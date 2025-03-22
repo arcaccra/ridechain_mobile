@@ -51,7 +51,7 @@ abstract class AppConstant {
   //--------------------------------------------------------------------
   //verify account screen
 
-  static const verifyScreenInLabel = "in";
+  static const verifyScreenLabel = "in";
   static const verifyScreenResentOtpLabel = "Resend OTP";
   static const verifyChangePhoneLabel = "Change Phone Number";
   static const verifyScreenTitleLabel = "Verify Your Account!";
@@ -62,5 +62,25 @@ abstract class AppConstant {
   //shared labels
 
   static const loginContinueLabel = "or continue with";
+
+  //-------------------------------------------------------------------------
+  //privacy screen
+
+  static const verifyScreenPrivacyTitleLabel = "Manage Your Privacy";
+  static const verifyScreenPrivacySubtitleLabel = "Control how we use your data to enhance your experience";
+  static const verifyScreenLocationTitleLabel = "Location Access";
+  static const verifyScreenLocationSubtitleLabel = "Allow the app to access your location for better ride-matching.";
+  static const verifyScreenNotificationTitleLabel = "Notification & Alerts";
+  static const verifyScreenNotificationSubtitleLabel = "Receive trip updates, promotion and important alerts.";
+  static const verifyScreenMarketingPrefsTitleLabel = "Marketing Preferences";
+  static const verifyScreenMarketingPrefsSubtitleLabel = "Receive special promotions and discounts via email or SMS.";
+  static const verifyScreenDataSharingTitleLabel = "Data Sharing for Personalization";
+  static const verifyScreenDataSharingSubtitleLabel = "Improve your experience with tailored ride suggestions and offers.";
+
+  //--------------------------------------------------------------------------
+  //Home labels
+  static const homepageWelcomeLabel = "Welcome to RideShare";
+  static const homepageSearchingLabel = "Searching for ride...";
+
 
 }

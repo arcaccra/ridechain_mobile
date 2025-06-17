@@ -27,6 +27,7 @@ dependencies:
   flutter_screenutil:
   flutter_svg:
   get:
+  gap:
   get_it:
   image_picker:
   intl:
@@ -52,7 +53,6 @@ flutter:
     - assets/svgs/
     - assets/images/
 
-  example:
   fonts:
     - family: BeauSans
       fonts:
@@ -60,6 +60,9 @@ flutter:
         - asset: fonts/BT-BeauSans-Medium.ttf
         - asset: fonts/BT-BeauSans-Bold.ttf
           weight: 800
+    - family: Zain
+      fonts:
+        - asset: fonts/Zain.ttf
     - family: Outfit
       fonts:
         - asset: fonts/Outfit-Regular.ttf

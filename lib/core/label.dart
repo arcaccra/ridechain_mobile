@@ -1,14 +1,16 @@
 
 
-abstract class AppConstant {
+abstract class Label {
 
   //--------------------------------------------------------------------
   //app name
-  static const appNameLabel = "RideShare";
+  static const appNameLabel = "Ride Chain";
 
   //--------------------------------------------------------------------
   //splash screen
-
+  static const share = "Share";
+  static const price = "Price";
+  static const choice = "Choice";
   static const splashScreenOnboardingFirstLabel = "Share Ride in affordable way";
   static const splashScreenOnboardingSecondLabel = "Its transparent & priceless";
   static const splashScreenOnboardingThirdLabel = "Unlike other rides, you have a say in the ride";
@@ -27,6 +29,7 @@ abstract class AppConstant {
   static const buttonVerifyLabel = "Verify";
   static const buttonRegisterLabel = "Register";
   static const buttonContinueLabel = "Continue";
+  static const buttonNextLabel = "Continue";
 
   //--------------------------------------------------------------------
   //login screen

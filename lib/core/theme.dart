@@ -15,23 +15,23 @@ class AppThemes {
     //create the light theme
     AppTheme.darkTheme: ThemeData(
       colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: AppColor.primaryColor,
-          secondary: AppColor.primaryColor
+          primary: AppColors.white,
+          secondary: AppColors.primaryColor
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColor.primaryColor,
-        foregroundColor: AppColor.white,
+        backgroundColor: AppColors.white,
+        foregroundColor: AppColors.primaryColor,
         elevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarColor: AppColor.primaryColor,
-            statusBarIconBrightness: Brightness.light,
-            statusBarBrightness: Brightness.dark
+            statusBarColor: AppColors.white,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light
         ),
       ),
       useMaterial3: true,
-      brightness: Brightness.light,
-      dividerColor: AppColor.borderColor,
-      fontFamily: 'Geist',
+      //brightness: Brightness.dark,
+      dividerColor: AppColors.borderColor,
+      fontFamily: 'Inter',
     )
   };
 
@@ -48,24 +48,25 @@ class AppThemes {
   //---------------------------------------------------------------------------
   //text styles
   //
-  static const appOutFitSmallStyle = TextStyle(fontSize: 12, fontFamily: "Outfit", color: AppColor.primaryColor);
-  static const appOutFitSmallMedium = TextStyle(fontSize: 16, fontFamily: "Outfit", color: AppColor.primaryColor);
-  static const appOutFitSmallLarge = TextStyle(fontSize: 20, fontFamily: "Outfit", color: AppColor.primaryColor);
+  static const appOutFitSmallStyle = TextStyle(fontSize: 12, fontFamily: "Outfit", color: AppColors.primaryColor);
+  static const appOutFitSmallMedium = TextStyle(fontSize: 16, fontFamily: "Outfit", color: AppColors.primaryColor);
+  static const appOutFitSmallLarge = TextStyle(fontSize: 20, fontFamily: "Outfit", color: AppColors.primaryColor);
 
-  static const appBeauSansSmallStyle = TextStyle(fontSize: 12, fontFamily: "BeauSans", color: AppColor.primaryColor);
-  static const appBeauSansSmallMedium = TextStyle(fontSize: 16, fontFamily: "BeauSans", color: AppColor.primaryColor);
-  static const appBeauSansSmallLarge = TextStyle(fontSize: 20, fontFamily: "BeauSans", color: AppColor.primaryColor);
+  static const appBeauSansSmall = TextStyle(fontSize: 12, fontFamily: "BeauSans", color: AppColors.primaryColor);
+  static const appBeauSansMedium = TextStyle(fontSize: 16, fontFamily: "BeauSans", color: AppColors.primaryColor);
+  static const appBeauSansLarge = TextStyle(fontSize: 20, fontFamily: "BeauSans", color: AppColors.primaryColor);
 
-  static const appInterSmallStyle = TextStyle(fontSize: 12, fontFamily: "Inter", color: AppColor.primaryColor);
-  static const appInterSmallMedium = TextStyle(fontSize: 16, fontFamily: "Inter", color: AppColor.primaryColor);
-  static const appInterSmallLarge = TextStyle(fontSize: 20, fontFamily: "Inter", color: AppColor.primaryColor);
+  static const appInterSmallStyle = TextStyle(fontSize: 12, fontFamily: "Inter", color: AppColors.primaryColor);
+  static const appInterSmallMedium = TextStyle(fontSize: 16, fontFamily: "Inter", color: AppColors.primaryColor);
+  static const appInterSmallLarge = TextStyle(fontSize: 20, fontFamily: "Inter", color: AppColors.primaryColor);
 
   //getCustomTextStyle
-  static getCustomTextStyle(String? fontFamily, double? fontSize, Color? color, double? lineHeight) {
+  static getCustomTextStyle({String? fontFamily, double? fontSize, Color? color, double? lineHeight, FontWeight? weight}) {
     return TextStyle(
       fontFamily: fontFamily ?? "BeauSans",
-      color: color ?? AppColor.primaryColor,
+      color: color ?? AppColors.primaryColor,
       fontSize: fontSize ?? 16,
+      fontWeight: weight ?? FontWeight.w500,
       height: lineHeight ?? 1
     );
   }
@@ -74,14 +75,14 @@ class AppThemes {
   //border styles
   static const appRoundedBorderSmall = RoundedRectangleBorder(
     borderRadius: BorderRadius.all(Radius.circular(8)),
-    side: BorderSide(color: AppColor.borderColor, width: 1)
+    side: BorderSide(color: AppColors.borderColor, width: 1)
   );
 
   //---------------------------------------------------------------------------
   //card styles
   static const appCardDecorationTheme = BoxDecoration(
     borderRadius: BorderRadius.all(Radius.circular(20.52)),
-    color: AppColor.white
+    color: AppColors.white
   );
 
   static BoxDecoration appCardDecorationWithShadowTheme = BoxDecoration(
@@ -91,21 +92,21 @@ class AppThemes {
         offset: Offset(0, 3.27),
         blurRadius: 31.6,
         spreadRadius: 0,
-        color: AppColor.primaryColor.withValues(alpha: 0.11),
+        color: AppColors.primaryColor.withValues(alpha: 0.11),
       )],
-      color: AppColor.white
+      color: AppColors.white
   );
 
   //---------------------------------------------------------------------------
   //button styles
   static const buttonDecorationTheme = BoxDecoration(
     borderRadius: BorderRadius.all(Radius.circular(33.5)),
-    color: AppColor.primaryColor,
+    color: AppColors.primaryColor,
   );
 
   static BoxDecoration buttonRoundedBorderDecorationTheme = BoxDecoration(
     borderRadius: BorderRadius.all(Radius.circular(33.5)),
-    border: Border.all(width: 2, color: AppColor.primaryColor)
+    border: Border.all(width: 2, color: AppColors.primaryColor)
   );
 
 }

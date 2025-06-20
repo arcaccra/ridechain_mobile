@@ -18,20 +18,24 @@ dependencies:
     sdk: flutter
 
   cached_network_image:
+  country_picker:
   cupertino_icons: ^1.0.8
   dio:
   dots_indicator:
   flutter_animate:
   flutter_dotenv:
   flutter_local_notifications:
+  flutter_multi_formatter:
   flutter_screenutil:
   flutter_svg:
   get:
+  gap:
   get_it:
   image_picker:
   intl:
   path:
   path_provider:
+  pin_code_fields:
   provider:
   shared_preferences:
 
@@ -52,7 +56,6 @@ flutter:
     - assets/svgs/
     - assets/images/
 
-  example:
   fonts:
     - family: BeauSans
       fonts:
@@ -60,11 +63,14 @@ flutter:
         - asset: fonts/BT-BeauSans-Medium.ttf
         - asset: fonts/BT-BeauSans-Bold.ttf
           weight: 800
+    - family: Zain
+      fonts:
+        - asset: fonts/Zain.ttf
     - family: Outfit
       fonts:
         - asset: fonts/Outfit-Regular.ttf
         - asset: fonts/Outfit-SemiBold.ttf
-        - asset: fonts/Outfit.ttf
+        - asset: fonts/Outfit-Bold.ttf
           weight: 800
     - family: Inter
       fonts:

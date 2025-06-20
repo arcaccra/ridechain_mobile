@@ -1,14 +1,16 @@
 
 
-abstract class AppConstant {
+abstract class Label {
 
   //--------------------------------------------------------------------
   //app name
-  static const appNameLabel = "RideShare";
+  static const appNameLabel = "Ride Chain";
 
   //--------------------------------------------------------------------
   //splash screen
-
+  static const share = "Share";
+  static const price = "Price";
+  static const choice = "Choice";
   static const splashScreenOnboardingFirstLabel = "Share Ride in affordable way";
   static const splashScreenOnboardingSecondLabel = "Its transparent & priceless";
   static const splashScreenOnboardingThirdLabel = "Unlike other rides, you have a say in the ride";
@@ -27,6 +29,7 @@ abstract class AppConstant {
   static const buttonVerifyLabel = "Verify";
   static const buttonRegisterLabel = "Register";
   static const buttonContinueLabel = "Continue";
+  static const buttonNextLabel = "Continue";
 
   //--------------------------------------------------------------------
   //login screen
@@ -49,10 +52,23 @@ abstract class AppConstant {
   static const registerScreenMessageLabel = "Ride, drive, or both-sign up and explore the possibilities!";
 
   //--------------------------------------------------------------------
+  //password screen
+
+  static const passwordScreenTitleLabel = "Create Password!";
+  static const passwordScreenMessageLabel = "Secure your account with a strong password";
+
+  //--------------------------------------------------------------------
+  //image capture screen
+
+  static const imageTitleLabel = "Upload Your Photo";
+  static const imageMessageLabel = "Choose a clear photo or take a new one";
+
+  //--------------------------------------------------------------------
   //verify account screen
 
   static const verifyScreenLabel = "in";
-  static const verifyScreenResentOtpLabel = "Resend OTP";
+  static const verifyScreenResentOtpLabel = "Resend OTP in ";
+  static const verifyScreenReadyToResendLabel = "Ready to resend! ";
   static const verifyChangePhoneLabel = "Change Phone Number";
   static const verifyScreenTitleLabel = "Verify Your Account!";
   static const verifyScreenNoOtpLabel = "Didn't receive the code?";
@@ -66,16 +82,16 @@ abstract class AppConstant {
   //-------------------------------------------------------------------------
   //privacy screen
 
-  static const verifyScreenPrivacyTitleLabel = "Manage Your Privacy";
-  static const verifyScreenPrivacySubtitleLabel = "Control how we use your data to enhance your experience";
-  static const verifyScreenLocationTitleLabel = "Location Access";
-  static const verifyScreenLocationSubtitleLabel = "Allow the app to access your location for better ride-matching.";
-  static const verifyScreenNotificationTitleLabel = "Notification & Alerts";
-  static const verifyScreenNotificationSubtitleLabel = "Receive trip updates, promotion and important alerts.";
-  static const verifyScreenMarketingPrefsTitleLabel = "Marketing Preferences";
-  static const verifyScreenMarketingPrefsSubtitleLabel = "Receive special promotions and discounts via email or SMS.";
-  static const verifyScreenDataSharingTitleLabel = "Data Sharing for Personalization";
-  static const verifyScreenDataSharingSubtitleLabel = "Improve your experience with tailored ride suggestions and offers.";
+  static const privacyTitleLabel = "Manage Your Privacy";
+  static const privacySubtitleLabel = "Control how we use your data to enhance your experience";
+  static const locationTitleLabel = "Location Access";
+  static const locationSubtitleLabel = "Allow the app to access your location for better ride-matching.";
+  static const notificationTitleLabel = "Notification & Alerts";
+  static const notificationSubtitleLabel = "Receive trip updates, promotion and important alerts.";
+  static const marketingPrefsTitleLabel = "Marketing Preferences";
+  static const marketingPrefsSubtitleLabel = "Receive special promotions and discounts via email or SMS.";
+  static const dataSharingTitleLabel = "Data Sharing for Personalization";
+  static const dataSharingSubtitleLabel = "Improve your experience with tailored ride suggestions and offers.";
 
   //--------------------------------------------------------------------------
   //Home labels

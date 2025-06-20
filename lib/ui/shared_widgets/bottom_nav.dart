@@ -1,0 +1,39 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../core/colors.dart';
+import '../../services/nav_service.dart';
+
+class BottomNav extends StatelessWidget {
+  final int? currentIndex;
+  final void Function(int)? getCurrentIndex;
+  const BottomNav({super.key, this.currentIndex, this.getCurrentIndex});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 1.sw,
+      height: 68.h,
+      child: ClipRect(
+        child: Container(
+          height: 99.h,
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(5, (index) {
+              var navigatorItem =
+              NavService.navigationItems(isSelected: currentIndex == index, userImage: null)[index];
+              return GestureDetector(
+                onTap: () {
+                  getCurrentIndex!(index);
+                },
+                child: navigatorItem,
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+}

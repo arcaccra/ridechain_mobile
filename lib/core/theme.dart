@@ -29,7 +29,7 @@ class AppThemes {
         ),
       ),
       useMaterial3: true,
-      brightness: Brightness.dark,
+      //brightness: Brightness.dark,
       dividerColor: AppColors.borderColor,
       fontFamily: 'Inter',
     )
@@ -52,9 +52,9 @@ class AppThemes {
   static const appOutFitSmallMedium = TextStyle(fontSize: 16, fontFamily: "Outfit", color: AppColors.primaryColor);
   static const appOutFitSmallLarge = TextStyle(fontSize: 20, fontFamily: "Outfit", color: AppColors.primaryColor);
 
-  static const appBeauSansSmallStyle = TextStyle(fontSize: 12, fontFamily: "BeauSans", color: AppColors.primaryColor);
-  static const appBeauSansSmallMedium = TextStyle(fontSize: 16, fontFamily: "BeauSans", color: AppColors.primaryColor);
-  static const appBeauSansSmallLarge = TextStyle(fontSize: 20, fontFamily: "BeauSans", color: AppColors.primaryColor);
+  static const appBeauSansSmall = TextStyle(fontSize: 12, fontFamily: "BeauSans", color: AppColors.primaryColor);
+  static const appBeauSansMedium = TextStyle(fontSize: 16, fontFamily: "BeauSans", color: AppColors.primaryColor);
+  static const appBeauSansLarge = TextStyle(fontSize: 20, fontFamily: "BeauSans", color: AppColors.primaryColor);
 
   static const appInterSmallStyle = TextStyle(fontSize: 12, fontFamily: "Inter", color: AppColors.primaryColor);
   static const appInterSmallMedium = TextStyle(fontSize: 16, fontFamily: "Inter", color: AppColors.primaryColor);

@@ -18,7 +18,7 @@ class OnBoardingPageThreeStack extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            top: 0,
+            bottom: 120,
             child: Text(Label.choice, style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 121, color: AppColors.greyEd))
                 .animate(delay: 200.ms)
                 .slide(

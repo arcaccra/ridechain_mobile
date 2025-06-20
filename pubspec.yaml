@@ -18,12 +18,14 @@ dependencies:
     sdk: flutter
 
   cached_network_image:
+  country_picker:
   cupertino_icons: ^1.0.8
   dio:
   dots_indicator:
   flutter_animate:
   flutter_dotenv:
   flutter_local_notifications:
+  flutter_multi_formatter:
   flutter_screenutil:
   flutter_svg:
   get:
@@ -33,6 +35,7 @@ dependencies:
   intl:
   path:
   path_provider:
+  pin_code_fields:
   provider:
   shared_preferences:
 
@@ -67,7 +70,7 @@ flutter:
       fonts:
         - asset: fonts/Outfit-Regular.ttf
         - asset: fonts/Outfit-SemiBold.ttf
-        - asset: fonts/Outfit.ttf
+        - asset: fonts/Outfit-Bold.ttf
           weight: 800
     - family: Inter
       fonts:

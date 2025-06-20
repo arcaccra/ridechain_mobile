@@ -12,6 +12,7 @@ import 'package:ridex/ui/screens/onboarding/widgets/onboarding_page_two_stack.da
 
 import '../../../core/cache_helper.dart';
 import '../../../core/colors.dart';
+import '../../../core/theme.dart';
 import '../../shared_widgets/default_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -27,51 +28,63 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 0.04.sh),
-        child: Column(
-          children: [
-            Gap(24.h),
-            Expanded(
-              child: PageView(
-                controller: pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    pageIndex = index;
-                  });
-                },
-                children: [
-                  OnBoardingPage(title: Label.splashScreenOnboardingFirstLabel,  stack: OnboardingPageOneStack()),
-                  OnBoardingPage(title: Label.splashScreenOnboardingSecondLabel,  stack: OnboardingPageTwoStack()),
-                  OnBoardingPage(title: Label.splashScreenOnboardingThirdLabel,  stack: OnBoardingPageThreeStack())
-                ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 0.04.sh),
+          child: Column(
+            children: [
+              Gap(30.h),
+              Text(
+                Label.appNameLabel,
+                style: AppThemes.getCustomTextStyle(
+                    fontSize: 24,
+                    fontFamily: "Outfit",
+                    weight: FontWeight.w700,
+                    color: AppColors.primaryColor
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-            const Gap(16),
-            IndicatorAndSkip(
-              page: pageIndex,
-              onTap: () {
-                //TODO: skip and move to login screen
-              },
-            ),
-            const Gap(16),
-            DefaultButton(
-              btnColor: AppColors.primaryColor,
-              btnTextColor: AppColors.white,
-              onBtnTap:
-                  pageIndex == 2
-                      ? () {
-                        CacheHelper.instance.cacheFirstTimer();
-                        Get.offAll(() => const LandingScreen());
-                      }
-                      : () {
-                        pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-                      },
-              btnText: pageIndex == 2 ? Label.buttonContinueLabel : Label.buttonNextLabel,
-            ),
-          ],
+              Gap(0.06.sh),
+              Expanded(
+                child: PageView(
+                  controller: pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      pageIndex = index;
+                    });
+                  },
+                  children: [
+                    OnBoardingPage(title: Label.splashScreenOnboardingFirstLabel,  stack: OnboardingPageOneStack()),
+                    OnBoardingPage(title: Label.splashScreenOnboardingSecondLabel,  stack: OnboardingPageTwoStack()),
+                    OnBoardingPage(title: Label.splashScreenOnboardingThirdLabel,  stack: OnBoardingPageThreeStack())
+                  ],
+                ),
+              ),
+              IndicatorAndSkip(
+                page: pageIndex,
+                onTap: () {
+                  //TODO: skip and move to login screen
+                },
+              ),
+              const Gap(16),
+              if(pageIndex == 2) DefaultButton(
+                btnColor: AppColors.primaryColor,
+                btnTextColor: AppColors.white,
+                onBtnTap:
+                    pageIndex == 2
+                        ? () {
+                          CacheHelper.instance.cacheFirstTimer();
+                          Get.offAll(() => const LandingScreen());
+                        }
+                        : () {
+                          pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+                        },
+                btnText: pageIndex == 2 ? Label.buttonContinueLabel : Label.buttonNextLabel,
+              ),
+            ],
+          ),
         ),
       ),
     );

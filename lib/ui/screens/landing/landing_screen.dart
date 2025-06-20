@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:ridex/core/colors.dart';
+import 'package:ridex/ui/screens/auth/register_screen.dart';
 
 import '../../../core/label.dart';
+import '../../../core/media.dart';
 import '../../../core/theme.dart';
 import '../../shared_widgets/default_button.dart';
+import '../auth/login_screen.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
@@ -16,7 +20,7 @@ class LandingScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          SizedBox(height: double.infinity, width: double.infinity, child: Image.asset('assets/images/background.png', fit: BoxFit.cover)),
+          SizedBox(height: double.infinity, width: double.infinity, child: Image.asset(Media.landingImage, fit: BoxFit.cover)),
           Positioned(
             top: 40.h,
             left: 0,
@@ -31,8 +35,6 @@ class LandingScreen extends StatelessWidget {
                 )
                 .fade(begin: 0, end: 1, duration: 500.ms, delay: 200.ms),
           ),
-
-
           Positioned(
             top: 0.5.sh,
             left: 24,
@@ -40,7 +42,6 @@ class LandingScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(Label.landingScreenTitleLabel, style: AppThemes.getCustomTextStyle(fontFamily: "Zain", fontSize: 72, color: AppColors.primaryColor,), textAlign: TextAlign.left, )
                     .animate(delay: 200.ms)
                     .slide(
@@ -59,10 +60,11 @@ class LandingScreen extends StatelessWidget {
                   curve: Curves.easeOutBack,
                 ).fade(begin: 0, end: 1, duration: 500.ms, delay: 200.ms),
 
-                Gap(40.h),
-
+                Gap(60.h),
                 DefaultButton(
-                  onBtnTap: (){},
+                  onBtnTap: (){
+                    Get.to(() => const LoginScreen());
+                  },
                   btnText: Label.buttonLoginLabel,
                   btnColor: AppColors.primaryColor,
                   btnTextColor: AppColors.white,
@@ -70,7 +72,9 @@ class LandingScreen extends StatelessWidget {
                 ),
                 Gap(10.h),
                 DefaultButton(
-                  onBtnTap: (){},
+                  onBtnTap: (){
+                    Get.to(() => const RegisterScreen());
+                  },
                   btnText: Label.buttonRegisterLabel,
                   btnColor: AppColors.white,
                   btnTextColor: AppColors.primaryColor,

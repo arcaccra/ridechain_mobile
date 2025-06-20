@@ -18,7 +18,7 @@ class OnboardingPageOneStack extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            top: 0,
+            bottom: 120,
             child: Text(Label.share, style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 121, color: AppColors.greyEd))
               .animate(delay: 200.ms)
               .slide(
@@ -47,7 +47,7 @@ class OnboardingPageOneStack extends StatelessWidget {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Image.asset(Media.onboardingGuyImg, height: 182, width: 385,)
+            child: Image.asset(Media.onboardingGuyImg, height: 192, width: 385,)
                 .animate(delay: 200.ms)
                 .slide(
               begin: const Offset(0, -0.3), // Start from top of screen

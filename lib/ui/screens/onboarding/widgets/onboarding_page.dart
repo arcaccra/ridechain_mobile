@@ -28,8 +28,9 @@ class OnBoardingPage extends StatelessWidget {
           child: Text(
             title,
             style: AppThemes.getCustomTextStyle(
-              fontSize: 38,
+              fontSize: 28.5,
               fontFamily: "Outfit",
+              weight: FontWeight.w700,
               color: AppColors.primaryColor
             ),
             textAlign: TextAlign.center,

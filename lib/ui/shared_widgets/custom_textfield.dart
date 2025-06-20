@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../core/colors.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final bool obscureText;
@@ -15,6 +15,8 @@ class CustomTextField extends StatelessWidget {
   final String? hintText;
   final Widget? suffixIcon;
   final Widget? prefix;
+  final String? labelText;
+  final FocusNode? focusNode;
   final Widget? prefixIcon;
   final List<TextInputFormatter>? inputFormatters;
   final AutovalidateMode? autovalidateMode;
@@ -35,6 +37,8 @@ class CustomTextField extends StatelessWidget {
     this.onEditingComplete,
     this.autovalidateMode,
     this.hintText,
+    this.labelText,
+    this.focusNode,
     this.onChanged,
     this.suffixIcon,
     this.prefix,
@@ -45,23 +49,43 @@ class CustomTextField extends StatelessWidget {
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = widget.focusNode ?? FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    final _focusNode = FocusNode();
     final border = OutlineInputBorder(
       borderSide: BorderSide(color: AppColors.textFieldBorderColor, width: 1),
       borderRadius: BorderRadius.circular(8.r),
     );
 
     return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
+      controller: widget.controller,
+      keyboardType: widget.keyboardType,
       focusNode: _focusNode,
-      obscureText: obscureText,
-      enabled: enabled,
-      readOnly: readOnly,
-      maxLines: expandable ? 5 : 1,
-      minLines: expandable ? 5 : 1,
-      onTap: onTap,
+      obscureText: widget.obscureText,
+      enabled: widget.enabled,
+      readOnly: widget.readOnly,
+      maxLines: widget.expandable ? 5 : 1,
+      minLines: widget.expandable ? 5 : 1,
+      onTap: widget.onTap,
       style: TextStyle(
         fontSize: 14.sp,
         fontFamily: "Inter",
@@ -72,9 +96,9 @@ class CustomTextField extends StatelessWidget {
       ),
       cursorColor: AppColors.primaryColor,
       onTapOutside: (_) => _focusNode.unfocus(),
-      onEditingComplete: onEditingComplete,
-      onChanged: onChanged,
-      autovalidateMode: autovalidateMode,
+      onEditingComplete: widget.onEditingComplete,
+      onChanged: widget.onChanged,
+      autovalidateMode: widget.autovalidateMode,
       decoration: InputDecoration(
         border: border,
         filled: true,
@@ -82,8 +106,8 @@ class CustomTextField extends StatelessWidget {
         enabledBorder: border,
         focusedBorder: border,
         disabledBorder: border,
-        hintText: hintText,
-        labelText: null,
+        hintText: widget.hintText,
+        labelText: widget.labelText,
         errorBorder: border,
         errorStyle: TextStyle(
           fontSize: 14.sp,
@@ -101,7 +125,7 @@ class CustomTextField extends StatelessWidget {
           letterSpacing: -0.48,
           height: 1.2,
         ),
-        suffixIcon: suffixIcon,
+        suffixIcon: widget.suffixIcon,
         hintStyle: TextStyle(
           fontSize: 14.sp,
           fontFamily: "Inter",
@@ -110,19 +134,19 @@ class CustomTextField extends StatelessWidget {
           letterSpacing: -0.48,
           height: 1.2,
         ),
-        prefix: prefix,
-        prefixIcon: prefixIcon,
+        prefix: widget.prefix,
+        prefixIcon: widget.prefixIcon,
         contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       ),
-      inputFormatters: inputFormatters,
-      validator: defaultValidation
+      inputFormatters: widget.inputFormatters,
+      validator: widget.defaultValidation
           ? (value) {
         if (value == null || value.isEmpty) {
           return 'Required Field';
         }
-        return validator?.call(value);
+        return widget.validator?.call(value);
       }
-          : validator,
+          : widget.validator,
     );
   }
 }

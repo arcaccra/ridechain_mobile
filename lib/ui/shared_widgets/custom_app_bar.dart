@@ -20,7 +20,7 @@ class CustomLoginAppBar extends StatelessWidget {
       child: Row(
         children: [
           DefaultBackButton(
-            icon: CupertinoIcons.left_chevron,
+            icon: CupertinoIcons.arrow_left,
             iconColor: AppColors.primaryColor,
             btnColor: AppColors.backgroundColor,
           ),

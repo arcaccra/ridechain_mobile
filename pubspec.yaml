@@ -21,6 +21,7 @@ dependencies:
   country_picker:
   cupertino_icons: ^1.0.8
   dio:
+  dotenv:
   dots_indicator:
   flutter_animate:
   flutter_dotenv:
@@ -31,13 +32,18 @@ dependencies:
   get:
   gap:
   get_it:
+  geolocator:
+  google_maps_flutter:
   image_picker:
   intl:
+  maps_launcher:
   path:
   path_provider:
   pin_code_fields:
   provider:
   shared_preferences:
+  connectivity_plus: ^6.1.4
+  url_launcher:
 
 
 dev_dependencies:

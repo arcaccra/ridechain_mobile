@@ -99,4 +99,17 @@ abstract class Label {
   static const homepageSearchingLabel = "Searching for ride...";
 
 
+  //--------------------------------------------------------------------------
+  static const noInternetTitle = "No Internet Connection";
+  static const noInternetMessage = "Oops... can not get your location at this time. please check your internet connection and try again.";
+
+  static String noGPSPermission = "No GPS permission has been granted. Check your settings and allow gps for the app to work properly.";
+
+  static String checkGPSAccess = "Please check your GPS Access";
+
+  static String rideSearching = "Searching for ride...";
+
+  static String confirmRide = "Confirm Ride";
+
+
 }

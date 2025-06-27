@@ -119,15 +119,17 @@ class DialogService {
     Color? backgroundColor = Colors.transparent,
     Color? barrierColor = Colors.transparent,
     AnimationController? animationController,
-    bool? isScrollControlled = true,
+    bool isDismissible = true,
+    bool isScrollControlled = true,
   }) {
     return showModalBottomSheet(
         backgroundColor: backgroundColor,
-        isScrollControlled: isScrollControlled!,
+        isScrollControlled: isScrollControlled,
         barrierColor: barrierColor,
         elevation: 0.0,
         transitionAnimationController: animationController,
         useRootNavigator: true,
+        isDismissible: isDismissible,
         context: context,
         builder: (context) {
           return customModal;

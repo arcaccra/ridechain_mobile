@@ -12,4 +12,9 @@ abstract class AppColors {
   static const textFieldBorderColor = Color(0xffe0e0e0);
   static const textFieldHintColor = Color(0xff828282);
   static const cancelButtonColor = Color(0xffe8eae9);
+
+  static var gradientColors = [
+    Color(0xff575757).withValues(alpha: 0.2),
+    Color(0xffffffff),
+  ];
 }

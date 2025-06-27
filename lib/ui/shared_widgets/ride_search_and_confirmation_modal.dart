@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:ridex/core/label.dart';
+import 'package:ridex/ui/shared_widgets/default_back_button.dart';
 import 'package:ridex/ui/shared_widgets/default_button.dart';
 
 import '../../core/colors.dart';
@@ -11,9 +12,10 @@ import '../../core/theme.dart';
 
 
 class RideSearchAndConfirmationModal extends StatelessWidget {
-  const RideSearchAndConfirmationModal({super.key, this.title, this.onBtnTap, this.isSuccess = false});
+  const RideSearchAndConfirmationModal({super.key, this.title, this.onBtnTap, this.isSuccess = false, this.lowerBtnText});
 
   final String? title;
+  final String? lowerBtnText;
   final VoidCallback? onBtnTap;
   final bool isSuccess;
 
@@ -42,7 +44,7 @@ class RideSearchAndConfirmationModal extends StatelessWidget {
               weight: FontWeight.w700,
               color: AppColors.primaryColor,
             ),),
-            Gap(20),
+            Gap(30.h),
             if(isSuccess) DefaultButton(
               onBtnTap: onBtnTap!,
               btnText: Label.confirmRide,
@@ -50,7 +52,18 @@ class RideSearchAndConfirmationModal extends StatelessWidget {
               btnColor: AppColors.primaryColor,
               btnTextColor: AppColors.white,
             ),
-            if(!isSuccess) BackButton(color: AppColors.white,)
+            if(!isSuccess) DefaultBackButton(
+              onBackTap: onBtnTap,
+              btnColor: AppColors.primaryColor,
+              icon: Icons.clear,
+              iconColor: AppColors.white,
+            ),
+            Gap(!isSuccess ? 16 : 0),
+            if(!isSuccess) Text(lowerBtnText ?? Label.buttonCancelText, style: AppThemes.getCustomTextStyle(
+              fontFamily: "Inter",
+              fontSize: 12,
+              weight: FontWeight.w400,
+              color: AppColors.primaryColor,))
           ],
         ),
       ),

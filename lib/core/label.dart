@@ -111,5 +111,7 @@ abstract class Label {
 
   static String confirmRide = "Confirm Ride";
 
+  static String buttonCancelText = "Cancel";
+
 
 }

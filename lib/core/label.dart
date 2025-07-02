@@ -113,5 +113,7 @@ abstract class Label {
 
   static String buttonCancelText = "Cancel";
 
+  static String ada = "₳";
+
 
 }

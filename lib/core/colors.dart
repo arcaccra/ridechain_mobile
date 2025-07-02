@@ -7,9 +7,16 @@ abstract class AppColors {
   static const white = Color(0xffffffff);
   static const grey = Color(0xff6d7280);
   static const greyEd = Color(0xffededed);
+  static const greyAd = Color(0xffadadad);
   static const borderColor = Color(0xffececec);
   static const googleColour = Color(0xffeeeeee);
+  static const yellow = Color(0xfffbbc05);
   static const textFieldBorderColor = Color(0xffe0e0e0);
   static const textFieldHintColor = Color(0xff828282);
   static const cancelButtonColor = Color(0xffe8eae9);
+
+  static var gradientColors = [
+    Color(0xff575757).withValues(alpha: 0.2),
+    Color(0xffffffff),
+  ];
 }

@@ -18,6 +18,21 @@ class BottomNav extends StatelessWidget {
         child: Container(
           height: 99.h,
           padding: EdgeInsets.symmetric(horizontal: 12.w),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16.r),
+              topRight: Radius.circular(16.r),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryColor.withValues(alpha: 0.11),
+                spreadRadius: 0,
+                blurRadius: 19.9,
+                offset: Offset(0, -8),
+              )
+            ]
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceAround,

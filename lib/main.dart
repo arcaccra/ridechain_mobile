@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ridex/core/theme.dart';
 import 'package:ridex/data/locator.dart';
+import 'package:ridex/services/connectivity_service.dart';
 import 'package:ridex/ui/screens/splash/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,10 +19,29 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    locator<ConnectionService>().checkConnection();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    locator<ConnectionService>().closeConnection();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(

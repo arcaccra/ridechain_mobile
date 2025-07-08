@@ -16,6 +16,7 @@ abstract class Media {
   static const onboardingToyotaImg = "$_images/toyota.png";
   static const landingImage = "$_images/landing.png";
   static const splashImage = "$_images/splash.png";
+  static const cutToyota = "$_images/cut_toyota.png";
 
   //svg
   static const google = "$_svgs/google.svg";
@@ -27,6 +28,7 @@ abstract class Media {
   static const profile = "$_svgs/profile.svg";
   static const car = "$_svgs/car.svg";
   static const marker = "$_svgs/marker.svg";
+  static const steering = "$_svgs/steering_wheel.svg";
 
 
 }

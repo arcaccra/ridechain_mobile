@@ -18,6 +18,7 @@ class DefaultButton extends StatelessWidget {
         this.width,
         this.iconData,
         this.borderColor,
+        this.btnTextSize,
         this.btnTextColor,
         this.btnFontWeight,
         this.isIconPresent = false});
@@ -29,6 +30,7 @@ class DefaultButton extends StatelessWidget {
   final Color? borderColor;
   final FontWeight? btnFontWeight;
   final double? width;
+  final double? btnTextSize;
   final bool isNull;
   final bool borderPresent;
   final String? iconData;
@@ -56,7 +58,7 @@ class DefaultButton extends StatelessWidget {
               if (isIconPresent)
                 SizedBox(height: 30.h, width: 30.h, child: SvgPicture.asset(iconData!)),
               Gap(12.w),
-              Text(btnText, style: AppThemes.getCustomTextStyle(color: btnTextColor ?? AppColors.white, fontSize: 16, weight: btnFontWeight ?? FontWeight.w500,),),
+              Text(btnText, style: AppThemes.getCustomTextStyle(color: btnTextColor ?? AppColors.white, fontSize: btnTextSize ?? 16, weight: btnFontWeight ?? FontWeight.w500,),),
             ],
           ),
         ),

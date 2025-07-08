@@ -115,5 +115,9 @@ abstract class Label {
 
   static String ada = "₳";
 
+  //driver en route
+  static const String driverOnWay = "Your driver is coming";
+  static const String driverTimeAway = "Arriving in ";
+
 
 }

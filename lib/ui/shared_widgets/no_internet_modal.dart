@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:ridex/core/label.dart';
-import 'package:ridex/core/theme.dart';
+import 'package:ridex/core/core_constants/label.dart';
+import 'package:ridex/app/theme.dart';
 
-import '../../core/colors.dart';
-import '../../core/media.dart';
+import '../../core/core_constants/colors.dart';
+import '../../core/core_constants/media.dart';
 
 
 class NoInternetModal extends StatelessWidget {

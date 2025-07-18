@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
-import '../../core/colors.dart';
+import '../../core/core_constants/colors.dart';
 import 'default_back_button.dart';
 
 class CustomLoginAppBar extends StatelessWidget {

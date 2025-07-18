@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/colors.dart';
+import '../../core/core_constants/colors.dart';
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;

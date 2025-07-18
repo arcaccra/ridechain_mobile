@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/colors.dart';
-import '../../../../core/theme.dart';
+import '../../../../core/core_constants/colors.dart';
+import '../../../../app/theme.dart';
 
 class NoAccount extends StatelessWidget {
   const NoAccount({super.key, required this.title, required this.actionTitle, required this.onPressed});

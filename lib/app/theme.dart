@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'colors.dart';
+import '../core/core_constants/colors.dart';
 
 enum AppTheme {
   lightTheme, darkTheme

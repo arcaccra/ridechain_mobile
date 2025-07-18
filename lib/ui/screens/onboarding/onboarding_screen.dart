@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:ridex/core/label.dart';
+import 'package:ridex/core/core_constants/label.dart';
 import 'package:ridex/ui/screens/landing/landing_screen.dart';
 import 'package:ridex/ui/screens/onboarding/widgets/indicator_and_skip.dart';
 import 'package:ridex/ui/screens/onboarding/widgets/onboarding_page.dart';
@@ -11,8 +11,8 @@ import 'package:ridex/ui/screens/onboarding/widgets/onboarding_page_three_stack.
 import 'package:ridex/ui/screens/onboarding/widgets/onboarding_page_two_stack.dart';
 
 import '../../../core/cache_helper.dart';
-import '../../../core/colors.dart';
-import '../../../core/theme.dart';
+import '../../../core/core_constants/colors.dart';
+import '../../../app/theme.dart';
 import '../../shared_widgets/default_button.dart';
 
 class OnboardingScreen extends StatefulWidget {

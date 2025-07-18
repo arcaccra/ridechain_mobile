@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-import '../../../../core/colors.dart';
-import '../../../../core/theme.dart';
+import '../../../../core/core_constants/colors.dart';
+import '../../../../app/theme.dart';
 
 class OtpFields extends StatelessWidget {
   const OtpFields({super.key, required this.otpCtrl});
@@ -20,7 +20,7 @@ class OtpFields extends StatelessWidget {
     );
     return PinCodeTextField(
       appContext: context,
-      length: 5,
+      length: 6,
       keyboardType: TextInputType.number,
       controller: otpCtrl,
       autoFocus: true,

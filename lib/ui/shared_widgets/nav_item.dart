@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'dart:ui';
 
-import '../../core/colors.dart';
+import '../../core/core_constants/colors.dart';
 
 class NavItem extends StatelessWidget {
   final String navData;

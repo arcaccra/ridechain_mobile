@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:ridex/core/theme.dart';
+import 'package:ridex/app/theme.dart';
 
-import '../../../../core/colors.dart';
+import '../../../../core/core_constants/colors.dart';
 import 'choose_image_icon.dart';
 
 class CustomPictureModal extends StatelessWidget {

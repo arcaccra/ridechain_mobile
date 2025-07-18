@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:ridex/ui/shared_widgets/custom_textfield.dart';
 
-import '../../../core/colors.dart';
-import '../../../core/label.dart';
+import '../../../core/core_constants/colors.dart';
+import '../../../core/core_constants/label.dart';
 import '../../shared_widgets/default_button.dart';
 
 class BottomCardWidget extends StatelessWidget {

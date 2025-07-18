@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/colors.dart';
-import '../../core/theme.dart';
+import '../../core/core_constants/colors.dart';
+import '../../app/theme.dart';
 
 class DialogButtons extends StatelessWidget {
   final double? height;
@@ -57,12 +57,12 @@ class DialogButtons extends StatelessWidget {
     GestureDetector(
       onTap: onOkayButtonPressed,
       child: Container(
-        padding: EdgeInsets.all(screenHeight * 0.01.h),
+        padding: EdgeInsets.all(12),
         width: width * 0.3.w,
-        height: screenHeight * 0.08.h,
+        height: 50.h,
         decoration: BoxDecoration(
             color: AppColors.primaryColor,
-            borderRadius: BorderRadius.circular(16.r)
+            borderRadius: BorderRadius.circular(24.r)
         ),
         child: Center(
           child: _buildButtonData(true, okayText!),
@@ -101,10 +101,10 @@ class DialogButtons extends StatelessWidget {
   }
 
   Widget _buildButtonData(bool isOkayBtn, String text) {
-    final color = isOkayBtn ? Colors.white : Colors.grey;
+    final color = isOkayBtn ? Colors.white : AppColors.primaryColor;
     final btnText = Text(
       text,
-      style: AppThemes.getCustomTextStyle(color: AppColors.white, fontSize: 16, weight: FontWeight.w500,));
+      style: AppThemes.getCustomTextStyle(color: color, fontSize: 16, weight: FontWeight.w500,));
 
     final loader = SizedBox(
       height: 10.h,

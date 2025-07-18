@@ -1,19 +1,25 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:provider/provider.dart';
 import 'package:ridex/ui/screens/auth/auth_widgets/otp_fields.dart';
 import 'package:ridex/ui/screens/auth/password_screen.dart';
 
-import '../../../core/colors.dart';
-import '../../../core/label.dart';
-import '../../../core/theme.dart';
+import '../../../core/core_constants/colors.dart';
+import '../../../core/core_constants/label.dart';
+import '../../../app/theme.dart';
+import '../../../data/locator.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../services/dialog_service.dart';
 import '../../shared_widgets/custom_app_bar.dart';
 import '../../shared_widgets/default_button.dart';
+import '../../shared_widgets/loader.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
@@ -30,9 +36,11 @@ class _OtpScreenState extends State<OtpScreen> {
   bool _canRestart = false;
   final TextEditingController _otpController = TextEditingController();
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+  AuthVm? authVm;
 
   @override
   void initState() {
+    authVm = context.read<AuthVm>();
     super.initState();
     _startCountdown();
   }
@@ -66,10 +74,10 @@ class _OtpScreenState extends State<OtpScreen> {
     _resendOTP();
   }
 
-  void _resendOTP() {
+  void _resendOTP()  async{
     // Add your OTP resend logic here
     print('Resending OTP...');
-    // Example: Call your API to resend OTP
+    authVm!.resendOTP(authVm?.body['phone_number']);
   }
 
   String _formatTime(int seconds) {
@@ -81,13 +89,14 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    _otpController.dispose();
     super.dispose();
+    _otpController.dispose();
   }
 
 
   @override
   Widget build(BuildContext context) {
+    authVm = context.watch<AuthVm>();
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
@@ -102,77 +111,97 @@ class _OtpScreenState extends State<OtpScreen> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 40),
                     child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Gap(20.h),
-                          Text(Label.verifyScreenTitleLabel, style: AppThemes.getCustomTextStyle(fontFamily: "Zain", weight: FontWeight.w900, color: AppColors.primaryColor, fontSize: 38, lineHeight: 1.33), textAlign: TextAlign.center)
-                              .animate(delay: 100.ms)
-                              .slide(
-                            begin: const Offset(0, -0.3),
-                            end: const Offset(0, 0), // End at center
-                            duration: 600.ms,
-                            curve: Curves.easeOutBack,
-                          )
-                              .fade(begin: 0, end: 1, duration: 600.ms),
-                          Gap(4.h),
-                          Text(Label.verifyScreenMessageLabel, style: AppThemes.getCustomTextStyle(fontFamily: "Zain", weight: FontWeight.w700, color: AppColors.primaryColor, fontSize: 16, lineHeight: 1.33), textAlign: TextAlign.center)
-                              .animate(delay: 100.ms)
-                              .slide(
-                            begin: const Offset(0, -0.3),
-                            end: const Offset(0, 0), // End at center
-                            duration: 600.ms,
-                            curve: Curves.easeOutBack,
-                          )
-                              .fade(begin: 0, end: 1, duration: 600.ms),
-                          Gap(0.15.sh),
-                          OtpFields(otpCtrl: _otpController,),
-                          Gap(0.15.sh),
-                          DefaultButton(
-                            onBtnTap: () async {
-                              Get.to(()=> PasswordScreen());
-                            },
-                            btnText: Label.buttonVerifyLabel,
-                            isIconPresent: false,
-                            btnColor: AppColors.primaryColor,
-                            btnTextColor: AppColors.white,
-                          ),
-                          Gap(30.h),
-                          GestureDetector(
-                            onTap: () {},
-                            child: Text(Label.verifyChangePhoneLabel, style: AppThemes.getCustomTextStyle(
-                              fontFamily: "BeauSans",
-                              fontSize: 13,
-                              weight: FontWeight.normal
-                            ),),
-                          ),
-                          Gap(0.15.sh),
-                          Text(Label.verifyScreenNoOtpLabel, style: AppThemes.getCustomTextStyle(
-                              fontFamily: "BeauSans",
-                              fontSize: 12,
-                              weight: FontWeight.w700,
-                          ),),
-                          Gap(10.h),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: _canRestart ? _restartCountdown : null,
-                                child: Text(_isActive ? Label.verifyScreenResentOtpLabel : Label.verifyScreenReadyToResendLabel, style: AppThemes.getCustomTextStyle(
-                                  fontFamily: "BeauSans",
-                                  fontSize: 12,
-                                  weight: FontWeight.w300,
-                                ),),
-                              ),
-                              if(_isActive)Text(_formatTime(_countdown), style: AppThemes.getCustomTextStyle(
+                      child: Form(
+                        key: _globalKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Gap(20.h),
+                            Text(Label.verifyScreenTitleLabel, style: AppThemes.getCustomTextStyle(fontFamily: "Zain", weight: FontWeight.w900, color: AppColors.primaryColor, fontSize: 38, lineHeight: 1.33), textAlign: TextAlign.center)
+                                .animate(delay: 100.ms)
+                                .slide(
+                              begin: const Offset(0, -0.3),
+                              end: const Offset(0, 0), // End at center
+                              duration: 600.ms,
+                              curve: Curves.easeOutBack,
+                            )
+                                .fade(begin: 0, end: 1, duration: 600.ms),
+                            Gap(4.h),
+                            Text(Label.verifyScreenMessageLabel, style: AppThemes.getCustomTextStyle(fontFamily: "Zain", weight: FontWeight.w700, color: AppColors.primaryColor, fontSize: 16, lineHeight: 1.33), textAlign: TextAlign.center)
+                                .animate(delay: 100.ms)
+                                .slide(
+                              begin: const Offset(0, -0.3),
+                              end: const Offset(0, 0), // End at center
+                              duration: 600.ms,
+                              curve: Curves.easeOutBack,
+                            )
+                                .fade(begin: 0, end: 1, duration: 600.ms),
+                            Gap(0.15.sh),
+                            OtpFields(otpCtrl: _otpController,),
+                            Gap(0.15.sh),
+                            DefaultButton(
+                              onBtnTap: () async {
+                                if(_globalKey.currentState!.validate()) {
+                                  var code = _otpController.text.trim();
+                                  await authVm!.verifyOTP(code);
+                                }
+                              },
+                              btnText: Label.buttonVerifyLabel,
+                              isIconPresent: false,
+                              btnColor: AppColors.primaryColor,
+                              btnTextColor: AppColors.white,
+                            ),
+                            Gap(30.h),
+                            GestureDetector(
+                              onTap: () {
+                                locator<DialogService>().showAlertDialog(
+                                  context: context,
+                                  message: "Will you like to change your phone number?",
+                                  okayText: Label.yes,
+                                  showTitle: true,
+                                  title: "Warning",
+                                  cancelText: Label.no,
+                                  type: AlertDialogType.warning,
+                                  showCancelBtn: true,
+                                  onOkayBtnTap: () async {
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                              child: Text(Label.verifyChangePhoneLabel, style: AppThemes.getCustomTextStyle(
+                                fontFamily: "BeauSans",
+                                fontSize: 13,
+                                weight: FontWeight.normal
+                              ),),
+                            ),
+                            Gap(0.15.sh),
+                            Text(Label.verifyScreenNoOtpLabel, style: AppThemes.getCustomTextStyle(
                                 fontFamily: "BeauSans",
                                 fontSize: 12,
-                                weight: FontWeight.w600,
-                              ),),
-                            ],
-                          )
-                        ],
+                                weight: FontWeight.w700,
+                            ),),
+                            Gap(10.h),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: _canRestart ? _restartCountdown : null,
+                                  child: Text(_isActive ? Label.verifyScreenResentOtpLabel : Label.verifyScreenReadyToResendLabel, style: AppThemes.getCustomTextStyle(
+                                    fontFamily: "BeauSans",
+                                    fontSize: 12,
+                                    weight: FontWeight.w300,
+                                  ),),
+                                ),
+                                if(_isActive)Text(_formatTime(_countdown), style: AppThemes.getCustomTextStyle(
+                                  fontFamily: "BeauSans",
+                                  fontSize: 12,
+                                  weight: FontWeight.w600,
+                                ),),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -180,10 +209,10 @@ class _OtpScreenState extends State<OtpScreen> {
                 Gap(16.h),
               ],
             ),
-            // Visibility(
-            //   visible: authVm!.isLoading || authVm!.loading,
-            //   child: const Loader(),
-            // )
+            Visibility(
+              visible: authVm!.isLoading,
+              child: const Loader(),
+            )
           ],
         ),
       ),

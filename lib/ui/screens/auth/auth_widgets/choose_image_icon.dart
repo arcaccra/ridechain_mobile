@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
-import '../../../../core/colors.dart';
-import '../../../../core/theme.dart';
+import '../../../../core/core_constants/colors.dart';
+import '../../../../app/theme.dart';
 
 class ChooseImageIcon extends StatelessWidget {
   const ChooseImageIcon({super.key, required this.title, required this.iconData});

@@ -7,8 +7,8 @@ import 'package:ridex/ui/screens/profile/profile_screen.dart';
 import 'package:ridex/ui/screens/scan/scan_screen.dart';
 import 'package:ridex/ui/screens/search/search_screen.dart';
 
-import '../core/colors.dart';
-import '../core/media.dart';
+import '../core/core_constants/colors.dart';
+import '../core/core_constants/media.dart';
 import '../ui/shared_widgets/nav_item.dart';
 
 class NavService {

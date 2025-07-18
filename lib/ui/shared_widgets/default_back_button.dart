@@ -5,7 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-import '../../core/colors.dart';
+import '../../core/core_constants/colors.dart';
 
 class DefaultBackButton extends StatelessWidget {
   const DefaultBackButton({super.key, this.onBackTap, this.iconColor, this.btnColor, this.icon, this.asset});

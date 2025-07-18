@@ -3,14 +3,17 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:ridex/ui/screens/auth/auth_widgets/password_form.dart';
 import 'package:ridex/ui/screens/auth/image_capture_screen.dart';
 
-import '../../../core/colors.dart';
-import '../../../core/label.dart';
-import '../../../core/theme.dart';
+import '../../../core/core_constants/colors.dart';
+import '../../../core/core_constants/label.dart';
+import '../../../app/theme.dart';
+import '../../../providers/auth_provider.dart';
 import '../../shared_widgets/custom_app_bar.dart';
 import '../../shared_widgets/default_button.dart';
+import '../../shared_widgets/loader.dart';
 
 class PasswordScreen extends StatefulWidget {
   const PasswordScreen({super.key});
@@ -25,6 +28,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
   final TextEditingController _confirmPasswordCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authVm = Provider.of<AuthVm>(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
@@ -69,6 +73,10 @@ class _PasswordScreenState extends State<PasswordScreen> {
                           DefaultButton(
                             onBtnTap: () async {
                               if (_formKey.currentState!.validate()) {
+                                var password1 = _passwordCtrl.text.trim();
+                                authVm.addToRegisterMap("password1", password1);
+                                var password2 = _confirmPasswordCtrl.text.trim();
+                                authVm.addToRegisterMap("password2", password2);
                                 Get.to(()=> ImageCaptureScreen());
                               }
                             },
@@ -85,10 +93,10 @@ class _PasswordScreenState extends State<PasswordScreen> {
                 Gap(16.h),
               ],
             ),
-            // Visibility(
-            //   visible: authVm!.isLoading || authVm!.loading,
-            //   child: const Loader(),
-            // )
+            Visibility(
+              visible: authVm!.isLoading,
+              child: const Loader(),
+            )
           ],
         ),
       ),

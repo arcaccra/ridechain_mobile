@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ridex/core/theme.dart';
-import '../core/colors.dart';
+import 'package:ridex/app/theme.dart';
+import '../core/core_constants/colors.dart';
 import '../data/models/api_response.dart';
 import '../ui/shared_widgets/custom_alert_dialog.dart';
 

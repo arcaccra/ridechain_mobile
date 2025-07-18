@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:ridex/core/label.dart';
+import 'package:ridex/core/core_constants/label.dart';
 import 'package:ridex/ui/shared_widgets/default_back_button.dart';
 import 'package:ridex/ui/shared_widgets/default_button.dart';
 
-import '../../core/colors.dart';
-import '../../core/media.dart';
-import '../../core/theme.dart';
+import '../../core/core_constants/colors.dart';
+import '../../core/core_constants/media.dart';
+import '../../app/theme.dart';
 
 
 class RideSearchAndConfirmationModal extends StatelessWidget {

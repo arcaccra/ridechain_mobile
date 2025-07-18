@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme.dart';
+import '../../../app/theme.dart';
 
 
 class SearchScreen extends StatelessWidget {

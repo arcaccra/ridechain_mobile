@@ -119,5 +119,10 @@ abstract class Label {
   static const String driverOnWay = "Your driver is coming";
   static const String driverTimeAway = "Arriving in ";
 
+  static const String no= "No";
+  static const String yes= "Yes";
+
+  static const String submitLabel = "Submit";
+
 
 }

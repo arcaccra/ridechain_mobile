@@ -3,8 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
-import '../../../../core/colors.dart';
-import '../../../../core/theme.dart';
+import '../../../../core/core_constants/colors.dart';
+import '../../../../app/theme.dart';
 
 class OnBoardingPage extends StatelessWidget {
   const OnBoardingPage({super.key, required this.title,required this.stack});

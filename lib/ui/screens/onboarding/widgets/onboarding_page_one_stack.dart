@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ridex/core/colors.dart';
+import 'package:ridex/core/core_constants/colors.dart';
 
-import '../../../../core/label.dart';
-import '../../../../core/media.dart';
-import '../../../../core/theme.dart';
+import '../../../../core/core_constants/label.dart';
+import '../../../../core/core_constants/media.dart';
+import '../../../../app/theme.dart';
 
 class OnboardingPageOneStack extends StatelessWidget {
   const OnboardingPageOneStack({super.key});

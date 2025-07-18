@@ -1,6 +1,6 @@
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/colors.dart';
+import '../../../../core/core_constants/colors.dart';
 
 class DotIndicatorWidget extends StatelessWidget {
   const DotIndicatorWidget({super.key, required this.page, required this.dotCount});

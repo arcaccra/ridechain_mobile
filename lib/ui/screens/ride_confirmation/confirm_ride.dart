@@ -4,9 +4,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:ridex/ui/shared_widgets/default_back_button.dart';
 
-import '../../../core/colors.dart';
-import '../../../core/media.dart';
-import '../../../core/theme.dart';
+import '../../../core/core_constants/colors.dart';
+import '../../../core/core_constants/label.dart';
+import '../../../core/core_constants/media.dart';
+import '../../../app/theme.dart';
 
 
 class ConfirmRide extends StatefulWidget {

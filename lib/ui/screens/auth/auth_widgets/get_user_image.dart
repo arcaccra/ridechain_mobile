@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/colors.dart';
+import '../../../../core/core_constants/colors.dart';
 import '../../../../data/locator.dart';
 import '../../../../services/dialog_service.dart';
 import 'choose_image_picker.dart';

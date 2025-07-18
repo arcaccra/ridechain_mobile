@@ -10,6 +10,8 @@ class CacheHelper {
   static final instance = CacheHelper._internal();
 
   static const _firstTimerKey = 'first-timer-key';
+  static const authKey = 'auth-key';
+  static const registerProcessKey = 'register-process-key';
 
   late SharedPreferences _prefs;
 
@@ -63,5 +65,19 @@ class CacheHelper {
   Future<bool> clearCache() async {
     return _prefs.clear();
   }
+
+  Future<void> cacheBool(String key, bool value) async {
+    await _prefs.setBool(key, value);
+  }
+
+  bool readBool(String key) {
+    final result = _prefs.getBool(key);
+    return result ?? false;
+  }
+
+  removeKey(String key) {
+    return _prefs.remove(key);
+  }
+
 
 }

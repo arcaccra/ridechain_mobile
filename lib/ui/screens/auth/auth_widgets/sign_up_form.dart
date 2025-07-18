@@ -129,6 +129,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     child: CustomTextField(
                       labelText: 'Phone',
                       focusNode: phoneFocusNode,
+                      hintText: "54 000 0000",
                       readOnly: country == null,
                       onTap: () {
                         if (country == null) {

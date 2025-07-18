@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme.dart';
+import '../../../app/theme.dart';
 
 class ScanScreen extends StatelessWidget {
   const ScanScreen({super.key});

@@ -7,7 +7,7 @@ import 'package:ridex/ui/screens/home/bottom_card_widget.dart';
 import 'package:ridex/ui/shared_widgets/loader.dart';
 import 'package:ridex/ui/shared_widgets/top_container.dart';
 
-import '../../../core/theme.dart';
+import '../../../app/theme.dart';
 import '../../../data/locator.dart';
 import '../../../services/dialog_service.dart';
 

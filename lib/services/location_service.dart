@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:maps_launcher/maps_launcher.dart';
-import '../core/label.dart';
+import '../core/core_constants/label.dart';
 import '../data/locator.dart';
 import 'dialog_service.dart';
 

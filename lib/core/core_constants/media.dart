@@ -17,6 +17,7 @@ abstract class Media {
   static const landingImage = "$_images/landing.png";
   static const splashImage = "$_images/splash.png";
   static const cutToyota = "$_images/cut_toyota.png";
+  static const logo = "$_images/logo.png";
 
   //svg
   static const google = "$_svgs/google.svg";

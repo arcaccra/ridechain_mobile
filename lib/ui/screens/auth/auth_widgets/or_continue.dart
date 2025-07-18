@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-import '../../../../core/colors.dart';
-import '../../../../core/label.dart';
-import '../../../../core/theme.dart';
+import '../../../../core/core_constants/colors.dart';
+import '../../../../core/core_constants/label.dart';
+import '../../../../app/theme.dart';
 
 class OrContinue extends StatelessWidget {
   const OrContinue({super.key});

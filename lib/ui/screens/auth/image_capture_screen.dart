@@ -3,20 +3,25 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:ridex/ui/screens/auth/auth_widgets/get_user_image.dart';
 import 'package:ridex/ui/screens/navigation/app_navigation_screen.dart';
 
-import '../../../core/colors.dart';
-import '../../../core/label.dart';
-import '../../../core/theme.dart';
+import '../../../core/core_constants/colors.dart';
+import '../../../core/core_constants/label.dart';
+import '../../../app/theme.dart';
+import '../../../providers/auth_provider.dart';
 import '../../shared_widgets/custom_app_bar.dart';
 import '../../shared_widgets/default_button.dart';
+import '../../shared_widgets/loader.dart';
 
 class ImageCaptureScreen extends StatelessWidget {
   const ImageCaptureScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authVm = Provider.of<AuthVm>(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
@@ -57,16 +62,16 @@ class ImageCaptureScreen extends StatelessWidget {
                               .fade(begin: 0, end: 1, duration: 600.ms),
                           Gap(0.15.sh),
                           GetUserImage(
-                            imageFile: null,
+                            imageFile: authVm.imageFile,
                             onCameraTap: () {
-                              // auth.captureProfilePicture(context,
-                              //     source: ImageSource.camera);
-                              // Get.back();
+                              authVm.captureProfilePicture(context,
+                                  source: ImageSource.camera);
+                              Get.back();
                             },
                             onGalleryTap: () {
-                              // auth.captureProfilePicture(context,
-                              //     source: ImageSource.gallery);
-                              // Get.back();
+                              authVm.captureProfilePicture(context,
+                                  source: ImageSource.gallery);
+                              Get.back();
                             },
                           ),
                           Gap(30.h),
@@ -87,8 +92,11 @@ class ImageCaptureScreen extends StatelessWidget {
                           ),
                           Gap(50.h),
                           DefaultButton(onBtnTap: () async {
-                            Get.to(()=> AppNavigationScreen());
-                          }, btnText: Label.buttonContinueLabel, isIconPresent: false, btnColor: AppColors.primaryColor, btnTextColor: AppColors.white),
+                            if (authVm.imageFile != null) {
+                              authVm.addToRegisterMap("avatar", authVm.selectedFile);
+                              await authVm.register();
+                            }
+                          }, btnText: Label.submitLabel, isIconPresent: false, btnColor: AppColors.primaryColor, btnTextColor: AppColors.white),
                         ],
                       ),
                     ),
@@ -98,10 +106,10 @@ class ImageCaptureScreen extends StatelessWidget {
                 Gap(16.h),
               ],
             ),
-            // Visibility(
-            //   visible: authVm!.isLoading || authVm!.loading,
-            //   child: const Loader(),
-            // )
+            Visibility(
+              visible: authVm.isLoading,
+              child: const Loader(),
+            )
           ],
         ),
       ),

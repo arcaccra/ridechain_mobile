@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../../../core/colors.dart';
+import '../../../core/core_constants/colors.dart';
 import '../../../data/locator.dart';
 import '../../../services/location_service.dart';
 import '../../../services/nav_service.dart';

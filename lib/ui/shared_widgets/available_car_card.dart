@@ -21,6 +21,7 @@ class AvailableCarCard extends StatelessWidget {
     return Container(
       width: 137.w,
       height: 139.h,
+      margin: EdgeInsets.only(left: 16.w),
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       decoration: BoxDecoration(
           color: AppColors.white,
@@ -41,7 +42,7 @@ class AvailableCarCard extends StatelessWidget {
           Gap(10),
           SizedBox(height: 47, width: 99, child: Image.asset(Media.onboardingToyotaImg, height: 47, width: 99,)),
           Gap(16),
-          Text("${Label.ada} ${amount ?? ""}", style: AppThemes.getCustomTextStyle(fontSize: 16, color: AppColors.primaryColor, weight: FontWeight.normal), maxLines: 1, overflow: TextOverflow.ellipsis,),
+          Text("ADA ${amount ?? ""}", style: AppThemes.getCustomTextStyle(fontSize: 16, color: AppColors.primaryColor, weight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis,),
           Gap(16),
           Text("${minutes ?? 7} min", style: AppThemes.getCustomTextStyle(fontSize: 8, color: AppColors.greyAd, weight: FontWeight.w400),),
         ],

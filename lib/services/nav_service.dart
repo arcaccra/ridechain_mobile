@@ -6,6 +6,7 @@ import 'package:ridex/ui/screens/home/home_screen.dart';
 import 'package:ridex/ui/screens/profile/profile_screen.dart';
 import 'package:ridex/ui/screens/scan/scan_screen.dart';
 import 'package:ridex/ui/screens/search/search_screen.dart';
+import 'package:ridex/ui/screens/trip_history/trip_history.dart';
 
 import '../core/core_constants/colors.dart';
 import '../core/core_constants/media.dart';
@@ -47,7 +48,7 @@ class NavService {
       const HomePage(),
       const SearchScreen(),
       const ScanScreen(),
-      const HistoryScreen(),
+      const TripHistory(),
       const ProfileScreen()
     ];
     if (screens[currentIndex] != null) {

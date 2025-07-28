@@ -30,8 +30,10 @@ class AcceptedTripDetailWidget extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("John Doe", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 14.42, weight: FontWeight.w700, color: AppColors.black)),
+                  Gap(8),
                   Row(
                     children: [
                       SvgPicture.asset(Media.steering, height: 8.3, width: 8.3),
@@ -48,7 +50,7 @@ class AcceptedTripDetailWidget extends StatelessWidget {
             ),
             Column(
               children: [
-                Text("${Label.ada} 28.50", style: AppThemes.getCustomTextStyle(fontSize: 13.33, color: AppColors.black, weight: FontWeight.w700),),
+                Text("ADA 28.50", style: AppThemes.getCustomTextStyle(fontSize: 13.33, color: AppColors.black, weight: FontWeight.w700),),
               ],
             ),
           ],
@@ -66,24 +68,28 @@ class AcceptedTripDetailWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 12, weight: FontWeight.w700, fontFamily: "Outfit")),
-                    Text("Pickup Locatiom" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 13, weight: FontWeight.w700, fontFamily: "Outfit")),
+                    Gap(6),
+                    Text("Pickup Location" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.black, fontSize: 13, weight: FontWeight.w700, fontFamily: "Outfit")),
                   ],
                 ),
                 const Spacer(),
                 Text("11:14 AM" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 8.3, weight: FontWeight.w400, fontFamily: "Outfit")),
               ],
             ),
-            DottedLine(height: 1, colors: [AppColors.greyEd],),
+            Gap(16.h),
+            DottedLine(height: 1, colors: [AppColors.greyEd], lineThickness: 0.5,),
+            Gap(16.h),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.circle, color: AppColors.purple, size: 8),
+                Icon(Icons.location_on, color: AppColors.purple, size: 8),
                 Gap(20.w),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(Label.destination, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 12, weight: FontWeight.w700, fontFamily: "Outfit")),
-                    Text("Destination Location" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 13, weight: FontWeight.w700, fontFamily: "Outfit")),
+                    Gap(6),
+                    Text("Destination Location" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.black, fontSize: 13, weight: FontWeight.w700, fontFamily: "Outfit")),
                   ],
                 ),
                 const Spacer(),

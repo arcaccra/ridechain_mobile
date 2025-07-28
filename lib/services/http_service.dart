@@ -149,20 +149,12 @@ class HttpService {
     String uri = "$host$url";
     print(uri);
 
-    // Fetch CSRF token
-    String? csrfToken = await getCsrfToken(host!);
-    if (csrfToken == null) {
-      throw Exception('Failed to retrieve CSRF token');
-    }
-
-
     return dio!.post(
       uri,
       data: body,
       cancelToken: token,
       options: Options(headers: {
         HttpHeaders.acceptHeader: "application/json",
-        'X-CSRFToken': csrfToken,
       }),
     );
   }

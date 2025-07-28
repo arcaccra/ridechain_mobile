@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 import '../../core/core_constants/colors.dart';
 import '../../app/theme.dart';
@@ -28,7 +29,8 @@ class PickupDestinationWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(title, style: AppThemes.getCustomTextStyle(fontSize: 8, color: AppColors.greyAd, weight: FontWeight.normal),),
-            Text(data ?? "", style: AppThemes.getCustomTextStyle(fontSize: 10, color: AppColors.greyAd, weight: FontWeight.normal), maxLines: 1, overflow: TextOverflow.ellipsis,),
+            Gap(4),
+            Text(data ?? "", style: AppThemes.getCustomTextStyle(fontSize: 10, color: AppColors.black, weight: FontWeight.normal), maxLines: 1, overflow: TextOverflow.ellipsis,),
           ],
         ),
     );

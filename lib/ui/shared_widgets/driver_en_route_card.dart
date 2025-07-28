@@ -26,15 +26,17 @@ class DriverEnRouteCard extends StatelessWidget {
         Text(Label.driverOnWay, style: AppThemes.getCustomTextStyle(fontSize: 20.2, color: AppColors.primaryColor, weight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis,),
         Gap(10.h),
         //sub text
-        Text(Label.driverTimeAway, style: AppThemes.getCustomTextStyle(fontSize: 11, color: AppColors.greyAd, weight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis,),
+        Text("${Label.driverTimeAway} 5mins", style: AppThemes.getCustomTextStyle(fontSize: 11, color: AppColors.greyAd, weight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis,),
         Gap(30.h),
         DottedLine(
           axis: Axis.horizontal,
           lineThickness: 1,
           dashGap: 4,
+          height: 1,
           dashWidth: 6,
           colors: [AppColors.textFieldBorderColor],
         ),
+        Gap(30.h),
         Row(
           children: [
             const CircleAvatar(
@@ -49,6 +51,7 @@ class DriverEnRouteCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("John Doe", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 14.42, weight: FontWeight.w700, color: AppColors.black)),
+                  Gap(6),
                   Row(
                     children: [
                       SvgPicture.asset(Media.steering, height: 8.3, width: 8.3),

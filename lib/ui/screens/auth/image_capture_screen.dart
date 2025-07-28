@@ -93,8 +93,9 @@ class ImageCaptureScreen extends StatelessWidget {
                           Gap(50.h),
                           DefaultButton(onBtnTap: () async {
                             if (authVm.imageFile != null) {
-                              authVm.addToRegisterMap("avatar", authVm.selectedFile);
-                              await authVm.register();
+                              // authVm.addToRegisterMap("avatar", authVm.selectedFile);
+                              // await authVm.register();
+                              Get.offAll(() => const AppNavigationScreen(), transition: Transition.leftToRight);
                             }
                           }, btnText: Label.submitLabel, isIconPresent: false, btnColor: AppColors.primaryColor, btnTextColor: AppColors.white),
                         ],

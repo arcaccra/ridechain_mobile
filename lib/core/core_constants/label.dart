@@ -142,6 +142,8 @@ abstract class Label {
 
   static const String payNow = "Pay Now";
 
+  static const String bookNow = "Book Now";
+
 
 
 }

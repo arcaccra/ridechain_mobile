@@ -4,10 +4,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ridex/services/location_service.dart';
 import 'package:ridex/ui/screens/home/bottom_card_widget.dart';
+import 'package:ridex/ui/screens/home/show_available_cars.dart';
+import 'package:ridex/ui/shared_widgets/driver_en_route_card.dart';
 import 'package:ridex/ui/shared_widgets/loader.dart';
 import 'package:ridex/ui/shared_widgets/top_container.dart';
 
 import '../../../app/theme.dart';
+import '../../../core/core_constants/colors.dart';
 import '../../../data/locator.dart';
 import '../../../services/dialog_service.dart';
 
@@ -27,6 +30,11 @@ class _HomePageState extends State<HomePage> {
   //call the app to get the location
 
   //TODO: load drivers markers for visualization
+
+  //show searching available cars
+  bool isAvailableCars = false;
+  bool isRiderComing = false;
+  String? destination;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +69,7 @@ class _HomePageState extends State<HomePage> {
             top: kToolbarHeight + 15.h,
             child: HomeTopContainer()
           ),
-          Positioned(
+          if(!isAvailableCars) Positioned(
             left: 24,
             right: 24,
             bottom: 88.h,
@@ -71,9 +79,46 @@ class _HomePageState extends State<HomePage> {
                   dialog.showSnackBar("No destination Input", "Please enter a valid destination/stop");
                   return;
                 }
+                setState(() {
+                  isAvailableCars = true;
+                  destination = locationController.text;
+                });
               },
               locationController: locationController,
             ),
+          ),
+          if(isAvailableCars && !isRiderComing) Positioned(
+            left: 24,
+            right: 24,
+            bottom: 88.h,
+            child: ShowAvailableCarsWidget(onBtnTap: () {
+              setState(() {
+                isRiderComing = true;
+              });
+            },
+              destination: destination,
+            )
+          ),
+          if(isRiderComing) Positioned(
+              left: 24,
+              right: 24,
+              bottom: 88.h,
+              child: Container(
+                width: 321.w,
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(21),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryColor.withValues(alpha: 0.11),
+                        spreadRadius: 0,
+                        blurRadius: 13.4,
+                        offset: Offset(0, 3.27),)
+                    ]
+                ),
+                child: DriverEnRouteCard()
+              )
           ),
         ],
       ),

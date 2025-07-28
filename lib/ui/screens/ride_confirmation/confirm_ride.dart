@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:ridex/ui/screens/ride_confirmation/widgets/ride_pickup_and_destination.dart';
 import 'package:ridex/ui/shared_widgets/default_back_button.dart';
 
 import '../../../core/core_constants/colors.dart';
 import '../../../core/core_constants/label.dart';
 import '../../../core/core_constants/media.dart';
 import '../../../app/theme.dart';
+import '../../shared_widgets/default_button.dart';
 
 
 class ConfirmRide extends StatefulWidget {
@@ -118,53 +120,24 @@ class _ConfirmRideState extends State<ConfirmRide> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: const [
-                        Icon(Icons.radio_button_checked, color: Colors.purple, size: 16),
-                        SizedBox(width: 8),
-                        Text('Pickup', style: TextStyle(color: Colors.grey)),
-                        Spacer(),
-                        Text('Central Train Station'),
-                      ],
-                    ),
-                    const Divider(height: 24),
-                    Row(
-                      children: const [
-                        Icon(Icons.location_on, color: Colors.purple, size: 16),
-                        SizedBox(width: 8),
-                        Text('Destination', style: TextStyle(color: Colors.grey)),
-                        Spacer(),
-                        Text('Wallbeck Tower Height'),
-                      ],
-                    ),
-                  ],
-                ),
+              Gap(16.h),
+              //pickup and destination
+              RidePickupAndDestination(pickupLocation: "Nairobi", destinationLocation: "Nakuru"),
+              Gap(30.h),
+              DefaultButton(
+                onBtnTap: (){},
+                btnText: Label.buttonConfirmLabel,
+                isIconPresent: false,
+                btnColor: AppColors.primaryColor,
+                btnTextColor: AppColors.white,
               ),
-              const Spacer(),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                ),
-                onPressed: () {},
-                child: const Text('Confirm'),
-              ),
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: () {},
-                child: const Text('Cancel', style: TextStyle(color: Colors.purple)),
+              Gap(10.h),
+              DefaultButton(
+                onBtnTap: (){},
+                btnText: Label.buttonConfirmLabel,
+                isIconPresent: false,
+                btnColor: AppColors.lightPurple,
+                btnTextColor: AppColors.purple,
               ),
             ],
           ),

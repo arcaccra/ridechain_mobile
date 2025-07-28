@@ -2,10 +2,13 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:ridex/app/app_config.dart';
 import 'package:ridex/core/cache_helper.dart';
 
+import '../data/constants/api_constants.dart';
 import '../data/models/user_model.dart';
 
 class HttpService {
@@ -13,6 +16,7 @@ class HttpService {
 
   BaseOptions? baseOptions;
   Dio? dio;
+  CookieJar cookieJar = CookieJar();
   int connectTimeout = 60000;
   int receiveTimeout = 60000;
 
@@ -41,6 +45,7 @@ class HttpService {
           return status! <= 500;
         });
     dio = Dio(baseOptions);
+    dio!.interceptors.add(CookieManager(cookieJar));
   }
 
   //get user token from login details
@@ -143,12 +148,21 @@ class HttpService {
       {dynamic body, CancelToken? token}) async {
     String uri = "$host$url";
     print(uri);
+
+    // Fetch CSRF token
+    String? csrfToken = await getCsrfToken(host!);
+    if (csrfToken == null) {
+      throw Exception('Failed to retrieve CSRF token');
+    }
+
+
     return dio!.post(
       uri,
       data: body,
       cancelToken: token,
       options: Options(headers: {
         HttpHeaders.acceptHeader: "application/json",
+        'X-CSRFToken': csrfToken,
       }),
     );
   }
@@ -193,5 +207,36 @@ class HttpService {
         headers: await getHeaders(),
       ),
     );
+  }
+
+  //getCsrftoken
+  Future<String?> getCsrfToken(String host) async {
+    try {
+      // Make a GET request to an endpoint that sets the CSRF cookie
+      Response response = await dio!.get(
+        '$host${Api.register}', // Replace with an endpoint like '/get-csrf-token/' or any accessible endpoint
+        options: Options(
+          followRedirects: true,
+          validateStatus: (status) => status! < 500,
+        ),
+      );
+
+      // Extract cookies from response
+      List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse('$host${Api.register}'));
+      String? csrfToken;
+
+      // Find the csrftoken cookie
+      for (var cookie in cookies) {
+        if (cookie.name == 'csrftoken') {
+          csrfToken = cookie.value;
+          break;
+        }
+      }
+
+      return csrfToken;
+    } catch (e) {
+      print('Error fetching CSRF token: $e');
+      return null;
+    }
   }
 }

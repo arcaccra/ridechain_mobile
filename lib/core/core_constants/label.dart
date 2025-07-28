@@ -124,5 +124,24 @@ abstract class Label {
 
   static const String submitLabel = "Submit";
 
+  static const String pickup = 'Pickup';
+  static const String estimatedTimeOfArrival = 'Estimated Time of Arrival';
+  static const String destination = 'Destination';
+
+  static const String buttonConfirmLabel = "Confirm";
+
+  static const String rideHistory = "Ride History";
+
+  static const String thisWeek = "This Week";
+
+  static const String completePayment = "Complete payment in ADA";
+
+  static const String rideStatus = "Ride Status";
+
+  static const String completed = "Completed";
+
+  static const String payNow = "Pay Now";
+
+
 
 }

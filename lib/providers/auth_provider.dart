@@ -43,10 +43,11 @@ class AuthVm extends BaseProvider {
       var response = await auth.login(body);
       var apiResponse = ApiResponse.parse(response);
       if(apiResponse.code == 200 || apiResponse.code == 201) {
-        _currentUser = AuthModel.fromJson(apiResponse.mappedData!);
+        _currentUser = AuthModel.fromJson(apiResponse.mappedObjects!);
         if(_currentUser != null) {
           await CacheHelper.instance.cacheModel(CacheHelper.authKey, _currentUser);
           _clearError();
+          clearBodyAndImages();
           Get.offAll(() => const AppNavigationScreen(), transition: Transition.leftToRight);
         }
       }
@@ -67,10 +68,11 @@ class AuthVm extends BaseProvider {
       log(response.toString());
       var apiResponse = ApiResponse.parse(response);
       if(apiResponse.code == 200 || apiResponse.code == 201) {
-        _currentUser = AuthModel.fromJson(apiResponse.mappedData!);
+        _currentUser = AuthModel.fromJson(apiResponse.mappedObjects!);
         if(_currentUser != null) {
           await CacheHelper.instance.cacheModel(CacheHelper.authKey, _currentUser);
           _clearError();
+          clearBodyAndImages();
           Get.offAll(() => const AppNavigationScreen(), transition: Transition.leftToRight);
         }
       }

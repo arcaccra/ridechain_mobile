@@ -5,6 +5,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ridex/core/core_constants/label.dart';
+import 'package:ridex/data/locator.dart';
+import 'package:ridex/services/login_service.dart';
+import 'package:ridex/ui/screens/navigation/app_navigation_screen.dart';
 import 'package:ridex/ui/screens/onboarding/onboarding_screen.dart';
 
 import '../../../core/cache_helper.dart';
@@ -30,9 +33,14 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _handleLogin() async {
-    _timer = Timer(const Duration(seconds: 2), () {
+    _timer = Timer(const Duration(seconds: 2), () async {
       if (CacheHelper.instance.isFirstTimer == true) {
-        Get.offAll(() => const LoginScreen());
+        bool isSuccess = await locator<LoginService>().isUserSignedIn();
+        if(isSuccess) {
+          Get.offAll(() => const AppNavigationScreen());
+        } else {
+          Get.offAll(() => const LoginScreen());
+        }
       } else {
         Get.offAll(() => const OnboardingScreen());
       }

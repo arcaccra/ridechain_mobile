@@ -37,13 +37,15 @@ class HomeTopContainer extends StatelessWidget {
         children: [
           SvgPicture.asset(image ?? Media.blackCar, width: 21, height: 21,),
           Gap(8.w),
-          Text(
-            title ?? "Welcome to RideShare.",
-            style: AppThemes.getCustomTextStyle(
-              fontSize: 13
+          Flexible(
+            child: Text(
+              title ?? "Welcome to RideShare.",
+              style: AppThemes.getCustomTextStyle(
+                fontSize: 13
+              ),
+              textAlign: TextAlign.left,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.left,
-            overflow: TextOverflow.ellipsis,
           )
         ],
       ),

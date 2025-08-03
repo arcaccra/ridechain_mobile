@@ -1,7 +1,9 @@
 
 
 import 'package:dio/dio.dart' as dio;
+import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
+import 'package:ridex/app/app_config.dart';
 import 'package:ridex/data/constants/api_constants.dart';
 import 'package:ridex/data/models/user_model.dart';
 import 'package:ridex/services/http_service.dart';
@@ -25,6 +27,14 @@ class LoginService extends HttpService {
     var body = dio.FormData.fromMap(data);
     var response = await loginPost(Api.register, body: body);
     return response;
+  }
+
+
+  registerWithHttp(Map<String, dynamic> data) async {
+    var body = data.map((key, value) => MapEntry(key, value.toString()));
+    var response = await http.post(Uri.parse("${AppConfig.shared.baseUrl}${Api.register}"), body: body);
+    return response;
+
   }
 
   //logout

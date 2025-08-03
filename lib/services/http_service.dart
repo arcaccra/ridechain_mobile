@@ -148,7 +148,6 @@ class HttpService {
       {dynamic body, CancelToken? token}) async {
     String uri = "$host$url";
     print(uri);
-
     return dio!.post(
       uri,
       data: body,

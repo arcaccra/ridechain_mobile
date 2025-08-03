@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:provider/provider.dart';
 import 'package:ridex/core/core_constants/label.dart';
 import 'package:ridex/core/core_constants/media.dart';
 import 'package:ridex/app/theme.dart';
@@ -13,8 +14,10 @@ import 'package:ridex/ui/screens/auth/register_screen.dart';
 import 'package:ridex/ui/screens/navigation/app_navigation_screen.dart';
 
 import '../../../core/core_constants/colors.dart';
+import '../../../providers/auth_provider.dart';
 import '../../shared_widgets/custom_app_bar.dart';
 import '../../shared_widgets/default_button.dart';
+import '../../shared_widgets/loader.dart';
 import 'auth_widgets/or_continue.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -31,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authVm = Provider.of<AuthVm>(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
@@ -75,7 +79,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           DefaultButton(
                             onBtnTap: () async {
                               if (_globalKey.currentState!.validate()) {
-                                Get.to(()=> AppNavigationScreen());
+                                final email = _emailCtrl.text.trim();
+                                final password = _passwordCtrl.text.trim();
+                                authVm.addToRegisterMap("email", email);
+                                authVm.addToRegisterMap("password", password);
+                                await authVm.login();
                               }
                             },
                             btnText: Label.buttonLoginLabel,
@@ -110,10 +118,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 Gap(16.h),
               ],
             ),
-            // Visibility(
-            //   visible: authVm!.isLoading || authVm!.loading,
-            //   child: const Loader(),
-            // )
+            Visibility(
+              visible: authVm.isLoading,
+              child: const Loader(),
+            )
           ],
         ),
       ),

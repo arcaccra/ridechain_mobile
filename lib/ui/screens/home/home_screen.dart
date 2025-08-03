@@ -36,6 +36,8 @@ class _HomePageState extends State<HomePage> {
   bool isRiderComing = false;
   String? destination;
 
+  bool onFirstLocationTry = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,9 +55,14 @@ class _HomePageState extends State<HomePage> {
                   child: GoogleMap(onMapCreated: (controller) => mapController = controller, myLocationEnabled: true, myLocationButtonEnabled: false, mapType: MapType.normal, initialCameraPosition: CameraPosition(target: LatLng(0.0, 0.0))),
                 );
               }
+
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Loader(loaderText: "Getting location");
               }
+
+
+              onFirstLocationTry = false;
+
               return SizedBox(
                 height: double.infinity,
                 width: double.infinity,

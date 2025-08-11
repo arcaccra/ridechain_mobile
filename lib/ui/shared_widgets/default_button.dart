@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:ridex/app/theme.dart';
+import 'package:ridex/ui/shared_widgets/loader.dart';
 
 import '../../core/core_constants/colors.dart';
 
@@ -15,6 +16,7 @@ class DefaultButton extends StatelessWidget {
         this.btnColor,
         this.isNull = false,
         this.borderPresent = false,
+        this.isLoading = false,
         this.width,
         this.iconData,
         this.borderColor,
@@ -32,6 +34,7 @@ class DefaultButton extends StatelessWidget {
   final double? width;
   final double? btnTextSize;
   final bool isNull;
+  final bool isLoading;
   final bool borderPresent;
   final String? iconData;
   final bool isIconPresent;
@@ -51,7 +54,7 @@ class DefaultButton extends StatelessWidget {
             color: borderColor ?? AppColors.primaryColor, width: 1) : null
         ),
         child: Center(
-          child: Row(
+          child: isLoading ? CircularProgressIndicator(strokeWidth: 0.7, color: AppColors.white,)  : Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -68,7 +71,7 @@ class DefaultButton extends StatelessWidget {
         begin: const Offset(0.8, 0.8),
         end: const Offset(1, 1), // 10% size increase
         curve: Curves.easeOut,
-      ),
+      )
     );
   }
 }

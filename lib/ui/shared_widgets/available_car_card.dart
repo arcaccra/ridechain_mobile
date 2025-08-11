@@ -35,16 +35,16 @@ class AvailableCarCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              SizedBox(height: 7, width:8, child: Icon(Icons.star, color: AppColors.yellow, size: 7,)),
-              Text("${rating ?? 4.5}/5", style: AppThemes.getCustomTextStyle(fontSize: 8, color: AppColors.greyAd, weight: FontWeight.w400),),
+              SizedBox(height: 7, width:8, child: Icon(Icons.star, color: AppColors.yellow, size: 12,)),
+              Text("${rating ?? 4.5}/5", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.greyAd, weight: FontWeight.w400),),
             ],
           ),
           Gap(10),
           SizedBox(height: 47, width: 99, child: Image.asset(Media.onboardingToyotaImg, height: 47, width: 99,)),
           Gap(16),
-          Text("ADA ${amount ?? ""}", style: AppThemes.getCustomTextStyle(fontSize: 16, color: AppColors.primaryColor, weight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis,),
+          Text("ADA ${amount ?? ""}", style: AppThemes.getCustomTextStyle(fontSize: 18, color: AppColors.primaryColor, weight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis,),
           Gap(16),
-          Text("${minutes ?? 7} min", style: AppThemes.getCustomTextStyle(fontSize: 8, color: AppColors.greyAd, weight: FontWeight.w400),),
+          Text("${minutes ?? 7} min", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.greyAd, weight: FontWeight.w400),),
         ],
       ),
     );

@@ -32,17 +32,17 @@ class AcceptedTripDetailWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("John Doe", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 14.42, weight: FontWeight.w700, color: AppColors.black)),
+                  Text("John Doe", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 18, weight: FontWeight.w700, color: AppColors.black)),
                   Gap(8),
                   Row(
                     children: [
-                      SvgPicture.asset(Media.steering, height: 8.3, width: 8.3),
+                      SvgPicture.asset(Media.steering, height: 12, width: 12),
                       Gap(4),
-                      Text("Hyundai Elantra (Silver)", style: AppThemes.getCustomTextStyle(fontSize: 8.3, color: AppColors.black, weight: FontWeight.w400),),
+                      Text("Hyundai Elantra (Silver)", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w400),),
                       Gap(16),
-                      SvgPicture.asset(Media.blackCar, height: 8.3, width: 8.3),
+                      SvgPicture.asset(Media.blackCar, height: 12, width: 12),
                       Gap(4),
-                      Text("MNO-7890", style: AppThemes.getCustomTextStyle(fontSize: 8.3, color: AppColors.black, weight: FontWeight.w700),),
+                      Text("MNO-7890", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
                     ],
                   ),
                 ],
@@ -50,13 +50,13 @@ class AcceptedTripDetailWidget extends StatelessWidget {
             ),
             Column(
               children: [
-                Text("ADA 28.50", style: AppThemes.getCustomTextStyle(fontSize: 13.33, color: AppColors.black, weight: FontWeight.w700),),
+                Text("ADA 28.50", style: AppThemes.getCustomTextStyle(fontSize: 18, fontFamily: "Outfit", color: AppColors.black, weight: FontWeight.w700),),
               ],
             ),
           ],
         ),
         //ride information
-        Gap(10),
+        Gap(16),
         Column(
           children: [
             Row(
@@ -67,13 +67,13 @@ class AcceptedTripDetailWidget extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 12, weight: FontWeight.w700, fontFamily: "Outfit")),
+                    Text(Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 16, weight: FontWeight.w500, fontFamily: "Outfit")),
                     Gap(6),
-                    Text("Pickup Location" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.black, fontSize: 13, weight: FontWeight.w700, fontFamily: "Outfit")),
+                    Text("Pickup Location" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.black, fontSize: 18, weight: FontWeight.w600, fontFamily: "Outfit")),
                   ],
                 ),
                 const Spacer(),
-                Text("11:14 AM" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 8.3, weight: FontWeight.w400, fontFamily: "Outfit")),
+                Text("11:14 AM" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 14, weight: FontWeight.w400, fontFamily: "Outfit")),
               ],
             ),
             Gap(16.h),
@@ -87,13 +87,13 @@ class AcceptedTripDetailWidget extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(Label.destination, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 12, weight: FontWeight.w700, fontFamily: "Outfit")),
+                    Text(Label.destination, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 16, weight: FontWeight.w500, fontFamily: "Outfit")),
                     Gap(6),
-                    Text("Destination Location" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.black, fontSize: 13, weight: FontWeight.w700, fontFamily: "Outfit")),
+                    Text("Destination Location" ?? Label.pickup, style: AppThemes.getCustomTextStyle(color: AppColors.black, fontSize: 18, weight: FontWeight.w600, fontFamily: "Outfit")),
                   ],
                 ),
                 const Spacer(),
-                Text("", style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 13, weight: FontWeight.w400, fontFamily: "Outfit")),
+                Text("", style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 12, weight: FontWeight.w400, fontFamily: "Outfit")),
               ],
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:ridex/services/widget_animations.dart';
 import 'package:ridex/ui/shared_widgets/custom_textfield.dart';
 
 import '../../../core/core_constants/colors.dart';

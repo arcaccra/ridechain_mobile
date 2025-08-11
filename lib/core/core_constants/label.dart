@@ -144,6 +144,17 @@ abstract class Label {
 
   static const String bookNow = "Book Now";
 
+  static const double countryLat = 5.5593;
+  static const double countryLng = 0.1974;
+
+  static String findingLocation = 'Finding your location...';
+
+  static String mayTakeSeconds = 'This may take a few seconds';
+
+  static String unableToGetLocation = 'Unable to get your location. Please try again.';
+
+  static String retry = "Retry";
+
 
 
 }

@@ -1,6 +1,14 @@
 
 
+
+
+import 'dart:ui';
+import 'dart:ui' as ui;
+
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:ridex/app/app_config.dart';
@@ -29,12 +37,10 @@ class LoginService extends HttpService {
     return response;
   }
 
-
-  registerWithHttp(Map<String, dynamic> data) async {
-    var body = data.map((key, value) => MapEntry(key, value.toString()));
-    var response = await http.post(Uri.parse("${AppConfig.shared.baseUrl}${Api.register}"), body: body);
+  //get the drivers
+  getDrivers() async {
+    var response = await get(Api.drivers);
     return response;
-
   }
 
   //logout
@@ -69,4 +75,27 @@ class LoginService extends HttpService {
     return () =>  Get.to(() => const LoginScreen());
 
   }
+
+  Future<BitmapDescriptor> svgToBitmap({
+    required BuildContext context,
+    required String svgAssetPath,
+    Size size = const Size(48, 48),
+  }) async {
+    final pictureInfo = await vg.loadPicture(SvgAssetLoader(svgAssetPath), null);
+    final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+    final width = (size.width * devicePixelRatio).toInt();
+    final height = (size.height * devicePixelRatio).toInt();
+
+    final scaleFactor = (width / pictureInfo.size.width).clamp(0.1, 10.0);
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder)
+      ..scale(scaleFactor)
+      ..drawPicture(pictureInfo.picture);
+
+    final image = await recorder.endRecording().toImage(width, height);
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    return BitmapDescriptor.bytes(bytes!.buffer.asUint8List());
+  }
+
+
 }

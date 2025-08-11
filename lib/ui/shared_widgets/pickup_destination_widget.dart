@@ -17,7 +17,6 @@ class PickupDestinationWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 146.w,
-      height: 45.h,
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -28,9 +27,9 @@ class PickupDestinationWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(title, style: AppThemes.getCustomTextStyle(fontSize: 8, color: AppColors.greyAd, weight: FontWeight.normal),),
+            Text(title, style: AppThemes.getCustomTextStyle(fontSize: 14, color: AppColors.greyAd, weight: FontWeight.normal),),
             Gap(4),
-            Text(data ?? "", style: AppThemes.getCustomTextStyle(fontSize: 10, color: AppColors.black, weight: FontWeight.normal), maxLines: 1, overflow: TextOverflow.ellipsis,),
+            Text(data ?? "", style: AppThemes.getCustomTextStyle(fontSize: 16, color: AppColors.black, weight: FontWeight.normal), maxLines: 1, overflow: TextOverflow.ellipsis,),
           ],
         ),
     );

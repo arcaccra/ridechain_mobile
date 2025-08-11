@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ridex/core/cache_helper.dart';
+import 'package:ridex/data/models/driver_model.dart';
 import 'package:ridex/providers/base_provider.dart';
 import 'package:ridex/ui/screens/auth/otp_screen.dart';
 import 'package:ridex/ui/screens/auth/password_screen.dart';
@@ -21,6 +22,7 @@ class AuthVm extends BaseProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   AuthModel? _currentUser;
+  List<DriverModel> allDrivers = [];
   String _verificationId = '';
   bool _authIsLoading = false;
   String? _errorMessage;
@@ -233,6 +235,31 @@ class AuthVm extends BaseProvider {
       updateUi(()=> _authIsLoading = false);
     }
     updateUi(()=> _authIsLoading = false);
+  }
+
+
+  bool isFirstTimeDriverLoad = true;
+  //get all the drivers
+  ///TODO: This call should fetch the drivers based on a radius around their location
+  Future<List<DriverModel>> getAllDrivers() async {
+    if(isFirstTimeDriverLoad) _authIsLoading = true;
+    try {
+      var response = await auth.getDrivers();
+      isFirstTimeDriverLoad = false;
+      var apiResponse = ApiResponse.parse(response);
+      if(apiResponse.code == 200 || apiResponse.code == 201) {
+        List driversList = apiResponse.listWithoutDataKey;
+        allDrivers = driversList.map((e)=> DriverModel.fromJson(e)).toList();
+        return allDrivers;
+      } else {
+        return [];
+      }
+    } on Exception catch(e) {
+      dialog.showSnackBar("An unexpected error occurred", e.toString());
+    } finally {
+      updateUi(()=> _authIsLoading = false);
+    }
+    return [];
   }
 
 

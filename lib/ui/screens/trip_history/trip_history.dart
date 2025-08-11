@@ -26,12 +26,12 @@ class _TripHistoryState extends State<TripHistory> {
           Gap(kToolbarHeight + 10.h),
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: Text(Label.rideHistory, style: AppThemes.getCustomTextStyle(color: AppColors.black, fontSize: 20, weight: FontWeight.w700, fontFamily: "Outfit")),
+            child: Text(Label.rideHistory, style: AppThemes.getCustomTextStyle(color: AppColors.black, fontSize: 24, weight: FontWeight.w700, fontFamily: "Outfit")),
           ),
           Gap(20.h),
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: Text(Label.thisWeek, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 11, weight: FontWeight.w500, fontFamily: "Outfit")),
+            child: Text(Label.thisWeek, style: AppThemes.getCustomTextStyle(color: AppColors.greyAd, fontSize: 16, weight: FontWeight.w500, fontFamily: "Outfit")),
           ),
           Expanded(child: ListView.builder(
               itemCount: 7,

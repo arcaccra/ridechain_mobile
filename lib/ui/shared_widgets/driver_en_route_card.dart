@@ -26,7 +26,7 @@ class DriverEnRouteCard extends StatelessWidget {
         Text(Label.driverOnWay, style: AppThemes.getCustomTextStyle(fontSize: 20.2, color: AppColors.primaryColor, weight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis,),
         Gap(10.h),
         //sub text
-        Text("${Label.driverTimeAway} 5mins", style: AppThemes.getCustomTextStyle(fontSize: 11, color: AppColors.greyAd, weight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis,),
+        Text("${Label.driverTimeAway} 5mins", style: AppThemes.getCustomTextStyle(fontSize: 14, color: AppColors.greyAd, weight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis,),
         Gap(30.h),
         DottedLine(
           axis: Axis.horizontal,
@@ -50,25 +50,25 @@ class DriverEnRouteCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("John Doe", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 14.42, weight: FontWeight.w700, color: AppColors.black)),
+                  Text("John Doe", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 18, weight: FontWeight.w700, color: AppColors.black)),
                   Gap(6),
                   Row(
                     children: [
-                      SvgPicture.asset(Media.steering, height: 8.3, width: 8.3),
+                      SvgPicture.asset(Media.steering, height: 12, width: 12),
                       Gap(4),
-                      Text("Hyundai Elantra (Silver)", style: AppThemes.getCustomTextStyle(fontSize: 8.3, color: AppColors.black, weight: FontWeight.w400),),
+                      Text("Hyundai Elantra (Silver)", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w400),),
                     ],
                   ),
                   SizedBox(height: 4),
                   Row(
                     children: [
-                      SvgPicture.asset(Media.blackCar, height: 8.3, width: 8.3),
+                      SvgPicture.asset(Media.blackCar, height: 12, width: 12),
                       Gap(4),
-                      Text("MNO-7890", style: AppThemes.getCustomTextStyle(fontSize: 8.3, color: AppColors.black, weight: FontWeight.w700),),
+                      Text("MNO-7890", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
                       Gap(16),
-                      Icon(Icons.star, size:8, color: AppColors.black,),
+                      Icon(Icons.star, size:12, color: AppColors.black,),
                       Gap(4),
-                      Text("4.7/5 Rating", style: AppThemes.getCustomTextStyle(fontSize: 8.3, color: AppColors.black, weight: FontWeight.w700),),
+                      Text("4.7/5 Rating", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
                     ],
                   ),
                 ],
@@ -76,7 +76,7 @@ class DriverEnRouteCard extends StatelessWidget {
             ),
             Column(
               children: [
-                Text("${Label.ada} 28.50", style: AppThemes.getCustomTextStyle(fontSize: 13.33, color: AppColors.black, weight: FontWeight.w700),),
+                Text("ADA 28.50", style: AppThemes.getCustomTextStyle(fontSize: 16.33, fontFamily: "Outfit", color: AppColors.black, weight: FontWeight.w800),),
               ],
             ),
           ],
@@ -106,7 +106,7 @@ class DriverEnRouteCard extends StatelessWidget {
           btnColor: AppColors.lightPurple,
           btnTextColor: AppColors.purple,
           btnFontWeight: FontWeight.w700,
-          btnTextSize: 10,
+          btnTextSize: 16,
         )
       ],
     );

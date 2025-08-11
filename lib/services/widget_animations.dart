@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-class WidgetAnimations {
+extension WidgetAnimationsExtension on Widget {
   // Base animation with slide from top and fade-in effect
-  static Animate baseSlideFade({
+  Animate baseSlideFade({
     Duration slideDuration = const Duration(seconds: 1),
     Duration fadeDuration = const Duration(milliseconds: 500),
     Duration delay = const Duration(milliseconds: 200),
@@ -33,7 +33,7 @@ class WidgetAnimations {
     );
   }
 
-  static AnimateList baseSlideFadeList({
+  AnimateList baseSlideFadeList({
     Duration slideDuration = const Duration(seconds: 1),
     Duration fadeDuration = const Duration(milliseconds: 500),
     Duration delay = const Duration(milliseconds: 200),
@@ -66,7 +66,7 @@ class WidgetAnimations {
 
 
   // Scale animation with optional delay and curve
-  static Animate scaleIn({
+  Animate scaleIn({
     Duration duration = const Duration(milliseconds: 600),
     Duration delay = const Duration(milliseconds: 200),
     Curve curve = Curves.easeOut,
@@ -86,7 +86,7 @@ class WidgetAnimations {
   }
 
   // Rotate animation with customizable angle
-  static Animate rotate({
+  Animate rotate({
     Duration duration = const Duration(milliseconds: 800),
     Duration delay = const Duration(milliseconds: 200),
     Curve curve = Curves.easeInOut,
@@ -107,7 +107,7 @@ class WidgetAnimations {
   }
 
   // Combined animation: slide + fade + scale
-  static Animate combined({
+  Animate combined({
     Duration slideDuration = const Duration(seconds: 1),
     Duration fadeDuration = const Duration(milliseconds: 500),
     Duration scaleDuration = const Duration(milliseconds: 600),
@@ -145,7 +145,7 @@ class WidgetAnimations {
   }
 
   // NEW: Slide from left with fade-in
-  static Animate slideFromLeft({
+  Animate slideFromLeft({
     Duration slideDuration = const Duration(seconds: 1),
     Duration fadeDuration = const Duration(milliseconds: 500),
     Duration delay = const Duration(milliseconds: 200),
@@ -174,7 +174,7 @@ class WidgetAnimations {
   }
 
   // NEW: Slide from right with fade-in
-  static Animate slideFromRight({
+  Animate slideFromRight({
     Duration slideDuration = const Duration(seconds: 1),
     Duration fadeDuration = const Duration(milliseconds: 500),
     Duration delay = const Duration(milliseconds: 200),
@@ -203,7 +203,7 @@ class WidgetAnimations {
   }
 
   // NEW: Flip animation on X-axis
-  static Animate flipX({
+  Animate flipX({
     Duration duration = const Duration(seconds: 1),
     Duration delay = const Duration(milliseconds: 200),
     Curve curve = Curves.easeOutBack,
@@ -225,7 +225,7 @@ class WidgetAnimations {
   }
 
   // NEW: Flip animation on Y-axis
-  static Animate flipY({
+  Animate flipY({
     Duration duration = const Duration(seconds: 1),
     Duration delay = const Duration(milliseconds: 200),
     Curve curve = Curves.easeOutBack,
@@ -247,7 +247,7 @@ class WidgetAnimations {
   }
 
   // NEW: Shimmer effect
-  static Animate shimmer({
+  Animate shimmer({
     Duration duration = const Duration(seconds: 1),
     Duration delay = const Duration(milliseconds: 200),
     Curve curve = Curves.easeOutBack,
@@ -268,7 +268,7 @@ class WidgetAnimations {
   }
 
   // NEW: Shake animation
-  static Animate shake({
+  Animate shake({
     Duration duration = const Duration(seconds: 1),
     Duration delay = const Duration(milliseconds: 200),
     Curve curve = Curves.easeOutBack,

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:ridex/providers/auth_provider.dart';
 import 'package:ridex/services/location_service.dart';
 import 'package:ridex/ui/screens/home/bottom_card_widget.dart';
 import 'package:ridex/ui/screens/home/show_available_cars.dart';
+import 'package:ridex/ui/screens/home/widget/progressive_map_widget.dart';
 import 'package:ridex/ui/shared_widgets/driver_en_route_card.dart';
 import 'package:ridex/ui/shared_widgets/loader.dart';
 import 'package:ridex/ui/shared_widgets/top_container.dart';
@@ -26,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   final dialog = locator<DialogService>();
   final TextEditingController locationController = TextEditingController();
   GoogleMapController? mapController;
+  late AuthVm authVm;
 
   //call the app to get the location
 
@@ -38,36 +42,74 @@ class _HomePageState extends State<HomePage> {
 
   bool onFirstLocationTry = true;
 
+  // Your location stream (replace with your actual implementation)
+  late Stream<Position> locationStream;
+
+  @override
+  void initState() {
+    //TODO: Activate fetch the driver details and show them on the map
+    authVm = context.read<AuthVm>();
+    super.initState();
+    authVm.getAllDrivers();
+    // Initialize your location stream here
+    locationStream = _createLocationStream();
+  }
+
+  Stream<Position> _createLocationStream() {
+    return Stream.periodic(const Duration(seconds: 2), (index) {
+      // Replace with your actual location service
+      return Geolocator.getCurrentPosition(
+        locationSettings: LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 10,
+        ),
+      );
+    }).asyncMap((future) => future);
+  }
+
   @override
   Widget build(BuildContext context) {
+    authVm = context.watch<AuthVm>();
     return Scaffold(
       body: Stack(
         children: [
-          StreamBuilder<Position>(
-            stream: location.stream,
-            builder: (context, snapshot) {
-              Position? userLocation = snapshot.data;
-              if (snapshot.hasError) {
-                dialog.showSnackBar("Caution..", "User location cannot be fetched at this time. Please try again...");
-                return SizedBox(
-                  height: double.infinity,
-                  width: double.infinity,
-                  child: GoogleMap(onMapCreated: (controller) => mapController = controller, myLocationEnabled: true, myLocationButtonEnabled: false, mapType: MapType.normal, initialCameraPosition: CameraPosition(target: LatLng(0.0, 0.0))),
-                );
-              }
-
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Loader(loaderText: "Getting location");
-              }
-
-
-              onFirstLocationTry = false;
-
-              return SizedBox(
-                height: double.infinity,
-                width: double.infinity,
-                child: GoogleMap(onMapCreated: (controller) => mapController = controller, myLocationEnabled: true, myLocationButtonEnabled: false, mapType: MapType.normal, initialCameraPosition: CameraPosition(zoom: 18, target: LatLng(userLocation!.latitude, userLocation.longitude))),
-              );
+          // StreamBuilder<Position>(
+          //   stream: location.stream,
+          //   builder: (context, snapshot) {
+          //     Position? userLocation = snapshot.data;
+          //     if (snapshot.hasError) {
+          //       dialog.showSnackBar("Caution..", "User location cannot be fetched at this time. Please try again...");
+          //       return SizedBox(
+          //         height: double.infinity,
+          //         width: double.infinity,
+          //         child: GoogleMap(onMapCreated: (controller) => mapController = controller, myLocationEnabled: true, myLocationButtonEnabled: false, mapType: MapType.normal, initialCameraPosition: CameraPosition(target: LatLng(0.0, 0.0))),
+          //       );
+          //     }
+          //
+          //     if (snapshot.connectionState == ConnectionState.waiting) {
+          //       return Loader(loaderText: "Getting location");
+          //     }
+          //
+          //
+          //     onFirstLocationTry = false;
+          //
+          //     return SizedBox(
+          //       height: double.infinity,
+          //       width: double.infinity,
+          //       child: GoogleMap(onMapCreated: (controller) => mapController = controller, myLocationEnabled: true, myLocationButtonEnabled: false, mapType: MapType.normal, initialCameraPosition: CameraPosition(zoom: 18, target: LatLng(userLocation!.latitude, userLocation.longitude))),
+          //     );
+          //   },
+          // ),
+          //this is the new implementation
+          ProgressiveMapWidget(
+            locationStream: locationStream,
+            onMapCreated: (controller) => mapController = controller,
+            availableDrivers: authVm.allDrivers,
+            onLocationFound: () {
+              // Called when location is found and animation completes
+              setState(() {
+                onFirstLocationTry = false;
+              });
             },
           ),
           Positioned(

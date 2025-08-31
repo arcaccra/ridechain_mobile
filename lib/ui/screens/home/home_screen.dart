@@ -4,12 +4,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ridex/providers/auth_provider.dart';
+import 'package:ridex/providers/rides_provider.dart';
 import 'package:ridex/services/location_service.dart';
 import 'package:ridex/ui/screens/home/bottom_card_widget.dart';
 import 'package:ridex/ui/screens/home/show_available_cars.dart';
 import 'package:ridex/ui/screens/home/widget/progressive_map_widget.dart';
 import 'package:ridex/ui/shared_widgets/driver_en_route_card.dart';
 import 'package:ridex/ui/shared_widgets/loader.dart';
+import 'package:ridex/ui/shared_widgets/ride_searching_loader.dart';
 import 'package:ridex/ui/shared_widgets/top_container.dart';
 
 import '../../../app/theme.dart';
@@ -30,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController locationController = TextEditingController();
   GoogleMapController? mapController;
   late AuthVm authVm;
+  late RideProvider rideProvider;
 
   //call the app to get the location
 
@@ -42,135 +45,173 @@ class _HomePageState extends State<HomePage> {
 
   bool onFirstLocationTry = true;
 
-  // Your location stream (replace with your actual implementation)
-  late Stream<Position> locationStream;
 
   @override
   void initState() {
     //TODO: Activate fetch the driver details and show them on the map
     authVm = context.read<AuthVm>();
+    rideProvider = context.read<RideProvider>();
     super.initState();
     authVm.getAllDrivers();
+    authVm.getLocations();
     // Initialize your location stream here
-    locationStream = _createLocationStream();
+    location.startListeningToPosition();
   }
 
-  Stream<Position> _createLocationStream() {
-    return Stream.periodic(const Duration(seconds: 2), (index) {
-      // Replace with your actual location service
-      return Geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 10,
-        ),
+  void _onDestinationSubmit() {
+    if (locationController.text.trim().isEmpty) {
+      dialog.showSnackBar(
+          "No destination Input",
+          "Please enter a valid destination/drop off"
       );
-    }).asyncMap((future) => future);
+      return;
+    }
+
+    setState(() {
+      destination = locationController.text.trim();
+      rideProvider.fetchRides(destination!);
+    });
   }
+
+
+  //reset to idle
+  void _resetToIdle() {
+    setState(() {
+      rideProvider.updateRideState(RideState.idle);
+      destination = null;
+      locationController.clear();
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     authVm = context.watch<AuthVm>();
+    rideProvider = context.watch<RideProvider>();
     return Scaffold(
       body: Stack(
         children: [
-          // StreamBuilder<Position>(
-          //   stream: location.stream,
-          //   builder: (context, snapshot) {
-          //     Position? userLocation = snapshot.data;
-          //     if (snapshot.hasError) {
-          //       dialog.showSnackBar("Caution..", "User location cannot be fetched at this time. Please try again...");
-          //       return SizedBox(
-          //         height: double.infinity,
-          //         width: double.infinity,
-          //         child: GoogleMap(onMapCreated: (controller) => mapController = controller, myLocationEnabled: true, myLocationButtonEnabled: false, mapType: MapType.normal, initialCameraPosition: CameraPosition(target: LatLng(0.0, 0.0))),
-          //       );
-          //     }
-          //
-          //     if (snapshot.connectionState == ConnectionState.waiting) {
-          //       return Loader(loaderText: "Getting location");
-          //     }
-          //
-          //
-          //     onFirstLocationTry = false;
-          //
-          //     return SizedBox(
-          //       height: double.infinity,
-          //       width: double.infinity,
-          //       child: GoogleMap(onMapCreated: (controller) => mapController = controller, myLocationEnabled: true, myLocationButtonEnabled: false, mapType: MapType.normal, initialCameraPosition: CameraPosition(zoom: 18, target: LatLng(userLocation!.latitude, userLocation.longitude))),
-          //     );
-          //   },
-          // ),
           //this is the new implementation
-          ProgressiveMapWidget(
-            locationStream: locationStream,
-            onMapCreated: (controller) => mapController = controller,
-            availableDrivers: authVm.allDrivers,
-            onLocationFound: () {
-              // Called when location is found and animation completes
-              setState(() {
-                onFirstLocationTry = false;
-              });
-            },
-          ),
-          Positioned(
-            left: 0.25.sw,
-            right: 0.25.sw,
-            top: kToolbarHeight + 15.h,
-            child: HomeTopContainer()
-          ),
-          if(!isAvailableCars) Positioned(
-            left: 24,
-            right: 24,
-            bottom: 88.h,
-            child: BottomCardWidget(
-              onBtnTap: () {
-                if (locationController.text.isEmpty) {
-                  dialog.showSnackBar("No destination Input", "Please enter a valid destination/stop");
-                  return;
-                }
-                setState(() {
-                  isAvailableCars = true;
-                  destination = locationController.text;
-                });
-              },
-              locationController: locationController,
-            ),
-          ),
-          if(isAvailableCars && !isRiderComing) Positioned(
-            left: 24,
-            right: 24,
-            bottom: 88.h,
-            child: ShowAvailableCarsWidget(onBtnTap: () {
-              setState(() {
-                isRiderComing = true;
-              });
-            },
-              destination: destination,
-            )
-          ),
-          if(isRiderComing) Positioned(
-              left: 24,
-              right: 24,
-              bottom: 88.h,
-              child: Container(
-                width: 321.w,
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(21),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primaryColor.withValues(alpha: 0.11),
-                        spreadRadius: 0,
-                        blurRadius: 13.4,
-                        offset: Offset(0, 3.27),)
-                    ]
-                ),
-                child: DriverEnRouteCard()
-              )
-          ),
+          buildMapWidget(),
+
+          buildTopContainer(),
+
+          //build the bottom card
+          buildBottomCard(),
         ],
       ),
     );
+  }
+
+  //build map widget
+  Widget buildMapWidget() {
+    return ProgressiveMapWidget(
+      locationStream: location.stream,
+      onMapCreated: (controller) => mapController = controller,
+      availableDrivers: authVm.allDrivers,
+      onLocationFound: () {
+        // Called when location is found and animation completes
+        setState(() {
+          onFirstLocationTry = false;
+        });
+      },
+    );
+  }
+
+  //build top container
+  Widget buildTopContainer() {
+    return Positioned(
+        left: 0.25.sw,
+        right: 0.25.sw,
+        top: kToolbarHeight + 15.h,
+        child: HomeTopContainer(title: destination,)
+    );
+  }
+
+  //build bottom card
+  Widget buildBottomCard() {
+    return Positioned(
+      left: 16,
+      right: 16,
+      bottom: 88.h,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (child, animation) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          );
+        },
+        child: _buildCurrentCard(),
+      ),
+    );
+  }
+
+  //build the current card to show
+  _buildCurrentCard(){
+    switch (rideProvider.currentRideState) {
+      case RideState.idle:
+        return _buildDestinationInputCard();
+
+      case RideState.carsAvailable:
+        return _buildAvailableCarsCard();
+
+      case RideState.riderEnRoute:
+        return _buildDriverEnRouteCard();
+
+      case RideState.searchingCars:
+        return _buildLoadingCard();
+    }
+  }
+
+  //build the destination input card
+  Widget _buildDestinationInputCard() {
+    return BottomCardWidget(
+      onBtnTap: () {
+        //function called when the destination has been submitted
+        _onDestinationSubmit();
+      },
+      locationController: locationController,
+    );
+  }
+
+  //show available drivers card
+  _buildAvailableCarsCard() {
+    return ShowAvailableCarsWidget(onBtnTap: () {
+      setState(() {
+        isRiderComing = true;
+      });
+    },
+      destination: destination,
+    );
+  }
+
+  //build the driver en route card
+  _buildDriverEnRouteCard(){
+    return Container(
+        width: 321.w,
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(21),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryColor.withValues(alpha: 0.11),
+                spreadRadius: 0,
+                blurRadius: 13.4,
+                offset: Offset(0, 3.27),)
+            ]
+        ),
+        //TODO: add an ontap to reset to idle when the page is closed
+        child: DriverEnRouteCard()
+    );
+  }
+
+  //build loader card
+  _buildLoadingCard(){
+    return RideSearchingLoader();
   }
 }

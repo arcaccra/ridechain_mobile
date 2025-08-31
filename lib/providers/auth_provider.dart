@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ridex/core/cache_helper.dart';
 import 'package:ridex/data/models/driver_model.dart';
+import 'package:ridex/data/models/location_model.dart';
 import 'package:ridex/providers/base_provider.dart';
 import 'package:ridex/ui/screens/auth/otp_screen.dart';
 import 'package:ridex/ui/screens/auth/password_screen.dart';
@@ -26,6 +27,7 @@ class AuthVm extends BaseProvider {
   String _verificationId = '';
   bool _authIsLoading = false;
   String? _errorMessage;
+  List<LocationModel> allLocations = [];
 
   File? imageFile;
 
@@ -260,6 +262,27 @@ class AuthVm extends BaseProvider {
       updateUi(()=> _authIsLoading = false);
     }
     return [];
+  }
+
+  //get all locations
+  getLocations() async {
+    _authIsLoading = true;
+    try{
+      var response = await auth.loadAllLocations();
+      var apiResponse = ApiResponse.parse(response);
+      if(apiResponse.code == 200 || apiResponse.code == 201) {
+        List locations = apiResponse.listWithoutDataKey;
+        allLocations = locations.map((e)=> LocationModel.fromJson(e)).toList();
+        await CacheHelper.instance.cacheModel(CacheHelper.locationsKey, locations);
+      } else {
+        allLocations = [];
+      }
+
+    } on Exception catch(e) {
+      dialog.showSnackBar("An unexpected error occurred", e.toString());
+    } finally {
+      updateUi(()=> _authIsLoading = false);
+    }
   }
 
 

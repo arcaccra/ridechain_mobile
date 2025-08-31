@@ -26,6 +26,8 @@ class ProgressiveMapWidget extends StatefulWidget {
 
 class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with TickerProviderStateMixin{
 
+
+
   GoogleMapController? _mapController;
   bool _isLocationFound = false;
   bool _hasAnimatedToLocation = false;
@@ -174,15 +176,16 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
             stream: widget.locationStream,
             builder: (context, snapshot) {
               // Handle errors gracefully
-              if (snapshot.hasError) {
-                _showLocationError();
-              }
+              // if (snapshot.hasError) {
+              //   _showLocationError();
+              // }
 
               // When location is received, animate to it
-              if (snapshot.hasData && !_hasAnimatedToLocation) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _animateToUserLocation(snapshot.data!);
-                });
+              if (snapshot.hasData && snapshot.data!.latitude != _userLocation?.latitude && snapshot.data!.longitude != _userLocation?.longitude) {
+                _userLocation = snapshot.data!;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _animateToUserLocation(_userLocation!);
+                  });
               }
 
               return GoogleMap(
@@ -286,6 +289,12 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
     );
   }
 
+  // The success animation is built using an AnimatedBuilder widget. The animation is controlled by the _fadeAnimation controller.
+  // The opacity of the container is decreased as the animation progresses, which creates a fade out effect.
+  // The color of the container is gradually changed to become more transparent, creating a fading effect.
+  // The size of the inner container is increased as the animation progresses, creating a scaling effect.
+  // The icon inside the inner container is also scaled up, creating a bouncing effect.
+  // The box shadow of the inner container is also changed as the animation progresses, creating a ripple effect.
   Widget _buildSuccessAnimation() {
     return AnimatedBuilder(
       animation: _fadeAnimation,

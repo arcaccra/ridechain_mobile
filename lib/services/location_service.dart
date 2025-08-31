@@ -96,7 +96,6 @@ class LocationService {
   }
 
 
-
   //open the map launcher
   showDirectionToDriver(double latitude, double longitude) async {
    await MapsLauncher.launchCoordinates(latitude, longitude, "Show direction to driver");

@@ -19,7 +19,7 @@ class HomeTopContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 299.h,
+      //width: 299.h,
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -34,8 +34,9 @@ class HomeTopContainer extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(image ?? Media.blackCar, width: 21, height: 21,),
+          SvgPicture.asset(title != null ? Media.marker : Media.blackCar, width: 21, height: 21,),
           Gap(8.w),
           Flexible(
             child: Text(

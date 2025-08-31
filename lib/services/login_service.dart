@@ -76,6 +76,13 @@ class LoginService extends HttpService {
 
   }
 
+  //get all locations
+  loadAllLocations() async {
+    var response = await get("${Api.rides}locations/");
+    return response;
+  }
+
+
   Future<BitmapDescriptor> svgToBitmap({
     required BuildContext context,
     required String svgAssetPath,

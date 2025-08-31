@@ -32,7 +32,7 @@ class ApiResponse {
   Map? get mappedObjects => body;
 
 
-  bool? get allGood => errors == null || errors!.isEmpty;
+  bool? get allGood => code! >= 200 && code! <= 300 ;
 
   bool? get noBody => errors?.isEmpty;
 

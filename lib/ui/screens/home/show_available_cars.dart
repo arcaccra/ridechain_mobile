@@ -15,7 +15,6 @@ class ShowAvailableCarsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 321.w,
       padding: EdgeInsets.only(top: 16, bottom: 16,),
       decoration: BoxDecoration(
           color: AppColors.white,
@@ -32,12 +31,17 @@ class ShowAvailableCarsWidget extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                PickupDestinationWidget(title: Label.pickup, data: "My Location",),
-                PickupDestinationWidget(title: Label.destination, data: destination ?? "",),
-              ],
+            child: SizedBox(
+              width: double.infinity,
+
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(child: PickupDestinationWidget(title: Label.pickup, data: "My Location",)),
+                  Gap(12.w),
+                  Expanded(child: PickupDestinationWidget(title: Label.destination, data: destination ?? "",)),
+                ],
+              ),
             ),
           ),
           Gap(16.h),

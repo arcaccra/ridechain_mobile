@@ -27,13 +27,16 @@ class LocationService {
 
 
   //calculate the distance and time
-  Future<Map<String, dynamic>> calculateDistanceAndTime(double taskLat, double taskLng, double userLocationLat, double userLocationLng) async {
+  int calculateTime(double taskLat, double taskLng, double userLocationLat, double userLocationLng) {
     double distanceInMeters = Geolocator.distanceBetween(taskLat, taskLng, userLocationLat, userLocationLng);
     double speed = 5.0; //assuming that the walkig speed is 5m/s
     double estimatedTime = distanceInMeters / speed;
+    return estimatedTime.round();
+  }
 
-    var map = {"distance" : distanceInMeters, "time": estimatedTime};
-    return map;
+  double calculateDistance(double taskLat, double taskLng, double userLocationLat, double userLocationLng){
+    double distanceInMeters = Geolocator.distanceBetween(taskLat, taskLng, userLocationLat, userLocationLng);
+    return distanceInMeters;
   }
 
   //launch the url for google maps

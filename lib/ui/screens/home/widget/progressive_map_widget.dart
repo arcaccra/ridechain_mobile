@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
@@ -5,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ridex/app/theme.dart';
 import 'package:ridex/data/locator.dart';
 import 'package:ridex/data/models/driver_model.dart';
+import 'package:ridex/data/models/ride_model.dart';
 import 'package:ridex/services/login_service.dart';
 
 import '../../../../core/core_constants/colors.dart';
@@ -16,9 +19,8 @@ class ProgressiveMapWidget extends StatefulWidget {
   final Stream<Position> locationStream;
   final Function(GoogleMapController) onMapCreated;
   final VoidCallback? onLocationFound;
-  final List<DriverModel> availableDrivers;
-  final Function(DriverModel)? onDriverTapped;
-  const ProgressiveMapWidget({super.key, required this.locationStream, required this.onMapCreated, this.onLocationFound, this.availableDrivers = const [], this.onDriverTapped});
+  final List<RideModel> availableRides;
+  const ProgressiveMapWidget({super.key, required this.locationStream, required this.onMapCreated, this.onLocationFound, this.availableRides = const [],});
 
   @override
   State<ProgressiveMapWidget> createState() => _ProgressiveMapWidgetState();
@@ -33,7 +35,7 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
   bool _hasAnimatedToLocation = false;
   Position? _userLocation;
   Set<Marker> _markers = {};
-  BitmapDescriptor? _driverMarkerIcon;
+  BitmapDescriptor? _rideMarkerIcon;
 
 
   // Animation controllers
@@ -45,7 +47,7 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
   // Default camera position (you can set this to your city/country center)
   static final LatLng _defaultLocation = LatLng(Label.countryLat, Label.countryLng); // San Francisco
   static const double _defaultZoom = 10.0;
-  static const double _userLocationZoom = 18.0;
+  static const double _userLocationZoom = 12.0;
 
   @override
   void initState() {
@@ -56,11 +58,17 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
 
   }
 
+  @override
+  void didChangeDependencies() {
+    _createCustomMarkerIcon();
+    super.didChangeDependencies();
+  }
+
   //check for changes and update the widget appropriately
   @override
   void didUpdateWidget(ProgressiveMapWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.availableDrivers != widget.availableDrivers) {
+    if (oldWidget.availableRides != widget.availableRides) {
       _updateDriverMarkers();
     }
   }
@@ -104,7 +112,7 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
     setState(() {
       _userLocation = position;
       _isLocationFound = true;
-      _hasAnimatedToLocation = true;
+      //_hasAnimatedToLocation = true;
     });
 
     // Stop pulse animation and start fade animation
@@ -129,7 +137,7 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
 
   //Create custom marker icon for drivers
   Future<void> _createCustomMarkerIcon() async {
-    _driverMarkerIcon = await locator<LoginService>().svgToBitmap(context: context, svgAssetPath: Media.car);
+    _rideMarkerIcon = await locator<LoginService>().svgToBitmap(context: context, svgAssetPath: Media.rideMarker);
     if (mounted) {
       _updateDriverMarkers();
     }
@@ -138,30 +146,30 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
   //get the driver markers
   // Update driver markers on map
   void _updateDriverMarkers() {
-    if (_driverMarkerIcon == null) return;
+    if (_rideMarkerIcon == null || widget.availableRides.isEmpty) return;
 
     final Set<Marker> newMarkers = {};
 
-    for (final driver in widget.availableDrivers) {
-      if (driver.online!) {
+    for (final ride in widget.availableRides) {
         newMarkers.add(
           Marker(
-            markerId: MarkerId('driver_${driver.id}'),
-            position: driver.latLng,
-            icon: _driverMarkerIcon!,
+            markerId: MarkerId('driver_${ride.uuid}'),
+            position: ride.latLng,
+            icon: _rideMarkerIcon!,
             //onTap: () => _onDriverMarkerTapped(driver),
             infoWindow: InfoWindow(
-              title: driver.user?.fullName,
-              snippet: '${driver.vehicleType} • ⭐ ${driver.vehiclePlateNumber}',
+              title: ride.driver?.user?.fullName,
+              snippet: '${ride.driver?.vehicleType} • ⭐ ${ride.driver?.vehiclePlateNumber}',
             ),
           ),
         );
-      }
     }
 
     setState(() {
+      _markers.clear();
       _markers = newMarkers;
     });
+    log("TOTAL MARKERS ====> ${_markers.length}");
   }
 
   @override
@@ -175,12 +183,6 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
           child: StreamBuilder<Position>(
             stream: widget.locationStream,
             builder: (context, snapshot) {
-              // Handle errors gracefully
-              // if (snapshot.hasError) {
-              //   _showLocationError();
-              // }
-
-              // When location is received, animate to it
               if (snapshot.hasData && snapshot.data!.latitude != _userLocation?.latitude && snapshot.data!.longitude != _userLocation?.longitude) {
                 _userLocation = snapshot.data!;
                   WidgetsBinding.instance.addPostFrameCallback((_) {

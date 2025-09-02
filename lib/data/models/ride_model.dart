@@ -3,6 +3,8 @@
 
 import 'dart:convert';
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 RideModel rideModelFromJson(String str) => RideModel.fromJson(json.decode(str));
 
 String rideModelToJson(RideModel data) => json.encode(data.toJson());
@@ -49,6 +51,8 @@ class RideModel {
     "created_at": createdAt?.toIso8601String(),
     "updated_at": updatedAt?.toIso8601String(),
   };
+
+  LatLng get latLng => LatLng(pickUp!.latitude!, pickUp!.longitude!);
 }
 
 class Driver {

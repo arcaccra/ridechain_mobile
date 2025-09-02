@@ -86,7 +86,7 @@ class LoginService extends HttpService {
   Future<BitmapDescriptor> svgToBitmap({
     required BuildContext context,
     required String svgAssetPath,
-    Size size = const Size(48, 48),
+    Size size = const Size(16, 16),
   }) async {
     final pictureInfo = await vg.loadPicture(SvgAssetLoader(svgAssetPath), null);
     final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;

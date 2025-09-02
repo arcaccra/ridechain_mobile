@@ -28,6 +28,7 @@ abstract class Media {
   static const search = "$_svgs/search.svg";
   static const profile = "$_svgs/profile.svg";
   static const car = "$_svgs/car.svg";
+  static const rideMarker = "$_svgs/ride_marker.svg";
   static const marker = "$_svgs/marker.svg";
   static const steering = "$_svgs/steering_wheel.svg";
 

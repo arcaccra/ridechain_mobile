@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
     return ProgressiveMapWidget(
       locationStream: location.stream,
       onMapCreated: (controller) => mapController = controller,
-      availableDrivers: authVm.allDrivers,
+      availableRides: rideProvider.rides,
       onLocationFound: () {
         // Called when location is found and animation completes
         setState(() {
@@ -164,6 +164,10 @@ class _HomePageState extends State<HomePage> {
 
       case RideState.searchingCars:
         return _buildLoadingCard();
+
+      case RideState.awaitingDriverResponse:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 
@@ -180,7 +184,9 @@ class _HomePageState extends State<HomePage> {
 
   //show available drivers card
   _buildAvailableCarsCard() {
-    return ShowAvailableCarsWidget(onBtnTap: () {
+    return ShowAvailableCarsWidget(
+      locationStream: location.stream,
+      onBtnTap: () {
       setState(() {
         isRiderComing = true;
       });

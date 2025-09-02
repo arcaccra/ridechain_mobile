@@ -1,5 +1,7 @@
 
 
+import 'dart:developer' as developer;
+
 import 'package:ridex/data/models/ride_model.dart';
 import 'package:ridex/providers/base_provider.dart';
 import '../data/models/api_response.dart';
@@ -8,7 +10,8 @@ enum RideState {
   idle,           // Initial state - show destination input
   searchingCars, // state when searching for ride
   carsAvailable, // show when the cars are available
-  riderEnRoute,   // Driver is coming
+  awaitingDriverResponse, // Awaiting driver response
+  riderEnRoute, // Driver is coming
 }
 
 class RideProvider extends BaseProvider {
@@ -18,6 +21,8 @@ class RideProvider extends BaseProvider {
 
   RideModel? selectedRide;
 
+  String selectedRideId = "";
+
   RideState currentRideState = RideState.idle;
 
   fetchRides(String destination) async {
@@ -25,11 +30,12 @@ class RideProvider extends BaseProvider {
     updateRideState(RideState.searchingCars);
     try {
       var response = await rideService.getAllRidesBasedOnLocation(destination);
+      developer.log(response.toString());
       var apiResponse = ApiResponse.parse(response);
       if(apiResponse.allGood!) {
         List ridesData = List.from(apiResponse.listWithoutDataKey);
         if(ridesData.isNotEmpty) {
-          ridesData = ridesData.map((e)=> RideModel.fromJson(e)).toList();
+          rides = ridesData.map((e)=> RideModel.fromJson(e)).toList();
           updateRideState(RideState.carsAvailable);
         } else {
           updateRideState(RideState.idle);
@@ -52,6 +58,7 @@ class RideProvider extends BaseProvider {
 
   setSelectedRide(RideModel ride) {
     selectedRide = ride;
+    selectedRideId = ride.uuid!;
     notifyListeners();
   }
 

@@ -22,6 +22,7 @@ class DefaultButton extends StatelessWidget {
         this.borderColor,
         this.btnTextSize,
         this.btnTextColor,
+        this.height,
         this.btnFontWeight,
         this.isIconPresent = false});
 
@@ -35,6 +36,7 @@ class DefaultButton extends StatelessWidget {
   final double? btnTextSize;
   final bool isNull;
   final bool isLoading;
+  final double? height;
   final bool borderPresent;
   final String? iconData;
   final bool isIconPresent;
@@ -45,8 +47,8 @@ class DefaultButton extends StatelessWidget {
       onTap: isNull ? null : onBtnTap,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 12.h),
-        width: 1.sw,
-        height: 55,
+        width: width ?? 1.sw,
+        height: height ?? 55,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32.r),
           color: isNull ? AppColors.grey : btnColor ?? AppColors.white,

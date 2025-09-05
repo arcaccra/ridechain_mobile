@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:ridex/data/models/ride_model.dart';
 import 'package:ridex/ui/screens/ride_confirmation/widgets/ride_pickup_and_destination.dart';
 import 'package:ridex/ui/shared_widgets/default_back_button.dart';
 
@@ -13,7 +14,8 @@ import '../../shared_widgets/default_button.dart';
 
 
 class ConfirmRide extends StatefulWidget {
-  const ConfirmRide({super.key});
+  final RideModel? ride;
+  const ConfirmRide({super.key, this.ride});
 
   @override
   State<ConfirmRide> createState() => _ConfirmRideState();
@@ -22,127 +24,142 @@ class ConfirmRide extends StatefulWidget {
 class _ConfirmRideState extends State<ConfirmRide> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(
+    return Container(
+        height: 0.95.sh,
+        width: 1.sw,
+        decoration: BoxDecoration(
+          color: AppColors.backgroundColor,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Gap(16),
+            const Row(
+              children: [
+                DefaultBackButton(
+                  iconColor: AppColors.black,
+                ),
+              ],
+            ),
+            Gap(16.h),
+            SizedBox(
+              height: 0.25.sh,
+              width: double.infinity,
+              child: Stack(
                 children: [
-                  DefaultBackButton(),
+                   Positioned(
+                     left: 16,
+                     top: 16,
+                     child: Text(
+                      'Confirm\nyour ride',
+                       style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 42, color: AppColors.black, weight: FontWeight.w700),
+                     ),
+                   ),
+                  Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Image.asset(
+                        Media.cutToyota,
+                        height: 186,
+                      ),)
                 ],
               ),
-              Gap(16.h),
-              SizedBox(
-                height: 0.25.sh,
-                width: double.infinity,
-                child: Stack(
-                  children: [
-                     Align(
-                       alignment: Alignment(16, 16),
-                       child: Text(
-                        'Confirm\nyour ride',
-                         style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 32, color: AppColors.black, weight: FontWeight.w700),
-                       ),
-                     ),
-                    Positioned(
-                        bottom: 0,
-                        left: 5,
-                        child: Image.network(
-                          Media.cutToyota,
-                          height: 186,
-                        ),)
-                  ],
-                ),
+            ),
+            Gap(24.h),
+            Container(
+              padding: const EdgeInsets.all(16),
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
               ),
-              Gap(24.h),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Driver Details',
-                      style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 11, color: AppColors.greyAd, weight: FontWeight.w700),
-                    ),
-                    Gap(12.h),
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 28,
-                          backgroundImage: NetworkImage(
-                            'https://i.pravatar.cc/150?img=3',
-                          ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Driver Details',
+                    style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 12, color: AppColors.greyAd, weight: FontWeight.w700),
+                  ),
+                  Gap(12.h),
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 28,
+                        backgroundImage: NetworkImage(
+                          'https://i.pravatar.cc/150?img=3',
                         ),
-                        Gap(12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("John Doe", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 14.42, weight: FontWeight.w700, color: AppColors.black)),
-                              Row(
-                                children: [
-                                  SvgPicture.asset(Media.steering, height: 8.3, width: 8.3),
-                                  Gap(4),
-                                  Text("Hyundai Elantra (Silver)", style: AppThemes.getCustomTextStyle(fontSize: 8.3, color: AppColors.black, weight: FontWeight.w400),),
-                                  Gap(16),
-                                  SvgPicture.asset(Media.blackCar, height: 8.3, width: 8.3),
-                                  Gap(4),
-                                  Text("MNO-7890", style: AppThemes.getCustomTextStyle(fontSize: 8.3, color: AppColors.black, weight: FontWeight.w700),),
-                                ],
-                              ),
-                              SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  Icon(Icons.star, size:8, color: AppColors.yellow,),
-                                  Gap(4),
-                                  Text("4.7/5 Rating", style: AppThemes.getCustomTextStyle(fontSize: 8.3, color: AppColors.purple, weight: FontWeight.w700),),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Column(
+                      ),
+                      Gap(12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("${Label.ada} 28.50", style: AppThemes.getCustomTextStyle(fontSize: 13.33, color: AppColors.black, weight: FontWeight.w700),),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(widget.ride?.driver?.user?.fullName ?? "", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 22, weight: FontWeight.w800, color: AppColors.black)),
+                                Text("ADA ${widget.ride?.pricePerSeat ?? 0.00}", style: AppThemes.getCustomTextStyle(fontSize: 16, color: AppColors.black, weight: FontWeight.w800),),
+                              ],
+                            ),
+                            Gap(12.h),
+                            Row(
+                              children: [
+                                SvgPicture.asset(Media.steering, height: 12, width: 12,colorFilter: ColorFilter.mode(AppColors.purple, BlendMode.srcIn)),
+                                Gap(4),
+                                Text(widget.ride?.driver?.vehicleType ?? "", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w400),),
+                                Spacer(),
+                                SvgPicture.asset(Media.blackCar, height: 12, width: 12 ,colorFilter: ColorFilter.mode(AppColors.purple, BlendMode.srcIn)),
+                                Gap(4),
+                                Text(widget.ride?.driver?.vehiclePlateNumber ?? "", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
+                              ],
+                            ),
+                            Gap(12.h),
+                            Row(
+                              children: [
+                                Icon(Icons.star, size:12, color: AppColors.yellow,),
+                                Gap(4),
+                                Text("4.7/5 Rating", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              Gap(16.h),
-              //pickup and destination
-              RidePickupAndDestination(pickupLocation: "Nairobi", destinationLocation: "Nakuru"),
-              Gap(30.h),
-              DefaultButton(
+            ),
+            Gap(10.h),
+            //pickup and destination
+            RidePickupAndDestination(pickupLocation: widget.ride?.pickUp?.name, destinationLocation: widget.ride?.dropOff?.name),
+            Gap(30.h),
+            Align(
+              alignment: Alignment.center,
+              child: DefaultButton(
                 onBtnTap: (){},
                 btnText: Label.buttonConfirmLabel,
                 isIconPresent: false,
-                btnColor: AppColors.primaryColor,
+                width: 0.7.sw,
+                btnColor: AppColors.purple,
                 btnTextColor: AppColors.white,
               ),
-              Gap(10.h),
-              DefaultButton(
+            ),
+            Gap(10.h),
+            Align(
+              alignment: Alignment.center,
+              child: DefaultButton(
                 onBtnTap: (){},
-                btnText: Label.buttonConfirmLabel,
+                btnText: Label.buttonCancelText,
                 isIconPresent: false,
+                width: 0.7.sw,
                 btnColor: AppColors.lightPurple,
                 btnTextColor: AppColors.purple,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
-    );
+      );
   }
 }

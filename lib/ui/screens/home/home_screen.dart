@@ -3,12 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:ridex/core/core_constants/label.dart';
 import 'package:ridex/providers/auth_provider.dart';
 import 'package:ridex/providers/rides_provider.dart';
 import 'package:ridex/services/location_service.dart';
 import 'package:ridex/ui/screens/home/bottom_card_widget.dart';
 import 'package:ridex/ui/screens/home/show_available_cars.dart';
 import 'package:ridex/ui/screens/home/widget/progressive_map_widget.dart';
+import 'package:ridex/ui/screens/ride_confirmation/confirm_ride.dart';
+import 'package:ridex/ui/shared_widgets/driver_car_detail_card.dart';
 import 'package:ridex/ui/shared_widgets/driver_en_route_card.dart';
 import 'package:ridex/ui/shared_widgets/loader.dart';
 import 'package:ridex/ui/shared_widgets/ride_searching_loader.dart';
@@ -166,9 +169,33 @@ class _HomePageState extends State<HomePage> {
         return _buildLoadingCard();
 
       case RideState.awaitingDriverResponse:
+        return _buildShowDriverDetailCard();
+      case RideState.driverAtLocation:
+        // TODO: Handle this case.
+        return _buildDriverIsHere();
+      case RideState.tripStarted:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case RideState.tripEnded:
         // TODO: Handle this case.
         throw UnimplementedError();
     }
+  }
+
+  _buildDriverIsHere(){
+    return RideSearchingLoader(
+      notLoadingState: true,
+      title: Label.rideHere,
+      height: 0.4.sh,
+      fontSize: 20,
+      onBtnTap: (){
+        locator<DialogService>().showCustomModal(
+            context: context,
+            isDismissible: false,
+            customModal: ConfirmRide(ride: rideProvider.selectedRide!,)
+        );
+      },
+    );
   }
 
   //build the destination input card
@@ -186,10 +213,8 @@ class _HomePageState extends State<HomePage> {
   _buildAvailableCarsCard() {
     return ShowAvailableCarsWidget(
       locationStream: location.stream,
-      onBtnTap: () {
-      setState(() {
-        isRiderComing = true;
-      });
+      onBtnTap: () async{
+        await rideProvider.bookRide(rideProvider.selectedRide!.uuid!);
     },
       destination: destination,
     );
@@ -198,7 +223,6 @@ class _HomePageState extends State<HomePage> {
   //build the driver en route card
   _buildDriverEnRouteCard(){
     return Container(
-        width: 321.w,
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
             color: AppColors.white,
@@ -212,12 +236,33 @@ class _HomePageState extends State<HomePage> {
             ]
         ),
         //TODO: add an ontap to reset to idle when the page is closed
-        child: DriverEnRouteCard()
+        child: DriverEnRouteCard(ride: rideProvider.selectedRide!, onCancelTap: (){
+          rideProvider.updateRideState(RideState.driverAtLocation);
+        },)
     );
   }
 
   //build loader card
   _buildLoadingCard(){
     return RideSearchingLoader();
+  }
+
+  _buildShowDriverDetailCard(){
+    return Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(21),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryColor.withValues(alpha: 0.11),
+                spreadRadius: 0,
+                blurRadius: 13.4,
+                offset: Offset(0, 3.27),)
+            ]
+        ),
+        //TODO: add an ontap to reset to idle when the page is closed
+        child: DriverCarDetailWidget(ride: rideProvider.selectedRide!,)
+    );
   }
 }

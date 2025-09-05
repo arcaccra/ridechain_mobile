@@ -116,8 +116,12 @@ abstract class Label {
   static String ada = "₳";
 
   //driver en route
-  static const String driverOnWay = "Your driver is coming";
-  static const String driverTimeAway = "Arriving in ";
+  static const String meetDriver = "Meet driver at pickup";
+  static const String driverTimeAway = "Driver has accepted, Meet driver at pickup";
+
+  //notifying driver
+  static const String notifyDriver = "We've notified the driver";
+  static const String notifyDriverMessage = "Please wait for the driver to accept";
 
   static const String no= "No";
   static const String yes= "Yes";
@@ -154,6 +158,8 @@ abstract class Label {
   static String unableToGetLocation = 'Unable to get your location. Please try again.';
 
   static String retry = "Retry";
+
+  static String rideHere = "Your ride is here";
 
 
 

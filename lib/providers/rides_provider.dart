@@ -11,6 +11,9 @@ enum RideState {
   searchingCars, // state when searching for ride
   carsAvailable, // show when the cars are available
   awaitingDriverResponse, // Awaiting driver response
+  driverAtLocation, // driver at location
+  tripStarted, // trip started
+  tripEnded, // trip ended
   riderEnRoute, // Driver is coming
 }
 
@@ -47,6 +50,30 @@ class RideProvider extends BaseProvider {
       setUiState(UiState.done);
     }
   }
+
+  bookRide(String rideId) async {
+    setUiState(UiState.loading);
+    updateRideState(RideState.riderEnRoute);
+    try {
+      // var response = await rideService.bookRide(rideId);
+      // developer.log(response.toString());
+      // var apiResponse = ApiResponse.parse(response);
+      // if(apiResponse.allGood!) {
+      //   List ridesData = List.from(apiResponse.listWithoutDataKey);
+      //   if(ridesData.isNotEmpty) {
+      //     rides = ridesData.map((e)=> RideModel.fromJson(e)).toList();
+      //     updateRideState(RideState.carsAvailable);
+      //   } else {
+      //     updateRideState(RideState.idle);
+      //   }
+      // }
+    } on Exception catch(e) {
+      dialog.showSnackBar("An unexpected error occurred", e.toString());
+    } finally {
+      setUiState(UiState.done);
+    }
+  }
+
 
   // Improved state management methods
   void updateRideState(RideState newState) {

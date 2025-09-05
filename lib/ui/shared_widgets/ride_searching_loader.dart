@@ -12,18 +12,20 @@ import '../../app/theme.dart';
 
 
 class RideSearchingLoader extends StatelessWidget {
-  const RideSearchingLoader({super.key, this.title, this.onBtnTap, this.notLoadingState = false, this.lowerBtnText});
+  const RideSearchingLoader({super.key, this.title,this.fontSize, this.height, this.onBtnTap, this.notLoadingState = false, this.lowerBtnText});
 
   final String? title;
   final String? lowerBtnText;
   final VoidCallback? onBtnTap;
   final bool notLoadingState;
+  final double? height;
+  final double? fontSize;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 1.sw,
-      height: 0.5.sh,
+      height: height ?? 0.5.sh,
       child: Container(
         width: 1.sw,
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -40,16 +42,19 @@ class RideSearchingLoader extends StatelessWidget {
             SizedBox(height: 160.w, width: 160.w, child: SvgPicture.asset(Media.car)),
             Text(title ?? Label.rideSearching, style: AppThemes.getCustomTextStyle(
               fontFamily: "Outfit",
-              fontSize: 18,
+              fontSize: fontSize ?? 18,
               weight: FontWeight.w700,
               color: AppColors.primaryColor,
-            ),),
+            ),
+              maxLines: 4,
+            ),
             Gap(30.h),
             if(notLoadingState) DefaultButton(
               onBtnTap: onBtnTap!,
               btnText: Label.confirmRide,
               isIconPresent: false,
-              btnColor: AppColors.primaryColor,
+              width: 0.5.sw,
+              btnColor: AppColors.purple,
               btnTextColor: AppColors.white,
             ),
             if(!notLoadingState) DefaultBackButton(

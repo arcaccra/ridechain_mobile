@@ -13,15 +13,12 @@ import '../../../app/theme.dart';
 import '../../shared_widgets/default_button.dart';
 
 
-class ConfirmRide extends StatefulWidget {
+class ConfirmRide extends StatelessWidget {
   final RideModel? ride;
-  const ConfirmRide({super.key, this.ride});
+  final VoidCallback? onCancelTap;
+  final VoidCallback? onConfirmTap;
+  const ConfirmRide({super.key, this.ride, this.onCancelTap, this.onConfirmTap});
 
-  @override
-  State<ConfirmRide> createState() => _ConfirmRideState();
-}
-
-class _ConfirmRideState extends State<ConfirmRide> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -99,8 +96,8 @@ class _ConfirmRideState extends State<ConfirmRide> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(widget.ride?.driver?.user?.fullName ?? "", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 22, weight: FontWeight.w800, color: AppColors.black)),
-                                Text("ADA ${widget.ride?.pricePerSeat ?? 0.00}", style: AppThemes.getCustomTextStyle(fontSize: 16, color: AppColors.black, weight: FontWeight.w800),),
+                                Text(ride?.driver?.user?.fullName ?? "", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 22, weight: FontWeight.w800, color: AppColors.black)),
+                                Text("ADA ${ride?.pricePerSeat ?? 0.00}", style: AppThemes.getCustomTextStyle(fontSize: 16, color: AppColors.black, weight: FontWeight.w800),),
                               ],
                             ),
                             Gap(12.h),
@@ -108,11 +105,11 @@ class _ConfirmRideState extends State<ConfirmRide> {
                               children: [
                                 SvgPicture.asset(Media.steering, height: 12, width: 12,colorFilter: ColorFilter.mode(AppColors.purple, BlendMode.srcIn)),
                                 Gap(4),
-                                Text(widget.ride?.driver?.vehicleType ?? "", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w400),),
+                                Text(ride?.driver?.vehicleType ?? "", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w400),),
                                 Spacer(),
                                 SvgPicture.asset(Media.blackCar, height: 12, width: 12 ,colorFilter: ColorFilter.mode(AppColors.purple, BlendMode.srcIn)),
                                 Gap(4),
-                                Text(widget.ride?.driver?.vehiclePlateNumber ?? "", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
+                                Text(ride?.driver?.vehiclePlateNumber ?? "", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
                               ],
                             ),
                             Gap(12.h),
@@ -133,12 +130,12 @@ class _ConfirmRideState extends State<ConfirmRide> {
             ),
             Gap(10.h),
             //pickup and destination
-            RidePickupAndDestination(pickupLocation: widget.ride?.pickUp?.name, destinationLocation: widget.ride?.dropOff?.name),
+            RidePickupAndDestination(pickupLocation: ride?.pickUp?.name, destinationLocation: ride?.dropOff?.name),
             Gap(30.h),
             Align(
               alignment: Alignment.center,
               child: DefaultButton(
-                onBtnTap: (){},
+                onBtnTap: onConfirmTap!,
                 btnText: Label.buttonConfirmLabel,
                 isIconPresent: false,
                 width: 0.7.sw,
@@ -150,7 +147,7 @@ class _ConfirmRideState extends State<ConfirmRide> {
             Align(
               alignment: Alignment.center,
               child: DefaultButton(
-                onBtnTap: (){},
+                onBtnTap: onCancelTap!,
                 btnText: Label.buttonCancelText,
                 isIconPresent: false,
                 width: 0.7.sw,

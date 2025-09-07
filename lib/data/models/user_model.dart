@@ -27,6 +27,7 @@ class UserModel {
   String? avatar;
   String? fullName;
   String? email;
+  String? walletAddress;
   String? country;
   List<double>? currentLocation;
   String? phoneNumber;
@@ -36,6 +37,7 @@ class UserModel {
     this.avatar,
     this.fullName,
     this.email,
+    this.walletAddress,
     this.country,
     this.currentLocation,
     this.phoneNumber,
@@ -47,6 +49,7 @@ class UserModel {
     fullName: json["full_name"],
     email: json["email"],
     country: json["country"],
+    walletAddress: json["wallet_address"],
     currentLocation: json["current_location"] == null ? [] : List<double>.from(json["current_location"]!.map((x) => x?.toDouble())),
     phoneNumber: json["phone_number"],
   );
@@ -55,6 +58,7 @@ class UserModel {
     "id": id,
     "avatar": avatar,
     "full_name": fullName,
+    "wallet_address": walletAddress,
     "email": email,
     "country": country,
     "current_location": currentLocation == null ? [] : List<dynamic>.from(currentLocation!.map((x) => x)),

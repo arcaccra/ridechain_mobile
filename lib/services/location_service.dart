@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:map_launcher/map_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import '../core/core_constants/label.dart';
@@ -40,12 +42,10 @@ class LocationService {
   }
 
   //launch the url for google maps
-  Future<void> launchGoogleMapsNavigation(double taskLat, double taskLng) async {
-    final url = "https://www.google.com/maps/dir/?api=1&destination=$taskLat,$taskLng";
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      throw "Could not launch Google Maps";
+  Future<void> launchGoogleMapsNavigation(double taskLat, double taskLng, {String? title}) async {
+    final availableMaps = await MapLauncher.installedMaps;
+    if(availableMaps.isNotEmpty) {
+      await availableMaps.first.showDirections(destination: Coords(taskLat, taskLng), destinationTitle: title);
     }
   }
 

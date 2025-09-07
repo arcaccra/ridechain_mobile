@@ -4,23 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:ridex/app/theme.dart';
 import 'package:ridex/data/locator.dart';
-import 'package:ridex/data/models/driver_model.dart';
 import 'package:ridex/data/models/ride_model.dart';
+import 'package:ridex/providers/rides_provider.dart';
+import 'package:ridex/services/location_service.dart';
 import 'package:ridex/services/login_service.dart';
+import 'package:ridex/services/rides_service.dart';
 
 import '../../../../core/core_constants/colors.dart';
 import '../../../../core/core_constants/label.dart';
 import '../../../../core/core_constants/media.dart';
+import '../../../../services/dialog_service.dart';
 
 
 class ProgressiveMapWidget extends StatefulWidget {
   final Stream<Position> locationStream;
   final Function(GoogleMapController) onMapCreated;
+  final Function()? approachingDestination;
   final VoidCallback? onLocationFound;
   final List<RideModel> availableRides;
-  const ProgressiveMapWidget({super.key, required this.locationStream, required this.onMapCreated, this.onLocationFound, this.availableRides = const [],});
+  const ProgressiveMapWidget({super.key, this.approachingDestination, required this.locationStream, required this.onMapCreated, this.onLocationFound, this.availableRides = const [],});
 
   @override
   State<ProgressiveMapWidget> createState() => _ProgressiveMapWidgetState();
@@ -169,11 +174,11 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
       _markers.clear();
       _markers = newMarkers;
     });
-    log("TOTAL MARKERS ====> ${_markers.length}");
   }
 
   @override
   Widget build(BuildContext context) {
+    final rideVm = Provider.of<RideProvider>(context);
     return Stack(
       children: [
         // Main Google Map - Always Visible
@@ -188,6 +193,15 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     _animateToUserLocation(_userLocation!);
                   });
+
+                  if(locator<RidesService>().checkIfTripHasStarted(rideState: rideVm.currentRideState, model: rideVm.selectedRide)) {
+                    var distance = locator<LocationService>().calculateDistance(rideVm.selectedRide?.dropOff?.latitude ?? 0.0, rideVm.selectedRide?.dropOff?.longitude ?? 0.0, _userLocation?.latitude ?? 0.0, _userLocation?.longitude ?? 0.0,);
+                    if(distance <= 20) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        widget.approachingDestination!();
+                      });
+                    }
+                  }
               }
 
               return GoogleMap(

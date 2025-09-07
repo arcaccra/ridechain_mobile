@@ -158,8 +158,15 @@ abstract class Label {
   static String unableToGetLocation = 'Unable to get your location. Please try again.';
 
   static String retry = "Retry";
+  static String atDropOff = "At DropOff";
 
   static String rideHere = "Your ride is here";
+  static String rideEnded = "You have arrived at your destination";
+  static String dropOff = "Drop Off";
+
+  static const String tripStarted = "Trip Started";
+  static const String tripStartedMessage = "Please ensure that you are seated properly and respect the driver and other passengers";
+  static const String approachingDestination = "Please are you almost at your destination?";
 
 
 

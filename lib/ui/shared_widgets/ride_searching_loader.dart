@@ -12,10 +12,11 @@ import '../../app/theme.dart';
 
 
 class RideSearchingLoader extends StatelessWidget {
-  const RideSearchingLoader({super.key, this.title,this.fontSize, this.height, this.onBtnTap, this.notLoadingState = false, this.lowerBtnText});
+  const RideSearchingLoader({super.key, this.title,this.fontSize, this.noLoadingText, this.height, this.onBtnTap, this.notLoadingState = false, this.lowerBtnText});
 
   final String? title;
   final String? lowerBtnText;
+  final String? noLoadingText;
   final VoidCallback? onBtnTap;
   final bool notLoadingState;
   final double? height;
@@ -44,14 +45,14 @@ class RideSearchingLoader extends StatelessWidget {
               fontFamily: "Outfit",
               fontSize: fontSize ?? 18,
               weight: FontWeight.w700,
-              color: AppColors.primaryColor,
+              color: AppColors.purple,
             ),
               maxLines: 4,
             ),
             Gap(30.h),
             if(notLoadingState) DefaultButton(
               onBtnTap: onBtnTap!,
-              btnText: Label.confirmRide,
+              btnText: noLoadingText ?? Label.confirmRide,
               isIconPresent: false,
               width: 0.5.sw,
               btnColor: AppColors.purple,
@@ -59,7 +60,7 @@ class RideSearchingLoader extends StatelessWidget {
             ),
             if(!notLoadingState) DefaultBackButton(
               onBackTap: onBtnTap,
-              btnColor: AppColors.primaryColor,
+              btnColor: AppColors.purple,
               icon: Icons.clear,
               iconColor: AppColors.white,
             ),
@@ -68,13 +69,13 @@ class RideSearchingLoader extends StatelessWidget {
               fontFamily: "Inter",
               fontSize: 12,
               weight: FontWeight.w400,
-              color: AppColors.primaryColor,)),
+              color: AppColors.purple,)),
             Gap(!notLoadingState ? 16 : 0),
             if(!notLoadingState) SizedBox(
               height: 24,
               width: 24,
               child: CircularProgressIndicator(
-                color: AppColors.primaryColor,
+                color: AppColors.purple,
                 strokeWidth: 0.4,
               ),
             )

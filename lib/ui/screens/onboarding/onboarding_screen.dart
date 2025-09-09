@@ -70,7 +70,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               const Gap(16),
               if(pageIndex == 2) DefaultButton(
-                btnColor: AppColors.primaryColor,
+                btnColor: AppColors.purple,
                 btnTextColor: AppColors.white,
                 onBtnTap:
                     pageIndex == 2

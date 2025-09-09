@@ -36,7 +36,7 @@ class HomeTopContainer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(title != null ? Media.marker : Media.blackCar, width: 21, height: 21,),
+          SvgPicture.asset(title != null ? Media.marker : Media.blackCar, width: 21, height: 21, colorFilter: ColorFilter.mode(AppColors.purple, BlendMode.srcIn),),
           Gap(8.w),
           Flexible(
             child: Text(

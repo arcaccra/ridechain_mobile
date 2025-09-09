@@ -82,7 +82,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                             },
                             btnText: Label.buttonContinueLabel,
                             isIconPresent: false,
-                            btnColor: AppColors.primaryColor,
+                            btnColor: AppColors.purple,
                             btnTextColor: AppColors.white,
                           ),
                         ],

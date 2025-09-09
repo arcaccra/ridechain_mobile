@@ -115,7 +115,7 @@ class ConfirmRide extends StatelessWidget {
                             Gap(12.h),
                             Row(
                               children: [
-                                Icon(Icons.star, size:12, color: AppColors.yellow,),
+                                Icon(Icons.star, size:12, color: AppColors.orange,),
                                 Gap(4),
                                 Text("4.7/5 Rating", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
                               ],

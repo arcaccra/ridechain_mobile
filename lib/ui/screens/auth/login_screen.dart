@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             btnText: Label.buttonLoginLabel,
                             isIconPresent: false,
-                            btnColor: AppColors.primaryColor,
+                            btnColor: AppColors.purple,
                             btnTextColor: AppColors.white,
                           ),
                           Gap(30.h),

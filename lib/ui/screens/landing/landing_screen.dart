@@ -66,7 +66,7 @@ class LandingScreen extends StatelessWidget {
                     Get.to(() => const LoginScreen());
                   },
                   btnText: Label.buttonLoginLabel,
-                  btnColor: AppColors.primaryColor,
+                  btnColor: AppColors.purple,
                   btnTextColor: AppColors.white,
                   width: 1.sw,
                 ),
@@ -76,11 +76,11 @@ class LandingScreen extends StatelessWidget {
                     Get.to(() => const RegisterScreen());
                   },
                   btnText: Label.buttonRegisterLabel,
-                  btnColor: AppColors.white,
-                  btnTextColor: AppColors.primaryColor,
-                  borderPresent: true,
+                  btnColor: AppColors.lightPurple,
+                  btnTextColor: AppColors.purple,
                   width: 1.sw,
                 ),
+                Gap(10.h),
               ],
             ),
           ),

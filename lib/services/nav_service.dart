@@ -20,24 +20,24 @@ class NavService {
       NavItem(
           navData: Media.home,
           navLabel: "Home",
-          itemColor: isSelected ? AppColors.primaryColor : AppColors.textFieldHintColor),
+          itemColor: isSelected ? AppColors.purple : AppColors.textFieldHintColor),
       NavItem(
           navData: Media.search,
           navLabel: "Search",
-          itemColor: isSelected ? AppColors.primaryColor : AppColors.textFieldHintColor),
+          itemColor: isSelected ? AppColors.purple : AppColors.textFieldHintColor),
       NavItem(
           navData: Media.scan,
           navLabel: "Scan",
-          itemColor: isSelected ? AppColors.primaryColor : AppColors.textFieldHintColor),
+          itemColor: isSelected ? AppColors.purple : AppColors.textFieldHintColor),
       NavItem(
           navData: Media.history,
           navLabel: "History",
           isProfile: true,
-          itemColor: isSelected ? AppColors.primaryColor : AppColors.textFieldHintColor),
+          itemColor: isSelected ? AppColors.purple : AppColors.textFieldHintColor),
       NavItem(
           navData: Media.profile,
           navLabel: "Profile",
-          itemColor: isSelected ? AppColors.primaryColor : AppColors.textFieldHintColor),
+          itemColor: isSelected ? AppColors.purple : AppColors.textFieldHintColor),
 
     ];
   }

@@ -23,9 +23,10 @@ class ProgressiveMapWidget extends StatefulWidget {
   final Stream<Position> locationStream;
   final Function(GoogleMapController) onMapCreated;
   final Function()? approachingDestination;
+  final Function()? approachingPickup;
   final VoidCallback? onLocationFound;
   final List<RideModel> availableRides;
-  const ProgressiveMapWidget({super.key, this.approachingDestination, required this.locationStream, required this.onMapCreated, this.onLocationFound, this.availableRides = const [],});
+  const ProgressiveMapWidget({super.key, this.approachingDestination, this.approachingPickup, required this.locationStream, required this.onMapCreated, this.onLocationFound, this.availableRides = const [],});
 
   @override
   State<ProgressiveMapWidget> createState() => _ProgressiveMapWidgetState();
@@ -194,9 +195,21 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
                     _animateToUserLocation(_userLocation!);
                   });
 
+
+                if(rideVm.currentRideState == RideState.riderEnRoute) {
+                  var distance = locator<LocationService>().calculateDistance(rideVm.selectedRide?.dropOff?.latitude ?? 0.0, rideVm.selectedRide?.dropOff?.longitude ?? 0.0, _userLocation?.latitude ?? 0.0, _userLocation?.longitude ?? 0.0,);
+                  log("DISTANCE FROM PICKUP===>> $distance");
+                  if(distance <= 200) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      widget.approachingPickup!();
+                    });
+                  }
+                }
+
                   if(locator<RidesService>().checkIfTripHasStarted(rideState: rideVm.currentRideState, model: rideVm.selectedRide)) {
                     var distance = locator<LocationService>().calculateDistance(rideVm.selectedRide?.dropOff?.latitude ?? 0.0, rideVm.selectedRide?.dropOff?.longitude ?? 0.0, _userLocation?.latitude ?? 0.0, _userLocation?.longitude ?? 0.0,);
-                    if(distance <= 20) {
+                    log("DISTANCE ===>> $distance");
+                    if(distance <= 200) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         widget.approachingDestination!();
                       });

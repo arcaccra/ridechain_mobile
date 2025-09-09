@@ -18,7 +18,7 @@ class RidesService extends HttpService {
 
   //book a ride
   bookRide(String rideId) async {
-    var response = await post("${Api.rides}rides/$rideId/book");
+    var response = await post("${Api.rides}rides/$rideId/book/");
     return response;
   }
 

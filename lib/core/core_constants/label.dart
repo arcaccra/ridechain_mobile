@@ -163,11 +163,30 @@ abstract class Label {
   static String rideHere = "Your ride is here";
   static String rideEnded = "You have arrived at your destination";
   static String dropOff = "Drop Off";
+  static String makePayment = "Make Payment";
+  static String adaWallet = "My Ada Wallet";
 
   static const String tripStarted = "Trip Started";
   static const String tripStartedMessage = "Please ensure that you are seated properly and respect the driver and other passengers";
   static const String approachingDestination = "Please are you almost at your destination?";
 
+  static const String paymentSuccessful = "Payment Successful";
+  static const String paymentSuccessfulMsg = "You have successfully paid";
+
+  static String downloadReceipt = "Download PDF Receipt";
+
+  static String driver = "Driver";
+  static String rideFare = "Ride Fare";
+  static String paymentMethod = "Payment Method";
+  static String transactionId = "Transaction ID";
+  static String total = "Total";
+
+  static String rateYourExperience = "Rate Your Experience";
+
+  static String submitReview = "Submit Review";
+  static String skipReview = "Skip";
+
+  static List<String> suggestedRatingWords = ["Friendly & Professional", "Punctual", "Good", "Late Pickup", "Reckless Driving"];
 
 
 }

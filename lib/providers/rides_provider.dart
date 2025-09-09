@@ -5,6 +5,7 @@ import 'dart:developer' as developer;
 import 'package:ridex/data/models/ride_model.dart';
 import 'package:ridex/providers/base_provider.dart';
 import '../data/models/api_response.dart';
+import '../data/models/booked_model.dart';
 
 enum RideState {
   idle,           // Initial state - show destination input
@@ -24,6 +25,8 @@ class RideProvider extends BaseProvider {
 
   RideModel? selectedRide;
 
+  BookedRideModel? bookedRide;
+
   String selectedRideId = "";
 
   RideState currentRideState = RideState.idle;
@@ -42,6 +45,7 @@ class RideProvider extends BaseProvider {
           updateRideState(RideState.carsAvailable);
         } else {
           updateRideState(RideState.idle);
+          dialog.showSnackBar("Oops😫", "No rides found with the search parameters");
         }
       }
     } on Exception catch(e) {
@@ -53,20 +57,18 @@ class RideProvider extends BaseProvider {
 
   bookRide(String rideId) async {
     setUiState(UiState.loading);
-    updateRideState(RideState.riderEnRoute);
+    updateRideState(RideState.awaitingDriverResponse);
     try {
-      // var response = await rideService.bookRide(rideId);
-      // developer.log(response.toString());
-      // var apiResponse = ApiResponse.parse(response);
-      // if(apiResponse.allGood!) {
-      //   List ridesData = List.from(apiResponse.listWithoutDataKey);
-      //   if(ridesData.isNotEmpty) {
-      //     rides = ridesData.map((e)=> RideModel.fromJson(e)).toList();
-      //     updateRideState(RideState.carsAvailable);
-      //   } else {
-      //     updateRideState(RideState.idle);
-      //   }
-      // }
+      var response = await rideService.bookRide(rideId);
+      developer.log(response.toString());
+      var apiResponse = ApiResponse.parse(response);
+      if(apiResponse.allGood!) {
+        bookedRide = BookedRideModel.fromJson(apiResponse.mappedObjects!);
+        updateRideState(RideState.riderEnRoute);
+      } else {
+        dialog.showSnackBar("An unexpected error occurred", apiResponse.message!);
+        updateRideState(RideState.carsAvailable);
+      }
     } on Exception catch(e) {
       dialog.showSnackBar("An unexpected error occurred", e.toString());
     } finally {
@@ -89,6 +91,19 @@ class RideProvider extends BaseProvider {
     notifyListeners();
   }
 
+  reset(){
+    selectedRide = null;
+    selectedRideId = "";
+    notifyListeners();
+  }
 
+
+  resetRideState() {
+    currentRideState = RideState.idle;
+    rides.clear();
+    selectedRide = null;
+    selectedRideId = "";
+    notifyListeners();
+  }
 
 }

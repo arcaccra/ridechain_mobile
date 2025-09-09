@@ -149,7 +149,7 @@ class _OtpScreenState extends State<OtpScreen> {
                               },
                               btnText: Label.buttonVerifyLabel,
                               isIconPresent: false,
-                              btnColor: AppColors.primaryColor,
+                              btnColor: AppColors.purple,
                               btnTextColor: AppColors.white,
                             ),
                             Gap(30.h),

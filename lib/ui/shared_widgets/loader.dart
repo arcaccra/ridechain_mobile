@@ -38,7 +38,7 @@ class Loader extends StatelessWidget {
                     height: 44,
                     width: 44,
                     child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
+                      color: AppColors.purple,
                       strokeWidth: 2,
 
                     ),
@@ -49,7 +49,7 @@ class Loader extends StatelessWidget {
                     style: AppThemes.getCustomTextStyle(
                     weight: FontWeight.w400,
                     fontSize: 14.sp,
-                    color: AppColors.primaryColor,
+                    color: AppColors.purple,
                     lineHeight: 1.2,
                     ),),
                 ],

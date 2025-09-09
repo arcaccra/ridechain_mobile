@@ -77,6 +77,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       destination = locationController.text.trim();
       rideProvider.fetchRides(destination!);
+      locationController.text = "";
     });
   }
 
@@ -116,11 +117,15 @@ class _HomePageState extends State<HomePage> {
       locationStream: location.stream,
       onMapCreated: (controller) => mapController = controller,
       availableRides: rideProvider.rides,
+      approachingPickup: (){
+        rideProvider.updateRideState(RideState.driverAtLocation);
+      },
       approachingDestination: (){
         locator<DialogService>().showAlertDialog(
         context: context,
         message: Label.approachingDestination, type: AlertDialogType.error, okayText: Label.yes,
-        cancelText: Label.no, onCancelBtnTap: (){
+        cancelText: Label.no,
+            onCancelBtnTap: (){
           Navigator.pop(context);
         },
         onOkayBtnTap: (){
@@ -144,10 +149,10 @@ class _HomePageState extends State<HomePage> {
   //build top container
   Widget buildTopContainer() {
     return Positioned(
-        left: 0.25.sw,
-        right: 0.25.sw,
         top: kToolbarHeight + 15.h,
-        child: HomeTopContainer(title: destination,)
+        left: 0,
+        right: 0,
+        child: Center(child: HomeTopContainer(title: destination,))
     );
   }
 
@@ -225,10 +230,11 @@ class _HomePageState extends State<HomePage> {
     return RideSearchingLoader(
       notLoadingState: true,
       title: Label.rideEnded,
+      noLoadingText: Label.makePayment,
       height: 0.4.sh,
       fontSize: 20,
       onBtnTap: (){
-        if(authVm.currentAuth?.user?.walletAddress == null){
+        if(authVm.currentAuth?.user?.walletAddress != null){
           Get.to(()=> RateDriverScreen());
         } else {
           Get.to(()=> PayForTrip());
@@ -256,6 +262,10 @@ class _HomePageState extends State<HomePage> {
       onBtnTap: () async{
         await rideProvider.bookRide(rideProvider.selectedRide!.uuid!);
     },
+      onCancelTap: (){
+        rideProvider.reset();
+        rideProvider.updateRideState(RideState.idle);
+      },
       destination: destination,
     );
   }
@@ -277,7 +287,8 @@ class _HomePageState extends State<HomePage> {
         ),
         //TODO: add an ontap to reset to idle when the page is closed
         child: DriverEnRouteCard(ride: rideProvider.selectedRide!, onCancelTap: (){
-          rideProvider.updateRideState(RideState.driverAtLocation);
+          rideProvider.updateRideState(RideState.carsAvailable);
+          rideProvider.reset();
         },)
     );
   }

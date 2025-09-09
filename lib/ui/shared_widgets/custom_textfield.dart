@@ -18,6 +18,7 @@ class CustomTextField extends StatefulWidget {
   final String? labelText;
   final FocusNode? focusNode;
   final Widget? prefixIcon;
+  final int minLines;
   final List<TextInputFormatter>? inputFormatters;
   final AutovalidateMode? autovalidateMode;
   final String? Function(String?)? validator;
@@ -40,6 +41,7 @@ class CustomTextField extends StatefulWidget {
     this.labelText,
     this.focusNode,
     this.onChanged,
+    this.minLines = 1,
     this.suffixIcon,
     this.prefix,
     this.prefixIcon,

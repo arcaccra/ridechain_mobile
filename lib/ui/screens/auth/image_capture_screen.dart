@@ -96,7 +96,7 @@ class ImageCaptureScreen extends StatelessWidget {
                               authVm.addToRegisterMap("avatar", authVm.selectedFile);
                               await authVm.register();
                             }
-                          }, btnText: Label.submitLabel, isIconPresent: false, btnColor: AppColors.primaryColor, btnTextColor: AppColors.white),
+                          }, btnText: Label.submitLabel, isIconPresent: false, btnColor: AppColors.purple, btnTextColor: AppColors.white),
                         ],
                       ),
                     ),

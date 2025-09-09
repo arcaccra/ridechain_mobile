@@ -143,12 +143,12 @@ class DialogService {
       title,
       message,
       snackPosition: SnackPosition.TOP,
-      backgroundColor: AppColors.primaryColor,
+      backgroundColor: AppColors.purple,
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       snackStyle: SnackStyle.FLOATING,
       overlayBlur: 10,
-      overlayColor: AppColors.primaryColor.withOpacity(0.2),
+      overlayColor: AppColors.purple.withOpacity(0.2),
       titleText: Text(
         title,
         style: AppThemes.getCustomTextStyle(

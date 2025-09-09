@@ -4,14 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:ridex/core/utility.dart';
 import 'package:ridex/data/models/ride_model.dart';
+import 'package:ridex/services/location_service.dart';
 import 'package:ridex/ui/shared_widgets/default_back_button.dart';
 import 'package:ridex/ui/shared_widgets/default_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/core_constants/colors.dart';
 import '../../core/core_constants/label.dart';
 import '../../core/core_constants/media.dart';
 import '../../app/theme.dart';
+import '../../data/locator.dart';
 
 
 class DriverEnRouteCard extends StatelessWidget {
@@ -87,7 +91,9 @@ class DriverEnRouteCard extends StatelessWidget {
                       Text("${ride?.seatsAvailable ?? 0} Seats", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
                       Spacer(),
                       DefaultBackButton(
-                        onBackTap: () {},
+                        onBackTap: () {
+                          locator<LocationService>().showDirectionToDriver(ride!.pickUp!.latitude!, ride!.pickUp!.longitude!);
+                        },
                         iconColor: AppColors.purple,
                         btnColor: AppColors.lightPurple,
                         size: 39,
@@ -96,7 +102,9 @@ class DriverEnRouteCard extends StatelessWidget {
                       ),
                       Gap(12),
                       DefaultBackButton(
-                        onBackTap: () {},
+                        onBackTap: () {
+                          Utils.makePhoneCall(ride!.driver!.user!.phoneNumber!);
+                        },
                         size: 39,
                         iconSize: 15,
                         iconColor: AppColors.purple,
@@ -108,7 +116,7 @@ class DriverEnRouteCard extends StatelessWidget {
                   Gap(12.h),
                   Row(
                     children: [
-                      Icon(Icons.star, size:12, color: AppColors.yellow,),
+                      Icon(Icons.star, size:12, color: AppColors.orange,),
                       Gap(4),
                       Text("4.7/5 Rating", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
                     ],

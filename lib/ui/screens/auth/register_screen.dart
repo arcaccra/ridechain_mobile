@@ -52,8 +52,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void dispose() {
     // TODO: implement dispose
-    super.dispose();
     authVm?.clearBodyAndImages();
+    super.dispose();
   }
 
   @override
@@ -132,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             },
                             btnText: Label.buttonContinueLabel,
                             isIconPresent: false,
-                            btnColor: AppColors.primaryColor,
+                            btnColor: AppColors.purple,
                             btnTextColor: AppColors.white,
                           ),
                           Gap(30.h),

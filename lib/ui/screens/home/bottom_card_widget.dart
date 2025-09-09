@@ -35,21 +35,14 @@ class BottomCardWidget extends StatelessWidget {
           CustomTextField(
             controller: locationController,
             hintText: "Where to?",
-            autovalidateMode: AutovalidateMode.onUserInteraction,
             keyboardType: TextInputType.text,
-            validator: (value){
-              if(value!.isEmpty){
-                return "Please enter a valid destination/stop";
-              }
-              return null;
-            },
           ),
           Gap(24.h),
           DefaultButton(
             onBtnTap: onBtnTap,
             btnText: Label.buttonContinueLabel,
             isIconPresent: false,
-            btnColor: AppColors.primaryColor,
+            btnColor: AppColors.purple,
             btnTextColor: AppColors.white,
           ),
         ],

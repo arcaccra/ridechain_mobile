@@ -15,10 +15,11 @@ import '../../shared_widgets/available_car_card.dart';
 import '../../shared_widgets/default_button.dart';
 
 class ShowAvailableCarsWidget extends StatelessWidget {
-  const ShowAvailableCarsWidget({super.key, this.destination, required this.onBtnTap, required this.locationStream});
+  const ShowAvailableCarsWidget({super.key, this.destination, required this.onBtnTap, required this.onCancelTap, required this.locationStream});
   final String? destination;
   final Stream<Position> locationStream;
   final VoidCallback onBtnTap;
+  final VoidCallback onCancelTap;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,7 @@ class ShowAvailableCarsWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(21),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryColor.withValues(alpha: 0.11),
+              color: AppColors.purple.withValues(alpha: 0.11),
               spreadRadius: 0,
               blurRadius: 13.4,
               offset: Offset(0, 3.27),)
@@ -63,7 +64,7 @@ class ShowAvailableCarsWidget extends StatelessWidget {
                   height: 24,
                   width: 24,
                   child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
+                    color: AppColors.purple,
                     strokeWidth: 0.4,
                   ),
                 );
@@ -101,8 +102,23 @@ class ShowAvailableCarsWidget extends StatelessWidget {
               onBtnTap: onBtnTap,
               btnText: Label.bookNow,
               isIconPresent: false,
-              btnColor: AppColors.primaryColor,
+              btnColor: AppColors.purple,
               btnTextColor: AppColors.white,
+            ),
+          ),
+          Gap(10.h),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28.0),
+            child: Align(
+              alignment: Alignment.center,
+              child: DefaultButton(
+                onBtnTap: onCancelTap,
+                btnText: Label.buttonCancelText,
+                isIconPresent: false,
+                width: 0.7.sw,
+                btnColor: AppColors.lightPurple,
+                btnTextColor: AppColors.purple,
+              ),
             ),
           ),
         ],

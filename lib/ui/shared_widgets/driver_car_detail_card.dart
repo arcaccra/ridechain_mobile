@@ -67,7 +67,7 @@ class DriverCarDetailWidget extends StatelessWidget {
             Gap(4),
             Text(ride?.driver?.vehiclePlateNumber ?? "", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
             Gap(16),
-            Icon(Icons.star, size:12, color: AppColors.yellow,),
+            Icon(Icons.star, size:12, color: AppColors.orange,),
             Gap(4),
             Text("4.7/5 Rating", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
           ],

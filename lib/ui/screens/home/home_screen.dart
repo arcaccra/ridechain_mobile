@@ -211,17 +211,7 @@ class _HomePageState extends State<HomePage> {
       height: 0.4.sh,
       fontSize: 20,
       onBtnTap: (){
-        locator<DialogService>().showCustomModal(
-            context: context,
-            isDismissible: false,
-            customModal: ConfirmRide(
-              ride: rideProvider.selectedRide!,
-              onCancelTap: (){},
-              onConfirmTap: (){
-                Navigator.pop(context);
-                rideProvider.updateRideState(RideState.tripStarted);
-              },)
-        );
+        rideProvider.updateRideState(RideState.tripStarted);
       },
     );
   }
@@ -260,7 +250,19 @@ class _HomePageState extends State<HomePage> {
     return ShowAvailableCarsWidget(
       locationStream: location.stream,
       onBtnTap: () async{
-        await rideProvider.bookRide(rideProvider.selectedRide!.uuid!);
+        locator<DialogService>().showCustomModal(
+            context: context,
+            isDismissible: false,
+            customModal: ConfirmRide(
+              ride: rideProvider.selectedRide!,
+              onCancelTap: (){
+                Navigator.pop(context);
+              },
+              onConfirmTap: () async {
+                Navigator.pop(context);
+                await rideProvider.bookRide(rideProvider.selectedRide!.uuid!);
+              },)
+        );
     },
       onCancelTap: (){
         rideProvider.reset();

@@ -63,6 +63,14 @@ class AuthVm extends BaseProvider {
     }
   }
 
+  fetchUserInfo() async {
+    var response = await CacheHelper.instance.readModel(CacheHelper.authKey);
+    if(response != null) {
+      _currentUser = AuthModel.fromJson(response);
+    }
+    notifyListeners();
+  }
+
   //register into the application
   register() async {
     updateUi(()=> _authIsLoading = true);
@@ -283,6 +291,24 @@ class AuthVm extends BaseProvider {
     } finally {
       updateUi(()=> _authIsLoading = false);
     }
+  }
+
+  Future<bool> logout() async {
+     setUiState(UiState.loading);
+    try{
+      await auth.logout();
+      //log(response);
+      //var apiResponse = ApiResponse.parse(response);
+      //if(apiResponse.code == 200 || apiResponse.code == 201) {
+        await CacheHelper.instance.clearCache();
+        return true;
+      //}
+    } on Exception catch(e) {
+      dialog.showSnackBar("An unexpected error occurred", e.toString());
+    } finally {
+      setUiState(UiState.done);
+    }
+    return false;
   }
 
 

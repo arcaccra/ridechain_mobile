@@ -103,6 +103,7 @@ class RideProvider extends BaseProvider {
     rides.clear();
     selectedRide = null;
     selectedRideId = "";
+    bookedRide = null;
     notifyListeners();
   }
 

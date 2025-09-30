@@ -61,7 +61,7 @@ class DialogButtons extends StatelessWidget {
         width: width * 0.3.w,
         height: 50.h,
         decoration: BoxDecoration(
-            color: AppColors.primaryColor,
+            color: AppColors.purple,
             borderRadius: BorderRadius.circular(24.r)
         ),
         child: Center(

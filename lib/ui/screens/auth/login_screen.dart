@@ -96,20 +96,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             Get.to(()=> RegisterScreen());
                           }),
                           Gap(30.h),
-                          OrContinue(),
-                          Gap(30.h),
-                          DefaultButton(
-                            onBtnTap: () async {
-                              if (_globalKey.currentState!.validate()) {
-                                Get.to(()=> AppNavigationScreen());
-                              }
-                            },
-                            btnText: Label.buttonGoogleLabel,
-                            isIconPresent: true,
-                            iconData: Media.google,
-                            btnColor: AppColors.primaryColor.withValues(alpha: 0.1),
-                            btnTextColor: AppColors.primaryColor,
-                          ),
+                          // OrContinue(),
+                          // Gap(30.h),
+                          // DefaultButton(
+                          //   onBtnTap: () async {
+                          //     if (_globalKey.currentState!.validate()) {
+                          //       Get.to(()=> AppNavigationScreen());
+                          //     }
+                          //   },
+                          //   btnText: Label.buttonGoogleLabel,
+                          //   isIconPresent: true,
+                          //   iconData: Media.google,
+                          //   btnColor: AppColors.primaryColor.withValues(alpha: 0.1),
+                          //   btnTextColor: AppColors.primaryColor,
+                          // ),
                         ],
                       ),
                     ),

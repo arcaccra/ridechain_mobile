@@ -125,7 +125,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   showCancelBtn: true,
                                   onOkayBtnTap: () async {
                                     Navigator.pop(context);
-                                    await authVm.sendOTP(formattedNumber);
+                                    Get.to(() => const OtpScreen(), transition: Transition.leftToRight);
+                                    //await authVm.sendOTP(formattedNumber);
                                   },
                                 );
                               }
@@ -144,20 +145,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             },
                           ),
                           Gap(30.h),
-                          OrContinue(),
-                          Gap(30.h),
-                          DefaultButton(
-                            onBtnTap: () async {
-                              if (_globalKey.currentState!.validate()) {
-                                Get.to(() => OtpScreen());
-                              }
-                            },
-                            btnText: Label.buttonGoogleLabel,
-                            isIconPresent: true,
-                            iconData: Media.google,
-                            btnColor: AppColors.primaryColor.withValues(alpha: 0.1),
-                            btnTextColor: AppColors.primaryColor,
-                          ),
+                          // OrContinue(),
+                          // Gap(30.h),
+                          // DefaultButton(
+                          //   onBtnTap: () async {
+                          //     if (_globalKey.currentState!.validate()) {
+                          //       Get.to(() => OtpScreen());
+                          //     }
+                          //   },
+                          //   btnText: Label.buttonGoogleLabel,
+                          //   isIconPresent: true,
+                          //   iconData: Media.google,
+                          //   btnColor: AppColors.primaryColor.withValues(alpha: 0.1),
+                          //   btnTextColor: AppColors.primaryColor,
+                          // ),
                         ],
                       ),
                     ),

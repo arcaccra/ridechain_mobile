@@ -100,7 +100,7 @@ class ShowAvailableCarsWidget extends StatelessWidget {
             child: DefaultButton(
               isNull: ridesProvider.selectedRideId.isEmpty,
               onBtnTap: onBtnTap,
-              btnText: Label.bookNow,
+              btnText: Label.buttonConfirmLabel,
               isIconPresent: false,
               btnColor: AppColors.purple,
               btnTextColor: AppColors.white,

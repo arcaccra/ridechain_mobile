@@ -21,10 +21,10 @@ class NavService {
           navData: Media.home,
           navLabel: "Home",
           itemColor: isSelected ? AppColors.purple : AppColors.textFieldHintColor),
-      NavItem(
-          navData: Media.search,
-          navLabel: "Search",
-          itemColor: isSelected ? AppColors.purple : AppColors.textFieldHintColor),
+      // NavItem(
+      //     navData: Media.search,
+      //     navLabel: "Search",
+      //     itemColor: isSelected ? AppColors.purple : AppColors.textFieldHintColor),
       NavItem(
           navData: Media.scan,
           navLabel: "Scan",
@@ -46,7 +46,7 @@ class NavService {
   static Widget? selectedScreen(int currentIndex) {
     List<Widget?> screens = [
       const HomePage(),
-      const SearchScreen(),
+      //const SearchScreen(),
       const ScanScreen(),
       const TripHistory(),
       const ProfileScreen()

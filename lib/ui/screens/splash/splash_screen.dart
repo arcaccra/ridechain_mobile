@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:ridex/core/core_constants/label.dart';
 import 'package:ridex/data/locator.dart';
 import 'package:ridex/services/login_service.dart';
@@ -14,6 +15,7 @@ import '../../../core/cache_helper.dart';
 import '../../../app/theme.dart';
 import '../../../core/core_constants/colors.dart';
 import '../../../core/core_constants/media.dart';
+import '../../../providers/auth_provider.dart';
 import '../auth/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -25,9 +27,10 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Timer? _timer;
-
+  AuthVm? authVm;
   @override
   void initState() {
+    authVm = context.read<AuthVm>();
     super.initState();
     _handleLogin();
   }
@@ -37,6 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (CacheHelper.instance.isFirstTimer == true) {
         bool isSuccess = await locator<LoginService>().isUserSignedIn();
         if(isSuccess) {
+          authVm?.fetchUserInfo();
           Get.offAll(() => const AppNavigationScreen());
         } else {
           Get.offAll(() => const LoginScreen());

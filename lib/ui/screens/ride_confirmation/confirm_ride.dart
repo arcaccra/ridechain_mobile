@@ -136,7 +136,7 @@ class ConfirmRide extends StatelessWidget {
               alignment: Alignment.center,
               child: DefaultButton(
                 onBtnTap: onConfirmTap!,
-                btnText: Label.buttonConfirmLabel,
+                btnText: Label.bookNow,
                 isIconPresent: false,
                 width: 0.7.sw,
                 btnColor: AppColors.purple,

@@ -30,6 +30,7 @@ class UserModel {
   String? walletAddress;
   String? country;
   List<double>? currentLocation;
+  bool? isDriver;
   String? phoneNumber;
 
   UserModel({
@@ -39,6 +40,7 @@ class UserModel {
     this.email,
     this.walletAddress,
     this.country,
+    this.isDriver,
     this.currentLocation,
     this.phoneNumber,
   });
@@ -50,6 +52,7 @@ class UserModel {
     email: json["email"],
     country: json["country"],
     walletAddress: json["wallet_address"],
+    isDriver: json["is_driver"],
     currentLocation: json["current_location"] == null ? [] : List<double>.from(json["current_location"]!.map((x) => x?.toDouble())),
     phoneNumber: json["phone_number"],
   );

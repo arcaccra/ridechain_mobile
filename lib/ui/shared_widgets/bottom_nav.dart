@@ -36,7 +36,7 @@ class BottomNav extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(5, (index) {
+            children: List.generate(4, (index) {
               var navigatorItem =
               NavService.navigationItems(isSelected: currentIndex == index, userImage: null)[index];
               return GestureDetector(

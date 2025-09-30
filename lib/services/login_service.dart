@@ -45,7 +45,7 @@ class LoginService extends HttpService {
 
   //logout
   logout() async {
-    var response = await loginPost(Api.logout);
+    var response = await post(Api.logout);
     return response;
   }
 

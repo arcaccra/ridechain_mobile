@@ -144,7 +144,8 @@ class _OtpScreenState extends State<OtpScreen> {
                               onBtnTap: () async {
                                 if(_globalKey.currentState!.validate()) {
                                   var code = _otpController.text.trim();
-                                  await authVm!.verifyOTP(code);
+                                  //await authVm!.verifyOTP(code);
+                                  Get.to(() => const PasswordScreen(), transition: Transition.leftToRight);
                                 }
                               },
                               btnText: Label.buttonVerifyLabel,

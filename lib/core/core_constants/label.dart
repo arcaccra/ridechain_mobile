@@ -188,5 +188,16 @@ abstract class Label {
 
   static List<String> suggestedRatingWords = ["Friendly & Professional", "Punctual", "Good", "Late Pickup", "Reckless Driving"];
 
+  static String earnAsDriver = "Need some cash. Click here.";
+
+  static String settings = "Settings";
+
+  static String about = "About";
+
+  static String logout = "Log out";
+
+  static String comingSoon = "Coming soon";
+  static String scanReview = "Scan Review and Earn ADA";
+
 
 }

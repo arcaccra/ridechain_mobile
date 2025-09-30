@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../core/core_constants/colors.dart';
 
@@ -48,6 +49,12 @@ class AppThemes {
   //---------------------------------------------------------------------------
   //text styles
   //
+  static TextStyle outfit({double? fontSize, FontWeight? fontWeight, Color? color, double? height, double? spacing}) => GoogleFonts.outfit(fontSize: fontSize ?? 12, fontWeight: FontWeight.normal, color: AppColors.primaryColor, height: height, letterSpacing: spacing);
+  static TextStyle sora({double? fontSize, FontWeight? fontWeight, Color? color, double? height, double? spacing}) => GoogleFonts.sora(fontSize: fontSize ?? 12, fontWeight: FontWeight.normal, color: AppColors.primaryColor, height: height, letterSpacing: spacing);
+  static TextStyle inter({double? fontSize, FontWeight? fontWeight, Color? color, double? height, double? spacing}) => GoogleFonts.inter(fontSize: fontSize ?? 12, fontWeight: FontWeight.normal, color: AppColors.primaryColor, height: height, letterSpacing: spacing);
+
+
+
   static const appOutFitSmallStyle = TextStyle(fontSize: 12, fontFamily: "Outfit", color: AppColors.primaryColor);
   static const appOutFitSmallMedium = TextStyle(fontSize: 16, fontFamily: "Outfit", color: AppColors.primaryColor);
   static const appOutFitSmallLarge = TextStyle(fontSize: 20, fontFamily: "Outfit", color: AppColors.primaryColor);
@@ -61,13 +68,14 @@ class AppThemes {
   static const appInterSmallLarge = TextStyle(fontSize: 20, fontFamily: "Inter", color: AppColors.primaryColor);
 
   //getCustomTextStyle
-  static getCustomTextStyle({String? fontFamily, double? fontSize, Color? color, double? lineHeight, FontWeight? weight}) {
+  static getCustomTextStyle({String? fontFamily, double? fontSize, Color? color, double? lineHeight, double? spacing, FontWeight? weight}) {
     return TextStyle(
       fontFamily: fontFamily ?? "BeauSans",
       color: color ?? AppColors.primaryColor,
       fontSize: fontSize ?? 16,
       fontWeight: weight ?? FontWeight.w500,
-      height: lineHeight ?? 1
+      height: lineHeight ?? 1,
+      letterSpacing: spacing
     );
   }
 

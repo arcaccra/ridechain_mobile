@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:ridex/services/image_service.dart';
 import 'package:ridex/services/rides_service.dart';
+import 'package:ridex/services/trip_firebase_service.dart';
 
 import '../data/locator.dart';
 import '../services/dialog_service.dart';
@@ -16,6 +17,7 @@ class BaseProvider with ChangeNotifier {
   var dialog = locator<DialogService>();
   var image = locator<ImageService>();
   var rideService = locator<RidesService>();
+  var tripService = locator<TripFirebaseService>();
 
   UiState uiState = UiState.idle;
 

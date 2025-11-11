@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:ridex/core/core_constants/label.dart';
 import 'package:ridex/providers/auth_provider.dart';
 import 'package:ridex/providers/rides_provider.dart';
+import 'package:ridex/services/fcm_service.dart';
 import 'package:ridex/services/location_service.dart';
 import 'package:ridex/ui/screens/home/bottom_card_widget.dart';
 import 'package:ridex/ui/screens/home/show_available_cars.dart';
@@ -63,6 +64,7 @@ class _HomePageState extends State<HomePage> {
     authVm.getLocations();
     // Initialize your location stream here
     location.startListeningToPosition();
+    FCMService.instance.saveAnActivateTokenRefresh(authVm.currentUser!.id.toString());
   }
 
   void _onDestinationSubmit() {
@@ -130,7 +132,7 @@ class _HomePageState extends State<HomePage> {
         },
         onOkayBtnTap: (){
           Navigator.pop(context);
-          if(authVm.currentAuth?.user?.walletAddress == null){
+          if(authVm.currentUser?.walletAddress == null){
             Get.to(()=> RateDriverScreen());
           } else {
             Get.to(()=> PayForTrip());
@@ -224,7 +226,7 @@ class _HomePageState extends State<HomePage> {
       height: 0.4.sh,
       fontSize: 20,
       onBtnTap: (){
-        if(authVm.currentAuth?.user?.walletAddress != null){
+        if(authVm.currentUser?.walletAddress != null){
           Get.to(()=> RateDriverScreen());
         } else {
           Get.to(()=> PayForTrip());
@@ -260,7 +262,7 @@ class _HomePageState extends State<HomePage> {
               },
               onConfirmTap: () async {
                 Navigator.pop(context);
-                await rideProvider.bookRide(rideProvider.selectedRide!.uuid!);
+                await rideProvider.bookRide(rideProvider.selectedRide!.uuid!, authVm.currentUser!.id.toString());
               },)
         );
     },

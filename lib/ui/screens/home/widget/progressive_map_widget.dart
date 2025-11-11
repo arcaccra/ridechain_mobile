@@ -138,7 +138,7 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
     );
 
     // Callback when location is found and animated to
-    widget.onLocationFound?.call();
+    widget.onLocationFound!();
   }
 
   //Create custom marker icon for drivers
@@ -192,6 +192,10 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
               if (snapshot.hasData && snapshot.data!.latitude != _userLocation?.latitude && snapshot.data!.longitude != _userLocation?.longitude) {
                 _userLocation = snapshot.data!;
                   WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if(_userLocation != null) {
+                      // Callback when location is found and animated to
+                      widget.onLocationFound!();
+                    }
                     _animateToUserLocation(_userLocation!);
                   });
 

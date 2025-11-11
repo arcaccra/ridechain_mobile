@@ -55,7 +55,7 @@ class RideProvider extends BaseProvider {
     }
   }
 
-  bookRide(String rideId) async {
+  bookRide(String rideId, String userId) async {
     setUiState(UiState.loading);
     updateRideState(RideState.awaitingDriverResponse);
     try {
@@ -64,6 +64,7 @@ class RideProvider extends BaseProvider {
       var apiResponse = ApiResponse.parse(response);
       if(apiResponse.allGood!) {
         bookedRide = BookedRideModel.fromJson(apiResponse.mappedObjects!);
+        await tripService.requestToJoinTrip(rideId, userId);
         updateRideState(RideState.riderEnRoute);
       } else {
         dialog.showSnackBar("An unexpected error occurred", apiResponse.message!);
@@ -74,6 +75,24 @@ class RideProvider extends BaseProvider {
     } finally {
       setUiState(UiState.done);
     }
+  }
+
+  Future<bool> rateTrip(Map<String, dynamic> body) async {
+    setUiState(UiState.loading);
+    updateRideState(RideState.awaitingDriverResponse);
+    try {
+      var response = await rideService.rateRide(body);
+      developer.log(response.toString());
+      var apiResponse = ApiResponse.parse(response);
+      if(apiResponse.allGood!) {
+        return true;
+      }
+    } on Exception catch(e) {
+      dialog.showSnackBar("An unexpected error occurred", e.toString());
+    } finally {
+      setUiState(UiState.done);
+    }
+    return false;
   }
 
 

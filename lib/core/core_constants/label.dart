@@ -199,5 +199,10 @@ abstract class Label {
   static String comingSoon = "Coming soon";
   static String scanReview = "Scan Review and Earn ADA";
 
+  static String? wallet = "Wallet";
+
+  static const walletAccountLabel = "Your Wallet";
+  static const walletMessageLabel = "Update your Wallet Information";
+
 
 }

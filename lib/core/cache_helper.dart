@@ -11,6 +11,8 @@ class CacheHelper {
 
   static const _firstTimerKey = 'first-timer-key';
   static const authKey = 'auth-key';
+  static const userKey = 'user-key';
+  static const walletKey = 'wallet-key';
   static const locationsKey = 'locations-key';
   static const registerProcessKey = 'register-process-key';
 

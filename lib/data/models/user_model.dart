@@ -1,3 +1,5 @@
+import 'package:ridex/data/models/driver_model.dart';
+
 class AuthModel {
   String? message;
   String? token;
@@ -32,12 +34,14 @@ class UserModel {
   List<double>? currentLocation;
   bool? isDriver;
   String? phoneNumber;
+  DriverModel? driver;
 
   UserModel({
     this.id,
     this.avatar,
     this.fullName,
     this.email,
+    this.driver,
     this.walletAddress,
     this.country,
     this.isDriver,
@@ -53,6 +57,7 @@ class UserModel {
     country: json["country"],
     walletAddress: json["wallet_address"],
     isDriver: json["is_driver"],
+    driver: json["driver"] == null ? null : DriverModel.fromJson(json['driver']),
     currentLocation: json["current_location"] == null ? [] : List<double>.from(json["current_location"]!.map((x) => x?.toDouble())),
     phoneNumber: json["phone_number"],
   );
@@ -64,6 +69,7 @@ class UserModel {
     "wallet_address": walletAddress,
     "email": email,
     "country": country,
+    "driver": driver?.toJson(),
     "current_location": currentLocation == null ? [] : List<dynamic>.from(currentLocation!.map((x) => x)),
     "phone_number": phoneNumber,
   };

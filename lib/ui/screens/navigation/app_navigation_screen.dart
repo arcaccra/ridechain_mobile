@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:ridex/ui/shared_widgets/light_status_bar.dart';
 
 import '../../../core/core_constants/colors.dart';
 import '../../../data/locator.dart';
@@ -42,23 +43,27 @@ class _AppNavigationScreenState extends State<AppNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      body: Stack(
-        children: [
-          NavService.selectedScreen(currentIndex)!,
-          Positioned(
-              right: 0,
-              left: 0,
-              bottom: 0,
-              child: BottomNav(
-                  currentIndex: currentIndex,
-                  getCurrentIndex: (index) {
-                      changeTheCurrentIndex(index);
-                  }).animate().fade().scale(
-                delay: 500.ms,
-              ))
-        ],
+    return LightStatusBar(
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: AppColors.backgroundColor,
+          body: Stack(
+            children: [
+              NavService.selectedScreen(currentIndex)!,
+              Positioned(
+                  right: 0,
+                  left: 0,
+                  bottom: 0,
+                  child: BottomNav(
+                      currentIndex: currentIndex,
+                      getCurrentIndex: (index) {
+                          changeTheCurrentIndex(index);
+                      }).animate().fade().scale(
+                    delay: 500.ms,
+                  ))
+            ],
+          ),
+        ),
       ),
     );
   }

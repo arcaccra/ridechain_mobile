@@ -10,7 +10,8 @@ import '../../../../core/core_constants/colors.dart';
 class ProfileTopWidget extends StatelessWidget {
   final UserModel? user;
   final String? adaBalance;
-  const ProfileTopWidget({super.key, this.user, this.adaBalance});
+  final String? walletAddress;
+  const ProfileTopWidget({super.key, this.user, this.adaBalance, this.walletAddress});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +73,7 @@ class ProfileTopWidget extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Wallet Address: ${user?.walletAddress ?? "N/A"}", style: AppThemes.sora(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.greyAd),),
+              Text("Wallet Address: ${walletAddress ?? "N/A"}", style: AppThemes.sora(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.greyAd), overflow: TextOverflow.ellipsis,),
               Gap(10.h),
               Text("ADA ${adaBalance ?? 0.00}", style: AppThemes.getCustomTextStyle(fontSize: 42, weight: FontWeight.w800, color: AppColors.purple),),
             ],

@@ -1,63 +1,70 @@
 
 
-
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ridex/data/models/user_model.dart';
-
 class DriverModel {
   int? id;
-  UserModel? user;
-  String? idType;
-  String? idNumber;
-  String? vehiclePlateNumber;
+  String? vehicleImage;
   String? vehicleType;
   String? vehicleColor;
+  String? vehiclePlateNumber;
+  String? licenceImage;
+  String? idType;
+  String? idNumber;
+  String? idFrontImage;
+  String? idBackImage;
+  String? insuranceCert;
   DateTime? dateCreated;
   DateTime? dateUpdated;
   String? status;
-  bool? online;
 
   DriverModel({
     this.id,
-    this.user,
-    this.idType,
-    this.idNumber,
-    this.vehiclePlateNumber,
+    this.vehicleImage,
     this.vehicleType,
     this.vehicleColor,
+    this.vehiclePlateNumber,
+    this.licenceImage,
+    this.idType,
+    this.idNumber,
+    this.idFrontImage,
+    this.idBackImage,
+    this.insuranceCert,
     this.dateCreated,
     this.dateUpdated,
     this.status,
-    this.online,
   });
 
-  factory DriverModel.fromJson(Map<dynamic, dynamic> json) => DriverModel(
+  factory DriverModel.fromJson(Map<String, dynamic> json) => DriverModel(
     id: json["id"],
-    user: json["user"] == null ? null : UserModel.fromJson(json["user"]),
-    idType: json["id_type"],
-    idNumber: json["id_number"],
-    vehiclePlateNumber: json["vehicle_plate_number"],
+    vehicleImage: json["vehicle_image"],
     vehicleType: json["vehicle_type"],
     vehicleColor: json["vehicle_color"],
+    vehiclePlateNumber: json["vehicle_plate_number"],
+    licenceImage: json["licence_image"],
+    idType: json["id_type"],
+    idNumber: json["id_number"],
+    idFrontImage: json["id_front_image"],
+    idBackImage: json["id_back_image"],
+    insuranceCert: json["insurance_cert"],
     dateCreated: json["date_created"] == null ? null : DateTime.parse(json["date_created"]),
     dateUpdated: json["date_updated"] == null ? null : DateTime.parse(json["date_updated"]),
     status: json["status"],
-    online: json["online"],
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "user": user?.toJson(),
-    "id_type": idType,
-    "id_number": idNumber,
-    "vehicle_plate_number": vehiclePlateNumber,
+    "vehicle_image": vehicleImage,
     "vehicle_type": vehicleType,
     "vehicle_color": vehicleColor,
+    "vehicle_plate_number": vehiclePlateNumber,
+    "licence_image": licenceImage,
+    "id_type": idType,
+    "id_number": idNumber,
+    "id_front_image": idFrontImage,
+    "id_back_image": idBackImage,
+    "insurance_cert": insuranceCert,
     "date_created": dateCreated?.toIso8601String(),
     "date_updated": dateUpdated?.toIso8601String(),
     "status": status,
-    "online": online,
   };
 
-  LatLng get latLng => LatLng(user!.currentLocation![0], user!.currentLocation![1]);
 }

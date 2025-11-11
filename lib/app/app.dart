@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';
 import 'package:ridex/core/providers.dart';
+import 'package:ridex/ui/screens/pay_for_trip/payment_success_screen.dart';
+import 'package:ridex/ui/screens/rate_driver/rate_driver_screen.dart';
 
 import '../ui/screens/splash/splash_screen.dart';
 import 'theme.dart';

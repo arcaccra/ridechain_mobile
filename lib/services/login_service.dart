@@ -52,9 +52,23 @@ class LoginService extends HttpService {
   //is user logged in
   Future<bool> isUserSignedIn() async {
     var data = await CacheHelper.instance.readModel(CacheHelper.authKey);
+    if(data == null) return false;
     AuthModel? model = AuthModel.fromJson(data);
     if(model.token != null) return true;
     return false;
+  }
+
+  //get wallet address
+  Future getWalletAddress() async {
+    var response = await get(Api.wallets);
+    return response;
+  }
+
+  //update wallet address
+  Future updateWalletAddress(Map<String, dynamic> data) async {
+    var body = dio.FormData.fromMap(data);
+    var response = await post(Api.wallets, body: body);
+    return response;
   }
 
   //check the page for the

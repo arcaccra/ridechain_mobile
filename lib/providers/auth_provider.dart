@@ -23,10 +23,12 @@ class AuthVm extends BaseProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   AuthModel? _currentUser;
+  UserModel? _model;
   List<DriverModel> allDrivers = [];
   String _verificationId = '';
   bool _authIsLoading = false;
   String? _errorMessage;
+  String? walletAddress;
   List<LocationModel> allLocations = [];
 
   File? imageFile;
@@ -36,6 +38,7 @@ class AuthVm extends BaseProvider {
   Map<String, dynamic> body = {};
 
   AuthModel? get currentAuth => _currentUser;
+  UserModel? get currentUser => _model;
   bool get isLoading => _authIsLoading;
   String? get errorMessage => _errorMessage;
 
@@ -45,11 +48,14 @@ class AuthVm extends BaseProvider {
     _clearError();
     try{
       var response = await auth.login(body);
+      log("auth response $response");
       var apiResponse = ApiResponse.parse(response);
       if(apiResponse.code == 200 || apiResponse.code == 201) {
         _currentUser = AuthModel.fromJson(apiResponse.mappedObjects!);
+        _model = _currentUser?.user;
         if(_currentUser != null) {
           await CacheHelper.instance.cacheModel(CacheHelper.authKey, _currentUser);
+          await CacheHelper.instance.cacheModel(CacheHelper.userKey, _model);
           _clearError();
           clearBodyAndImages();
           Get.offAll(() => const AppNavigationScreen(), transition: Transition.leftToRight);
@@ -63,11 +69,63 @@ class AuthVm extends BaseProvider {
     }
   }
 
+  Future<bool> updateWalletAddress(Map<String, dynamic> body) async {
+    updateUi(()=> _authIsLoading = true);
+    try{
+      var response = await auth.updateWalletAddress(body);
+      log("WALLET ADDRESS=====>> ${response.toString()}");
+      var apiResponse = ApiResponse.parse(response);
+      if(apiResponse.code == 200 || apiResponse.code == 201) {
+        UserModel userWalletModel = UserModel.fromJson(apiResponse.mappedObjects!['user']);
+        if(_model != null) {
+          await CacheHelper.instance.cacheString(CacheHelper.walletKey, userWalletModel.walletAddress!);
+        }
+        return true;
+      }
+    } catch (e) {
+      dialog.showSnackBar("An unexpected error occurred", e.toString());
+    } finally {
+      updateUi(()=> _authIsLoading = false);
+    }
+    return false;
+  }
+
+  Future<bool> getWalletAddress() async {
+    updateUi(()=> _authIsLoading = true);
+    try{
+      var response = await auth.getWalletAddress();
+      log("WALLET ADDRESS=====>> ${response.toString()}");
+      var apiResponse = ApiResponse.parse(response);
+      if(apiResponse.code == 200 || apiResponse.code == 201) {
+        UserModel userWalletModel = UserModel.fromJson(apiResponse.mappedObjects!['user']);
+        if(_model != null) {
+          await CacheHelper.instance.cacheString(CacheHelper.walletKey, userWalletModel.walletAddress!);
+        }
+        return true;
+      }
+    } catch (e) {
+      dialog.showSnackBar("An unexpected error occurred", e.toString());
+    } finally {
+      updateUi(()=> _authIsLoading = false);
+    }
+    return false;
+  }
+
   fetchUserInfo() async {
     var response = await CacheHelper.instance.readModel(CacheHelper.authKey);
+    var userResponse = await CacheHelper.instance.readModel(CacheHelper.userKey);
     if(response != null) {
       _currentUser = AuthModel.fromJson(response);
     }
+    //this is user response
+    if(userResponse != null) {
+      _model = UserModel.fromJson(userResponse);
+    }
+    String? address = CacheHelper.instance.readString(CacheHelper.walletKey);
+    if(address != null) {
+      walletAddress = address;
+    }
+
     notifyListeners();
   }
 
@@ -83,6 +141,7 @@ class AuthVm extends BaseProvider {
         _currentUser = AuthModel.fromJson(apiResponse.mappedObjects!);
         if(_currentUser != null) {
           await CacheHelper.instance.cacheModel(CacheHelper.authKey, _currentUser);
+          await tripService.createNewUser(user: _currentUser!.user!);
           _clearError();
           clearBodyAndImages();
           Get.offAll(() => const AppNavigationScreen(), transition: Transition.leftToRight);

@@ -7,14 +7,13 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:ridex/providers/auth_provider.dart';
 import 'package:ridex/providers/rides_provider.dart';
+import 'package:ridex/ui/screens/auth/wallet_information.dart';
 import 'package:ridex/ui/screens/profile/widgets/become_driver_widget.dart';
 import 'package:ridex/ui/screens/profile/widgets/profile_top_widget.dart';
 import 'package:ridex/ui/screens/profile/widgets/user_profile_widgets.dart';
 
-import '../../../app/theme.dart';
 import '../../../core/core_constants/colors.dart';
 import '../../../core/core_constants/label.dart';
-import '../../shared_widgets/custom_app_bar.dart';
 import '../../shared_widgets/default_button.dart';
 import '../auth/login_screen.dart';
 import '../settings/settings.dart';
@@ -42,7 +41,7 @@ class ProfileScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Gap(20.h),
-                      ProfileTopWidget(user: authVm.currentAuth?.user,)
+                      ProfileTopWidget(user: authVm.currentUser)
                           .animate(delay: 100.ms)
                           .slide(
                             begin: const Offset(0, -0.3),
@@ -70,6 +69,22 @@ class ProfileScreen extends StatelessWidget {
                         },
                         text: Label.settings,
                         icon: Icons.settings,
+                      )
+                          .animate(delay: 100.ms)
+                          .slide(
+                        begin: const Offset(0, -0.3),
+                        end: const Offset(0, 0), // End at center
+                        duration: 600.ms,
+                        curve: Curves.easeOutBack,
+                      )
+                          .fade(begin: 0, end: 1, duration: 600.ms),
+                      Gap(12),
+                      UserProfileWidgets(
+                        onTap: (){
+                          Get.to(() => const WalletInfo(), transition: Transition.rightToLeft);
+                        },
+                        text: Label.wallet,
+                        icon: Icons.wallet,
                       )
                           .animate(delay: 100.ms)
                           .slide(

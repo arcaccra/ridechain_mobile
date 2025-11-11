@@ -1,19 +1,24 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:dotted_line_flutter/dotted_line_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:ridex/providers/auth_provider.dart';
 import 'package:ridex/providers/rides_provider.dart';
+import 'package:ridex/services/trip_firebase_service.dart';
 import 'package:ridex/ui/screens/pay_for_trip/payment_success_screen.dart';
 import 'package:ridex/ui/screens/pay_for_trip/widgets/wallet_information_card.dart';
 import 'package:ridex/ui/shared_widgets/accepted_trip_detail_widget.dart';
 import 'package:ridex/ui/shared_widgets/custom_app_bar.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/core_constants/colors.dart';
 import '../../../core/core_constants/label.dart';
+import '../../../data/locator.dart';
 import '../../shared_widgets/default_button.dart';
 
 class PayForTrip extends StatelessWidget {
@@ -22,6 +27,7 @@ class PayForTrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rideVm = Provider.of<RideProvider>(context);
+    final authVm = Provider.of<AuthVm>(context);
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Column(
@@ -91,7 +97,9 @@ class PayForTrip extends StatelessWidget {
               ),
               Gap(40.h),
               DefaultButton(
-                onBtnTap: (){
+                onBtnTap: () async {
+                  final paymentId = Uuid().v4().toString();
+                  await locator<TripFirebaseService>().completePayment(paymentId: paymentId, tripId: rideVm.selectedRide!.uuid!, userId: authVm.currentUser!.id.toString(), amount: double.parse(rideVm.selectedRide!.pricePerSeat!));
                   Get.to(() => const PaymentSuccessScreen());
                 },
                 btnText: Label.payNow,

@@ -93,7 +93,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(20.0),
-                    child: PaymentSuccessDetailsWidget(ride: ride.selectedRide!,)
+                    child: PaymentSuccessDetailsWidget(ride: ride.selectedRide,)
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),

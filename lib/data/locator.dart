@@ -6,6 +6,7 @@ import 'package:ridex/services/image_service.dart';
 import 'package:ridex/services/location_service.dart';
 import 'package:ridex/services/login_service.dart';
 import 'package:ridex/services/rides_service.dart';
+import 'package:ridex/services/trip_firebase_service.dart';
 import 'package:ridex/ui/screens/auth/login_screen.dart';
 
 import '../services/dialog_service.dart';
@@ -20,5 +21,6 @@ void setUpLocator() {
   locator.registerLazySingleton<ImageService>(() => ImageService());
   locator.registerLazySingleton<RidesService>(() => RidesService());
   locator.registerLazySingleton<LocationService>(() => LocationService());
+  locator.registerLazySingleton<TripFirebaseService>(() => TripFirebaseService());
   locator.registerLazySingleton<ConnectionService>(() => ConnectionService());
 }

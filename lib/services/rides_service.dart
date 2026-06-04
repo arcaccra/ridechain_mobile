@@ -19,7 +19,7 @@ class RidesService extends HttpService {
   //get rides for destination
   rateRide(Map<String, dynamic> data) async {
     var body = dio.FormData.fromMap(data);
-    var response = await post(Api.ratings);
+    var response = await post(Api.ratings, body: body);
     return response;
   }
 
@@ -29,6 +29,20 @@ class RidesService extends HttpService {
     var response = await post("${Api.rides}rides/$rideId/book/");
     return response;
   }
+
+  //get the ride details by ID
+  getRideById(String rideId) async {
+    var response = await get("${Api.rides}rides/$rideId/");
+    return response;
+  }
+
+  //cancel a ride
+  cancelRide(String rideId, int userId) async {
+    var response = await post("${Api.rides}cancel-booking/$userId/$rideId/");
+    return response;
+  }
+
+
 
   checkIfTripHasStarted({RideModel? model, required RideState rideState}) {
     return model != null && rideState == RideState.tripStarted;

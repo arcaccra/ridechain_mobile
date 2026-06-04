@@ -1,25 +1,20 @@
 import 'dart:async';
+import 'dart:developer';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
-import 'package:ridex/ui/screens/auth/auth_widgets/otp_fields.dart';
 import 'package:ridex/ui/screens/auth/password_screen.dart';
 
-import '../../../core/core_constants/colors.dart';
-import '../../../core/core_constants/label.dart';
 import '../../../app/theme.dart';
-import '../../../data/locator.dart';
+import '../../../core/core_constants/colors.dart';
 import '../../../providers/auth_provider.dart';
-import '../../../services/dialog_service.dart';
-import '../../shared_widgets/custom_app_bar.dart';
 import '../../shared_widgets/default_button.dart';
 import '../../shared_widgets/loader.dart';
+import 'auth_widgets/otp_fields.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
@@ -29,191 +24,259 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
+  static const _totalSeconds = 60;
 
+  final TextEditingController _otpCtrl = TextEditingController();
   Timer? _timer;
-  int _countdown = 30;
-  bool _isActive = true;
-  bool _canRestart = false;
-  final TextEditingController _otpController = TextEditingController();
-  final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
-  AuthVm? authVm;
+  int _countdown = _totalSeconds;
+  bool _canResend = false;
+
+  late AuthVm _authVm;
 
   @override
   void initState() {
-    authVm = context.read<AuthVm>();
     super.initState();
+    _authVm = context.read<AuthVm>();
     _startCountdown();
-  }
-
-  void _startCountdown() {
-    setState(() {
-      _countdown = 30;
-      _isActive = true;
-      _canRestart = false;
-    });
-
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (_countdown > 0) {
-        setState(() {
-          _countdown--;
-        });
-      } else {
-        timer.cancel();
-        setState(() {
-          _isActive = false;
-          _canRestart = true;
-        });
-      }
-    });
-  }
-
-  void _restartCountdown() {
-    _timer?.cancel();
-    _startCountdown();
-    // Here you can add your resend OTP logic
-    _resendOTP();
-  }
-
-  void _resendOTP()  async{
-    // Add your OTP resend logic here
-    print('Resending OTP...');
-    authVm!.resendOTP(authVm?.body['phone_number']);
-  }
-
-  String _formatTime(int seconds) {
-    int minutes = seconds ~/ 60;
-    int remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   @override
   void dispose() {
     _timer?.cancel();
-    _otpController.dispose();
+    _otpCtrl.dispose();
     super.dispose();
   }
 
+  void _startCountdown() {
+    _timer?.cancel();
+    setState(() {
+      _countdown = _totalSeconds;
+      _canResend = false;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (!mounted) { t.cancel(); return; }
+      if (_countdown > 0) {
+        setState(() => _countdown--);
+      } else {
+        t.cancel();
+        setState(() => _canResend = true);
+      }
+    });
+  }
+
+  void _resend() {
+    _startCountdown();
+    log('Resending OTP...');
+    _authVm.resendOTP(_authVm.body['phone_number']);
+  }
+
+  Future<void> _verify() async {
+    final code = _otpCtrl.text.trim();
+    if (code.length < 6) {
+      Get.snackbar('Invalid code', 'Please enter the 6-digit code.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: AppColors.purple,
+          colorText: Colors.white);
+      return;
+    }
+    await _authVm.verifyOTP(code);
+    if (!mounted) return;
+  }
+
+  /// Masks a phone number: "+233244440123" → "+233 24 ••• 0123"
+  String _maskPhone(String? raw) {
+    if (raw == null || raw.isEmpty) return '••• ••• •••';
+    // Keep first 7 chars visible, last 4 visible, mask middle
+    if (raw.length <= 8) return raw;
+    final prefix = raw.substring(0, raw.length - 4).replaceRange(
+        raw.length > 10 ? 7 : 4, raw.length - 4, ' ••• ');
+    final suffix = raw.substring(raw.length - 4);
+    return '$prefix$suffix';
+  }
+
+  String _formatCountdown(int s) {
+    final m = s ~/ 60;
+    final sec = s % 60;
+    return '${m.toString().padLeft(1, '0')}:${sec.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
-    authVm = context.watch<AuthVm>();
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        body: Stack(
+    _authVm = context.watch<AuthVm>();
+    final phone = _maskPhone(_authVm.body['phone_number'] as String?);
+
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+      body: SafeArea(
+        child: Stack(
           children: [
             Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Gap(20.h),
-                const CustomLoginAppBar(),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 40),
-                    child: SingleChildScrollView(
-                      child: Form(
-                        key: _globalKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Gap(20.h),
-                            Text(Label.verifyScreenTitleLabel, style: AppThemes.getCustomTextStyle(fontFamily: "Zain", weight: FontWeight.w900, color: AppColors.primaryColor, fontSize: 38, lineHeight: 1.33), textAlign: TextAlign.center)
-                                .animate(delay: 100.ms)
-                                .slide(
-                              begin: const Offset(0, -0.3),
-                              end: const Offset(0, 0), // End at center
-                              duration: 600.ms,
-                              curve: Curves.easeOutBack,
-                            )
-                                .fade(begin: 0, end: 1, duration: 600.ms),
-                            Gap(4.h),
-                            Text(Label.verifyScreenMessageLabel, style: AppThemes.getCustomTextStyle(fontFamily: "Zain", weight: FontWeight.w700, color: AppColors.primaryColor, fontSize: 16, lineHeight: 1.33), textAlign: TextAlign.center)
-                                .animate(delay: 100.ms)
-                                .slide(
-                              begin: const Offset(0, -0.3),
-                              end: const Offset(0, 0), // End at center
-                              duration: 600.ms,
-                              curve: Curves.easeOutBack,
-                            )
-                                .fade(begin: 0, end: 1, duration: 600.ms),
-                            Gap(0.15.sh),
-                            OtpFields(otpCtrl: _otpController,),
-                            Gap(0.15.sh),
-                            DefaultButton(
-                              onBtnTap: () async {
-                                if(_globalKey.currentState!.validate()) {
-                                  var code = _otpController.text.trim();
-                                  //await authVm!.verifyOTP(code);
-                                  Get.to(() => const PasswordScreen(), transition: Transition.leftToRight);
-                                }
-                              },
-                              btnText: Label.buttonVerifyLabel,
-                              isIconPresent: false,
-                              btnColor: AppColors.purple,
-                              btnTextColor: AppColors.white,
-                            ),
-                            Gap(30.h),
-                            GestureDetector(
-                              onTap: () {
-                                locator<DialogService>().showAlertDialog(
-                                  context: context,
-                                  message: "Will you like to change your phone number?",
-                                  okayText: Label.yes,
-                                  showTitle: true,
-                                  title: "Warning",
-                                  cancelText: Label.no,
-                                  type: AlertDialogType.warning,
-                                  showCancelBtn: true,
-                                  onOkayBtnTap: () async {
-                                    Navigator.pop(context);
-                                  },
-                                );
-                              },
-                              child: Text(Label.verifyChangePhoneLabel, style: AppThemes.getCustomTextStyle(
-                                fontFamily: "BeauSans",
-                                fontSize: 13,
-                                weight: FontWeight.normal
-                              ),),
-                            ),
-                            Gap(0.15.sh),
-                            Text(Label.verifyScreenNoOtpLabel, style: AppThemes.getCustomTextStyle(
-                                fontFamily: "BeauSans",
-                                fontSize: 12,
-                                weight: FontWeight.w700,
-                            ),),
-                            Gap(10.h),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                GestureDetector(
-                                  onTap: _canRestart ? _restartCountdown : null,
-                                  child: Text(_isActive ? Label.verifyScreenResentOtpLabel : Label.verifyScreenReadyToResendLabel, style: AppThemes.getCustomTextStyle(
-                                    fontFamily: "BeauSans",
-                                    fontSize: 12,
-                                    weight: FontWeight.w300,
-                                  ),),
-                                ),
-                                if(_isActive)Text(_formatTime(_countdown), style: AppThemes.getCustomTextStyle(
-                                  fontFamily: "BeauSans",
-                                  fontSize: 12,
-                                  weight: FontWeight.w600,
-                                ),),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
+                // Back + progress
+                Padding(
+                  padding: EdgeInsets.only(top: 8.h, left: 8.w, right: 24.w),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                    color: AppColors.primaryColor,
+                    onPressed: () => Get.back(),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: const LinearProgressIndicator(
+                      value: 2 / 4,
+                      backgroundColor: Color(0xFFE5E7EB),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.purple),
+                      minHeight: 4,
                     ),
                   ),
                 ),
-                Gap(16.h),
+
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Gap(40.h),
+
+                        // Phone icon circle
+                        Container(
+                          width: 88,
+                          height: 88,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xFFEDE8FA),
+                          ),
+                          child: const Icon(
+                            Icons.phone_outlined,
+                            color: AppColors.purple,
+                            size: 36,
+                          ),
+                        )
+                            .animate()
+                            .fade(begin: 0, end: 1, duration: 400.ms)
+                            .scale(
+                                begin: const Offset(0.8, 0.8),
+                                end: const Offset(1, 1),
+                                duration: 400.ms,
+                                curve: Curves.easeOut),
+
+                        Gap(28.h),
+
+                        // Title
+                        Text(
+                          'Enter the code',
+                          style: AppThemes.getCustomTextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 28,
+                            weight: FontWeight.w700,
+                            color: AppColors.primaryColor,
+                          ),
+                          textAlign: TextAlign.center,
+                        )
+                            .animate(delay: 80.ms)
+                            .fade(begin: 0, end: 1, duration: 400.ms),
+
+                        Gap(8.h),
+
+                        // Subtitle with masked phone
+                        RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            style: AppThemes.getCustomTextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14,
+                              weight: FontWeight.w400,
+                              color: const Color(0xFF6B7280),
+                            ),
+                            children: [
+                              const TextSpan(text: 'Sent to '),
+                              TextSpan(
+                                text: phone,
+                                style: AppThemes.getCustomTextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  weight: FontWeight.w700,
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                            .animate(delay: 120.ms)
+                            .fade(begin: 0, end: 1, duration: 400.ms),
+
+                        Gap(36.h),
+
+                        // OTP boxes
+                        OtpFields(otpCtrl: _otpCtrl)
+                            .animate(delay: 160.ms)
+                            .fade(begin: 0, end: 1, duration: 400.ms),
+
+                        Gap(20.h),
+
+                        // Resend timer / link
+                        _canResend
+                            ? GestureDetector(
+                                onTap: _resend,
+                                child: Text(
+                                  'Resend code',
+                                  style: AppThemes.getCustomTextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 14,
+                                    weight: FontWeight.w600,
+                                    color: AppColors.purple,
+                                  ),
+                                ),
+                              )
+                            : RichText(
+                                text: TextSpan(
+                                  style: AppThemes.getCustomTextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 14,
+                                    weight: FontWeight.w400,
+                                    color: const Color(0xFF6B7280),
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'Resend in '),
+                                    TextSpan(
+                                      text: _formatCountdown(_countdown),
+                                      style: AppThemes.getCustomTextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 14,
+                                        weight: FontWeight.w700,
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                        Gap(24.h),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Verify button
+                Padding(
+                  padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 24.h),
+                  child: DefaultButton(
+                    onBtnTap: _verify,
+                    btnText: 'Verify',
+                    btnColor: AppColors.purple,
+                    btnTextColor: AppColors.white,
+                  ),
+                ),
               ],
             ),
-            Visibility(
-              visible: authVm!.isLoading,
-              child: const Loader(),
-            )
+
+            if (_authVm.isLoading) const Loader(),
           ],
         ),
       ),

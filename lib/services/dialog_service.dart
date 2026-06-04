@@ -137,35 +137,55 @@ class DialogService {
   }
 
 
-  //snackbar for getting dialogs
-  showSnackBar(String title, String message) {
+  /// Shows a floating snackbar.
+  /// Pass [isError: true] for red error styling (default is purple / success).
+  showSnackBar(String title, String message, {bool isError = false}) {
+    // Dismiss any existing snackbar so they don't stack
+    if (Get.isSnackbarOpen) Get.closeCurrentSnackbar();
+
+    final bg = isError ? const Color(0xFFDC2626) : AppColors.purple;
+
     return Get.snackbar(
       title,
       message,
       snackPosition: SnackPosition.TOP,
-      backgroundColor: AppColors.purple,
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      backgroundColor: bg,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       snackStyle: SnackStyle.FLOATING,
-      overlayBlur: 10,
-      overlayColor: AppColors.purple.withOpacity(0.2),
-      titleText: Text(
-        title,
-        style: AppThemes.getCustomTextStyle(
-          fontFamily: "Inter",
-          fontSize: 16,
-          weight: FontWeight.w700,
-          color: AppColors.white
-        )
+      borderRadius: 14,
+      duration: const Duration(seconds: 4),
+      isDismissible: true,
+      forwardAnimationCurve: Curves.easeOutBack,
+      titleText: Row(
+        children: [
+          Icon(
+            isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded,
+            color: Colors.white,
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              title,
+              style: AppThemes.getCustomTextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                weight: FontWeight.w700,
+                color: AppColors.white,
+              ),
+            ),
+          ),
+        ],
       ),
       messageText: Text(
         message,
         style: AppThemes.getCustomTextStyle(
-            fontFamily: "Inter",
-            fontSize: 14,
-            weight: FontWeight.w400,
-            color: AppColors.white
-        )
+          fontFamily: 'Inter',
+          fontSize: 13,
+          weight: FontWeight.w400,
+          color: AppColors.white.withValues(alpha: 0.92),
+        ),
       ),
     );
   }

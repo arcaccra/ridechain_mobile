@@ -26,7 +26,7 @@ class UserProfileWidgets extends StatelessWidget {
           children: [
             Icon(icon, size: 18, color: AppColors.black,),
             Gap(10),
-            Text(text ?? "Anon", style: AppThemes.getCustomTextStyle(fontSize: 14, weight: FontWeight.w500, color: AppColors.black, lineHeight: 0.70, spacing: 0),),
+            Text(text ?? "Anon", style: AppThemes.getCustomTextStyle(fontSize: 16, weight: FontWeight.w500, color: AppColors.black, lineHeight: 0.70, spacing: 0),),
           ],
         ),
       ),

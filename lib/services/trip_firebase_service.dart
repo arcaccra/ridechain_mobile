@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ridex/services/fcm_service.dart';
 
@@ -13,90 +12,106 @@ class TripFirebaseService {
   // ========================================
   Future<void> requestToJoinTrip(String tripId, String userId) async {
     try {
-      print('Sending trip request...');
-
       // 1. Create request in Firestore
-      final requestRef = await _firestore
+      await _firestore
           .collection('trips')
           .doc(tripId)
           .collection('requests')
-          .add({
+          .doc(userId)
+          .set({
         'tripId': tripId,
         'userId': userId,
         'status': 'pending',
-        'createdAt': DateTime.now(),
+        'createdAt': FieldValue.serverTimestamp(),
       });
 
-      print('Request created in Firestore');
-
-      // 2. Get trip and user details
+      // 2. Get trip details — guard against missing document
       final tripDoc = await _firestore.collection('trips').doc(tripId).get();
+      if (!tripDoc.exists || tripDoc.data() == null) {
+        print('⚠️ Trip document not found: $tripId');
+        return;
+      }
       final tripData = tripDoc.data()!;
 
+      // 3. Get user details — guard against missing document
       final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (!userDoc.exists || userDoc.data() == null) {
+        print('⚠️ User document not found: $userId');
+        return;
+      }
       final userData = userDoc.data()!;
 
-      // 3. Get driver's FCM token
-      final driverDoc = await _firestore
-          .collection('users')
-          .doc(tripData['driverId'])
-          .get();
-      final driverToken = driverDoc.data()?['fcmToken'];
-
-      if (driverToken == null) {
-        print('⚠️ Driver FCM token not found');
+      // 4. Get driver FCM token
+      final driverId = tripData['driverId'] as String?;
+      if (driverId == null) {
+        print('⚠️ Trip has no driverId field');
         return;
       }
 
-      // 4. Send notification to driver
+      final driverDoc =
+          await _firestore.collection('users').doc(driverId).get();
+      final driverToken = driverDoc.data()?['fcmToken'] as String?;
+
+      if (driverToken == null) {
+        print('⚠️ Driver FCM token not found for driverId: $driverId');
+        return;
+      }
+
+      // 5. Send notification to driver
       await _notificationService.sendTripRequestNotification(
         tripId: tripId,
         userId: userId,
         driverToken: driverToken,
-        userName: userData['name'] ?? 'A user',
-        destination: tripData['destination'] ?? 'your destination',
+        userName: (userData['name'] as String?) ?? 'A user',
+        destination: (tripData['destination'] as String?) ?? 'your destination',
       );
 
       print('✅ Trip request notification sent to driver');
-    } catch (e) {
-      print('❌ Error sending trip request: $e');
-      throw e;
+    } catch (e, stack) {
+      print('❌ Error sending trip request: $e\n$stack');
+      rethrow;
     }
   }
 
   // ========================================
-  // 4. PAYMENT COMPLETED
+  // 2. PAYMENT COMPLETED
   // ========================================
   Future<void> completePayment({
     required String paymentId,
     required String tripId,
     required String userId,
+    required String username,
     required double amount,
   }) async {
     try {
-      print('📤 Processing payment completion...');
-
-      // 1. Update payment status in Firestore
-      await _firestore.collection('payments').doc(paymentId).update({
+      // 1. Record payment in Firestore
+      await _firestore.collection('payments').doc(paymentId).set({
         'status': 'completed',
-        'completedAt': DateTime.now(),
+        'completedAt': FieldValue.serverTimestamp(),
       });
-      print('✅ Payment status updated in Firestore');
 
-      // 2. Get trip details
+      // 2. Get trip details — guard against missing document
       final tripDoc = await _firestore.collection('trips').doc(tripId).get();
+      if (!tripDoc.exists || tripDoc.data() == null) {
+        print('⚠️ Trip document not found: $tripId');
+        return;
+      }
       final tripData = tripDoc.data()!;
-      final driverId = tripData['driverId'];
+      final driverId = tripData['driverId'] as String?;
+      if (driverId == null) {
+        print('⚠️ Trip has no driverId field');
+        return;
+      }
 
-      // 3. Get user and driver details
+      // 3. Get user and driver FCM tokens
       final userDoc = await _firestore.collection('users').doc(userId).get();
-      final driverDoc = await _firestore.collection('users').doc(driverId).get();
+      final driverDoc =
+          await _firestore.collection('users').doc(driverId).get();
 
-      final userToken = userDoc.data()?['fcmToken'];
-      final driverToken = driverDoc.data()?['fcmToken'];
-      final userName = userDoc.data()?['name'];
+      final userToken = userDoc.data()?['fcmToken'] as String?;
+      final driverToken = driverDoc.data()?['fcmToken'] as String?;
 
-      // 4. Send notification to user (passenger)
+      // 4. Notify passenger
       if (userToken != null) {
         await _notificationService.sendPaymentNotification(
           token: userToken,
@@ -105,10 +120,9 @@ class TripFirebaseService {
           amount: amount,
           isDriver: false,
         );
-        print('✅ Payment notification sent to user');
       }
 
-      // 5. Send notification to driver
+      // 5. Notify driver
       if (driverToken != null) {
         await _notificationService.sendPaymentNotification(
           token: driverToken,
@@ -116,15 +130,14 @@ class TripFirebaseService {
           tripId: tripId,
           amount: amount,
           isDriver: true,
-          userName: userName,
+          userName: username,
         );
-        print('✅ Payment notification sent to driver');
       }
 
       print('✅ Payment completed successfully');
-    } catch (e) {
-      print('❌ Error completing payment: $e');
-      throw e;
+    } catch (e, stack) {
+      print('❌ Error completing payment: $e\n$stack');
+      rethrow;
     }
   }
 
@@ -132,10 +145,11 @@ class TripFirebaseService {
   // HELPER METHODS
   // ========================================
 
-  // Get trip details
+  /// Returns trip data map or null if document missing / on error.
   Future<Map<String, dynamic>?> getTripDetails(String tripId) async {
     try {
       final tripDoc = await _firestore.collection('trips').doc(tripId).get();
+      if (!tripDoc.exists) return null;
       return tripDoc.data();
     } catch (e) {
       print('❌ Error getting trip details: $e');
@@ -143,7 +157,7 @@ class TripFirebaseService {
     }
   }
 
-  // Get user's trips (for passenger)
+  /// Real-time stream of trips this passenger is part of.
   Stream<QuerySnapshot> getUserTrips(String userId) {
     return _firestore
         .collection('trips')
@@ -152,17 +166,20 @@ class TripFirebaseService {
         .snapshots();
   }
 
-  //create a new user whether driver
+  /// Creates or overwrites the Firestore user document for [user].
   Future<void> createNewUser({required UserModel user}) async {
     try {
-      await _firestore.collection('users').doc(user.id.toString()).set({
+      await _firestore
+          .collection('users')
+          .doc(user.id.toString())
+          .set({
         'userId': user.id.toString(),
         'name': user.fullName,
-        'createdAt': DateTime.now(),
-      });
-    } catch (e) {
+        'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    } catch (e, stack) {
+      print('❌ Error creating user in Firestore: $e\n$stack');
       rethrow;
     }
   }
-
 }

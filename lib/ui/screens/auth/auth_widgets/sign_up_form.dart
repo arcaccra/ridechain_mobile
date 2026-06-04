@@ -62,7 +62,7 @@ class _SignUpFormState extends State<SignUpForm> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             keyboardType: TextInputType.name,
             validator: (value) {
-              if (value == null) {
+              if (value == null || value.trim().isEmpty) {
                 return "Name input field must not be empty";
               }
               return null;

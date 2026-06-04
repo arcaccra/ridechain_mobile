@@ -46,9 +46,9 @@ class DefaultButton extends StatelessWidget {
     return InkWell(
       onTap: isNull ? null : onBtnTap,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 12.h),
+        padding: EdgeInsets.symmetric(vertical: 16.h),
         width: width ?? 1.sw,
-        height: height ?? 55,
+        //height: height ?? 55,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32.r),
           color: isNull ? AppColors.grey : btnColor ?? AppColors.white,

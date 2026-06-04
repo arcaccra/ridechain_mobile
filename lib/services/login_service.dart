@@ -43,6 +43,12 @@ class LoginService extends HttpService {
     return response;
   }
 
+  //get user by id
+  getUserById(int id) async {
+    var response = await get("${Api.users}$id/");
+    return response;
+  }
+
   //logout
   logout() async {
     var response = await post(Api.logout);
@@ -61,6 +67,12 @@ class LoginService extends HttpService {
   //get wallet address
   Future getWalletAddress() async {
     var response = await get(Api.wallets);
+    return response;
+  }
+
+  //get wallet address
+  Future getWalletById(int id) async {
+    var response = await get("${Api.wallets}$id/");
     return response;
   }
 

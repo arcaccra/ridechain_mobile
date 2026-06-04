@@ -24,7 +24,7 @@ class BecomeDriverWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             //user info
-            Text(Label.earnAsDriver, style: AppThemes.getCustomTextStyle(fontSize: 14, weight: FontWeight.w600, color: AppColors.white, lineHeight: 0.70, spacing: 0),),
+            Text(Label.earnAsDriver, style: AppThemes.getCustomTextStyle(fontSize: 16, weight: FontWeight.w600, color: AppColors.white, lineHeight: 0.70, spacing: 0),),
             Image.asset(Media.onboardingToyotaImg, height: 60, width: 60,)
           ],
         ),

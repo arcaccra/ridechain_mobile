@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:ridex/core/cache_helper.dart';
 import 'package:ridex/data/models/driver_model.dart';
 import 'package:ridex/data/models/location_model.dart';
+import 'package:ridex/data/models/wallet.dart';
 import 'package:ridex/providers/base_provider.dart';
 import 'package:ridex/ui/screens/auth/otp_screen.dart';
 import 'package:ridex/ui/screens/auth/password_screen.dart';
@@ -23,6 +24,7 @@ class AuthVm extends BaseProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   AuthModel? _currentUser;
+  Wallet? userWallet;
   UserModel? _model;
   List<DriverModel> allDrivers = [];
   String _verificationId = '';
@@ -56,13 +58,22 @@ class AuthVm extends BaseProvider {
         if(_currentUser != null) {
           await CacheHelper.instance.cacheModel(CacheHelper.authKey, _currentUser);
           await CacheHelper.instance.cacheModel(CacheHelper.userKey, _model);
+          await getWalletAddress();
           _clearError();
           clearBodyAndImages();
           Get.offAll(() => const AppNavigationScreen(), transition: Transition.leftToRight);
         }
+      } else {
+        final rawBody = response?.data;
+        final bodyError = (rawBody is Map) ? rawBody['error']?.toString() : null;
+        final msg = bodyError
+            ?? apiResponse.message
+            ?? apiResponse.errors
+            ?? 'Login failed. Please try again.';
+        dialog.showSnackBar('Login failed', msg, isError: true);
       }
     } catch (e, stackTrace) {
-      dialog.showSnackBar("An unexpected error occurred", e.toString(),);
+      dialog.showSnackBar("Login failed", e.toString(), isError: true);
       log("${e.toString()} and stacktrace ==> $stackTrace");
     } finally {
       updateUi(()=> _authIsLoading = false);
@@ -76,18 +87,67 @@ class AuthVm extends BaseProvider {
       log("WALLET ADDRESS=====>> ${response.toString()}");
       var apiResponse = ApiResponse.parse(response);
       if(apiResponse.code == 200 || apiResponse.code == 201) {
-        UserModel userWalletModel = UserModel.fromJson(apiResponse.mappedObjects!['user']);
+        userWallet = Wallet.fromJson(apiResponse.mappedObjects!);
+        String address = apiResponse.mappedObjects?['address'];
         if(_model != null) {
-          await CacheHelper.instance.cacheString(CacheHelper.walletKey, userWalletModel.walletAddress!);
+          await CacheHelper.instance.cacheString(CacheHelper.walletKey, address);
+          await CacheHelper.instance.cacheModel(CacheHelper.walletInfoKey, userWallet);
+          walletAddress = address;
         }
         return true;
+      } else {
+        final msg = apiResponse.message ?? apiResponse.errors ?? 'Request failed. Please try again.';
+        dialog.showSnackBar('Error', msg, isError: true);
       }
     } catch (e) {
-      dialog.showSnackBar("An unexpected error occurred", e.toString());
+      dialog.showSnackBar("Error", e.toString(), isError: true);
     } finally {
       updateUi(()=> _authIsLoading = false);
     }
     return false;
+  }
+
+  //get the wallet by id
+  Future<Wallet?> getWalletById(int id) async {
+    updateUi(()=> _authIsLoading = true);
+    try{
+      var response = await auth.getWalletById(id);
+      log("WALLET ADDRESS=====>> ${response.toString()}");
+      var apiResponse = ApiResponse.parse(response);
+      if(apiResponse.code == 200 || apiResponse.code == 201) {
+        userWallet = Wallet.fromJson(apiResponse.mappedObjects!);
+        String address = apiResponse.mappedObjects?['address'];
+        if(_model != null) {
+          await CacheHelper.instance.cacheString(CacheHelper.walletKey, address);
+          walletAddress = address;
+        }
+        return userWallet;
+      }
+    } catch (e) {
+      dialog.showSnackBar("An unexpected error occurred", e.toString(), isError: true);
+    } finally {
+      updateUi(()=> _authIsLoading = false);
+    }
+    return userWallet;
+  }
+
+  //fetch user by id
+  Future<UserModel?> getUserById(int id) async {
+    _authIsLoading = true;
+    try{
+      var response = await auth.getUserById(id);
+      log("USER=====>> ${response.toString()}");
+      var apiResponse = ApiResponse.parse(response);
+      if(apiResponse.code == 200 || apiResponse.code == 201) {
+        _model = UserModel.fromJson(apiResponse.mappedObjects!);
+        return _model;
+      }
+    } catch (e) {
+      dialog.showSnackBar("An unexpected error occurred", e.toString(), isError: true);
+    } finally {
+      updateUi(()=> _authIsLoading = false);
+    }
+    return _model;
   }
 
   Future<bool> getWalletAddress() async {
@@ -97,14 +157,20 @@ class AuthVm extends BaseProvider {
       log("WALLET ADDRESS=====>> ${response.toString()}");
       var apiResponse = ApiResponse.parse(response);
       if(apiResponse.code == 200 || apiResponse.code == 201) {
-        UserModel userWalletModel = UserModel.fromJson(apiResponse.mappedObjects!['user']);
+        userWallet = Wallet.fromJson(apiResponse.mappedObjects!);
+        String address = apiResponse.mappedObjects?['address'];
         if(_model != null) {
-          await CacheHelper.instance.cacheString(CacheHelper.walletKey, userWalletModel.walletAddress!);
+          await CacheHelper.instance.cacheString(CacheHelper.walletKey, address);
+          await CacheHelper.instance.cacheModel(CacheHelper.walletInfoKey, userWallet);
+          walletAddress = address;
         }
         return true;
+      } else {
+        final msg = apiResponse.message ?? apiResponse.errors ?? 'Request failed. Please try again.';
+        dialog.showSnackBar('Error', msg, isError: true);
       }
     } catch (e) {
-      dialog.showSnackBar("An unexpected error occurred", e.toString());
+      dialog.showSnackBar("Error", e.toString(), isError: true);
     } finally {
       updateUi(()=> _authIsLoading = false);
     }
@@ -126,6 +192,11 @@ class AuthVm extends BaseProvider {
       walletAddress = address;
     }
 
+    var wallet = await CacheHelper.instance.readModel(CacheHelper.walletInfoKey);
+    if(wallet != null) {
+      userWallet = Wallet.fromJson(wallet);
+    }
+
     notifyListeners();
   }
 
@@ -139,16 +210,21 @@ class AuthVm extends BaseProvider {
       var apiResponse = ApiResponse.parse(response);
       if(apiResponse.code == 200 || apiResponse.code == 201) {
         _currentUser = AuthModel.fromJson(apiResponse.mappedObjects!);
+        _model = _currentUser?.user;
         if(_currentUser != null) {
           await CacheHelper.instance.cacheModel(CacheHelper.authKey, _currentUser);
+          await CacheHelper.instance.cacheModel(CacheHelper.userKey, _model);
           await tripService.createNewUser(user: _currentUser!.user!);
           _clearError();
           clearBodyAndImages();
           Get.offAll(() => const AppNavigationScreen(), transition: Transition.leftToRight);
         }
+      } else {
+        final msg = apiResponse.message ?? apiResponse.errors ?? 'Registration failed. Please try again.';
+        dialog.showSnackBar('Registration failed', msg, isError: true);
       }
     } catch (e, stacktrace) {
-      dialog.showSnackBar("An unexpected error occurred", e.toString());
+      dialog.showSnackBar("Registration failed", e.toString(), isError: true);
       imageFile = null;
       selectedFile = null;
       log("${e.toString()} and stacktrace ==> $stacktrace");
@@ -195,7 +271,7 @@ class AuthVm extends BaseProvider {
         // Verification failed
         verificationFailed: (FirebaseAuthException e) {
           _setError(_getErrorMessage(e));
-          dialog.showSnackBar("An unexpected error occurred", e.toString());
+          dialog.showSnackBar("An unexpected error occurred", e.toString(), isError: true);
           updateUi(()=> _authIsLoading = false);
         },
 
@@ -215,7 +291,7 @@ class AuthVm extends BaseProvider {
       );
     } catch (e) {
       _setError('Failed to send OTP: ${e.toString()}');
-      dialog.showSnackBar("Failed to send OTP:", e.toString());
+      dialog.showSnackBar("Failed to send OTP:", e.toString(), isError: true);
       updateUi(()=> _authIsLoading = false);
     }
   }
@@ -238,7 +314,7 @@ class AuthVm extends BaseProvider {
       return true;
 
     } catch (e) {
-      dialog.showSnackBar("Invalid Otp:", e.toString());
+      dialog.showSnackBar("Invalid Otp:", e.toString(), isError: true);
       updateUi(()=> _authIsLoading = false);
       return false;
     }
@@ -300,7 +376,7 @@ class AuthVm extends BaseProvider {
       var encodedImage = img.encodeJpg(decodedImage!);
       selectedFile = dio.MultipartFile.fromBytes(encodedImage, filename: "image_$imageFile.jpg");
     } else {
-      dialog.showSnackBar("Error", "Error picking image... Please try again.");
+      dialog.showSnackBar("Error", "Error picking image... Please try again.", isError: true);
       updateUi(()=> _authIsLoading = false);
     }
     updateUi(()=> _authIsLoading = false);
@@ -324,7 +400,7 @@ class AuthVm extends BaseProvider {
         return [];
       }
     } on Exception catch(e) {
-      dialog.showSnackBar("An unexpected error occurred", e.toString());
+      dialog.showSnackBar("An unexpected error occurred", e.toString(), isError: true);
     } finally {
       updateUi(()=> _authIsLoading = false);
     }
@@ -346,7 +422,7 @@ class AuthVm extends BaseProvider {
       }
 
     } on Exception catch(e) {
-      dialog.showSnackBar("An unexpected error occurred", e.toString());
+      dialog.showSnackBar("An unexpected error occurred", e.toString(), isError: true);
     } finally {
       updateUi(()=> _authIsLoading = false);
     }
@@ -363,7 +439,7 @@ class AuthVm extends BaseProvider {
         return true;
       //}
     } on Exception catch(e) {
-      dialog.showSnackBar("An unexpected error occurred", e.toString());
+      dialog.showSnackBar("An unexpected error occurred", e.toString(), isError: true);
     } finally {
       setUiState(UiState.done);
     }

@@ -25,6 +25,7 @@ class CustomTextField extends StatefulWidget {
   final String? Function(String?)? onChanged;
   final Function()? onEditingComplete;
   final bool defaultValidation;
+  final Color? fillColor;
 
   const CustomTextField({
     super.key,
@@ -48,6 +49,7 @@ class CustomTextField extends StatefulWidget {
     this.inputFormatters,
     this.validator,
     this.defaultValidation = true,
+    this.fillColor,
   });
 
   @override
@@ -73,9 +75,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveFill = widget.fillColor ?? AppColors.white;
     final border = OutlineInputBorder(
-      borderSide: BorderSide(color: AppColors.textFieldBorderColor, width: 1),
-      borderRadius: BorderRadius.circular(8.r),
+      borderSide: BorderSide(
+        color: widget.fillColor != null ? Colors.transparent : AppColors.textFieldBorderColor,
+        width: 1,
+      ),
+      borderRadius: BorderRadius.circular(14.r),
     );
 
     return TextFormField(
@@ -89,7 +95,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       minLines: widget.expandable ? 5 : 1,
       onTap: widget.onTap,
       style: TextStyle(
-        fontSize: 14.sp,
+        fontSize: 16,
         fontFamily: "Inter",
         color: AppColors.primaryColor,
         fontWeight: FontWeight.w400,
@@ -104,7 +110,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       decoration: InputDecoration(
         border: border,
         filled: true,
-        fillColor: AppColors.white,
+        fillColor: effectiveFill,
         enabledBorder: border,
         focusedBorder: border,
         disabledBorder: border,
@@ -112,7 +118,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         labelText: widget.labelText,
         errorBorder: border,
         errorStyle: TextStyle(
-          fontSize: 14.sp,
+          fontSize: 16,
           fontFamily: "Inter",
           color: AppColors.primaryColor,
           fontWeight: FontWeight.w400,
@@ -120,7 +126,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           height: 1.2,
         ),
         labelStyle: TextStyle(
-          fontSize: 14.sp,
+          fontSize: 16,
           fontFamily: "Inter",
           color: AppColors.primaryColor,
           fontWeight: FontWeight.w400,
@@ -129,7 +135,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         suffixIcon: widget.suffixIcon,
         hintStyle: TextStyle(
-          fontSize: 14.sp,
+          fontSize: 16,
           fontFamily: "Inter",
           color: AppColors.textFieldHintColor,
           fontWeight: FontWeight.w400,
@@ -138,7 +144,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         prefix: widget.prefix,
         prefixIcon: widget.prefixIcon,
-        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       ),
       inputFormatters: widget.inputFormatters,
       validator: widget.defaultValidation

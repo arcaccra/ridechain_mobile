@@ -4,18 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:ridex/providers/auth_provider.dart';
 import 'package:ridex/providers/rides_provider.dart';
-import 'package:ridex/ui/screens/pay_for_trip/widgets/payment_success_details_widget.dart';
+import 'package:ridex/ui/screens/navigation/app_navigation_screen.dart';
 import 'package:ridex/ui/screens/rate_driver/rate_driver_screen.dart';
-import 'package:ridex/ui/shared_widgets/default_button.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/core_constants/colors.dart';
-import '../../../core/core_constants/label.dart';
-import '../../../data/locator.dart';
-import '../../../services/dialog_service.dart';
-
 
 class PaymentSuccessScreen extends StatefulWidget {
   const PaymentSuccessScreen({super.key});
@@ -25,26 +22,11 @@ class PaymentSuccessScreen extends StatefulWidget {
 }
 
 class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
-  RideProvider? rideProvider;
-  TextEditingController reviewController = TextEditingController();
-
   Timer? _timer;
 
   @override
   void initState() {
-    rideProvider = context.read<RideProvider>();
     super.initState();
-   _showRatingScreen();
-  }
-
-  _showRatingScreen() async {
-    _timer = Timer(const Duration(seconds: 3), () async {
-      locator<DialogService>().showCustomModal(
-          context: context,
-          isDismissible: false,
-          customModal: RateDriverScreen()
-      );
-    });
   }
 
   @override
@@ -53,70 +35,328 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final ride = Provider.of<RideProvider>(context);
+    final rideVm = context.watch<RideProvider>();
+    final authVm = context.watch<AuthVm>();
+
+    final ride = rideVm.selectedRide;
+    final price = double.tryParse(ride?.pricePerSeat ?? '0') ?? 0.0;
+    final networkFee = price * 0.068;
+    final total = price + networkFee;
+
+    final driver = ride?.driver;
+    final driverName = driver?.user?.fullName ?? 'Driver';
+    final firstName = driverName.split(' ').first;
+    final vehicleType = driver?.vehicleType ?? '';
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24),
+      backgroundColor: AppColors.darkBackground,
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(Label.paymentSuccessful, style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", weight: FontWeight.w900, color: AppColors.primaryColor, fontSize: 24, lineHeight: 1.33), textAlign: TextAlign.center)
-                .animate(delay: 100.ms)
-                .slide(
-              begin: const Offset(0, -0.3),
-              end: const Offset(0, 0), // End at center
-              duration: 600.ms,
-              curve: Curves.easeOutBack,
-            )
-                .fade(begin: 0, end: 1, duration: 600.ms),
-            Gap(4.h),
-            Text("${Label.paymentSuccessfulMsg} ADA ${ride.selectedRide?.pricePerSeat}", style: AppThemes.getCustomTextStyle(fontFamily: "Beau Sans", weight: FontWeight.w700, color: AppColors.primaryColor, fontSize: 14, lineHeight: 1.33), textAlign: TextAlign.center)
-                .animate(delay: 100.ms)
-                .slide(
-              begin: const Offset(0, -0.3),
-              end: const Offset(0, 0), // End at center
-              duration: 600.ms,
-              curve: Curves.easeOutBack,
-            )
-                .fade(begin: 0, end: 1, duration: 600.ms),
-            Gap(30.h),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: AppColors.white,
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Column(
+                  children: [
+                    Gap(48.h),
+
+                    // Green check circle
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFF16A34A),
+                      ),
+                      child: const Icon(Icons.check_rounded,
+                          color: Colors.white, size: 40),
+                    )
+                        .animate()
+                        .scale(
+                          begin: const Offset(0.6, 0.6),
+                          end: const Offset(1, 1),
+                          duration: 500.ms,
+                          curve: Curves.easeOutBack,
+                        )
+                        .fade(begin: 0, end: 1, duration: 400.ms),
+
+                    Gap(24.h),
+
+                    Text(
+                      'Payment sent',
+                      style: AppThemes.getCustomTextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: 28,
+                        weight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    )
+                        .animate(delay: 100.ms)
+                        .fade(begin: 0, end: 1, duration: 400.ms),
+
+                    Gap(6.h),
+
+                    Text(
+                      '${total.toStringAsFixed(2)} ₳ paid to $firstName.',
+                      style: AppThemes.getCustomTextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        weight: FontWeight.w400,
+                        color: const Color(0xFF9CA3AF),
+                      ),
+                    )
+                        .animate(delay: 150.ms)
+                        .fade(begin: 0, end: 1, duration: 400.ms),
+
+                    Gap(28.h),
+
+                    // Receipt card
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(18.r),
+                      decoration: BoxDecoration(
+                        color: AppColors.darkCard,
+                        borderRadius: BorderRadius.circular(18.r),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Receipt',
+                                style: AppThemes.getCustomTextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  weight: FontWeight.w600,
+                                  color: const Color(0xFF9CA3AF),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF14532D),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 6,
+                                      height: 6,
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Color(0xFF16A34A),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      'Confirmed',
+                                      style: AppThemes.getCustomTextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 11,
+                                        weight: FontWeight.w600,
+                                        color: Color(0xFF16A34A),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          _ReceiptRow(
+                              label: 'Amount',
+                              value:
+                                  '${total.toStringAsFixed(2)} ₳'),
+                          _ReceiptRow(
+                              label: 'Driver',
+                              value: firstName.isNotEmpty
+                                  ? '$firstName D.'
+                                  : '—'),
+                          _ReceiptRow(
+                              label: 'Trip',
+                              value: vehicleType.isNotEmpty
+                                  ? vehicleType
+                                  : '—'),
+                          _ReceiptRow(
+                              label: 'Date',
+                              value:
+                                  'Today · ${TimeOfDay.now().format(context)}'),
+                          _ReceiptRow(
+                              label: 'Tx hash',
+                              value: '0x4f2…b8e1',
+                              valueColor: AppColors.purple),
+                        ],
+                      ),
+                    )
+                        .animate(delay: 200.ms)
+                        .fade(begin: 0, end: 1, duration: 400.ms),
+
+                    Gap(14.h),
+
+                    // Scan QR bonus banner
+                    Container(
+                      padding: EdgeInsets.all(16.r),
+                      decoration: BoxDecoration(
+                        color: AppColors.darkCard,
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(
+                          color: AppColors.purple.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: AppColors.purple,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(Icons.bolt_rounded,
+                                color: Colors.white, size: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Scan your ride QR for 0.05 ₳',
+                                  style: AppThemes.getCustomTextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 13,
+                                    weight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  'Verified trip bonus',
+                                  style: AppThemes.getCustomTextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 12,
+                                    weight: FontWeight.w400,
+                                    color: const Color(0xFF9CA3AF),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.chevron_right_rounded,
+                              color: Color(0xFF6B7280), size: 20),
+                        ],
+                      ),
+                    )
+                        .animate(delay: 250.ms)
+                        .fade(begin: 0, end: 1, duration: 400.ms),
+
+                    Gap(24.h),
+                  ],
+                ),
               ),
+            ),
+
+            // Bottom buttons
+            Padding(
+              padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 16.h),
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: PaymentSuccessDetailsWidget(ride: ride.selectedRide,)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Get.to(() => const RateDriverScreen());
+                      },
+                      icon: const Icon(Icons.star_rounded,
+                          color: Color(0xFFF59E0B), size: 20),
+                      label: Text(
+                        'Rate your driver',
+                        style: AppThemes.getCustomTextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 15,
+                          weight: FontWeight.w700,
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    decoration: BoxDecoration(
-                        color: AppColors.purple,
-                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20),)
+                  const SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: () {
+                      rideVm.resetRideState();
+                      Get.offAll(() => const AppNavigationScreen(),
+                          transition: Transition.leftToRight);
+                    },
+                    child: Text(
+                      'Back home',
+                      style: AppThemes.getCustomTextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        weight: FontWeight.w500,
+                        color: const Color(0xFF9CA3AF),
+                      ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.feed_outlined, color: AppColors.yellow, size: 14),
-                        Gap(4.w),
-                        Text(Label.downloadReceipt, style: AppThemes.getCustomTextStyle(color: AppColors.yellow, fontSize: 11, weight: FontWeight.w500, fontFamily: "Outfit")),
-                      ],
-                    ),
-                  )
-
+                  ),
+                  Gap(8.h),
                 ],
               ),
             ),
-            Gap(20.h),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ReceiptRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color? valueColor;
+  const _ReceiptRow(
+      {required this.label, required this.value, this.valueColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: AppThemes.getCustomTextStyle(
+              fontFamily: 'Inter',
+              fontSize: 13,
+              weight: FontWeight.w400,
+              color: const Color(0xFF6B7280),
+            ),
+          ),
+          Text(
+            value,
+            style: AppThemes.getCustomTextStyle(
+              fontFamily: 'Inter',
+              fontSize: 13,
+              weight: FontWeight.w600,
+              color: valueColor ?? Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }

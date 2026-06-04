@@ -39,7 +39,7 @@ class _RideArrivalScreenState extends State<RideArrivalScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(Label.tripStarted, style: AppThemes.getCustomTextStyle(fontSize: 20.2, color: AppColors.primaryColor, weight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis,),
+        Text(Label.tripStarted, style: AppThemes.getCustomTextStyle(fontSize: 20, color: AppColors.primaryColor, weight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis,),
         Gap(10.h),
         //sub text
         Text(Label.tripStartedMessage, style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.greyAd, weight: FontWeight.w500), maxLines: 4, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,),
@@ -75,20 +75,20 @@ class _RideArrivalScreenState extends State<RideArrivalScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(widget.ride?.driver?.user?.fullName ?? "", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 22, weight: FontWeight.w800, color: AppColors.black)),
-                      Text("ADA ${widget.ride?.pricePerSeat ?? 0.00}", style: AppThemes.getCustomTextStyle(fontSize: 16, color: AppColors.black, weight: FontWeight.w800),),
+                      Text(widget.ride?.driver?.user?.fullName ?? "", style: AppThemes.getCustomTextStyle(fontFamily: "Outfit", fontSize: 18, weight: FontWeight.w700, color: AppColors.black)),
+                      Text("ADA ${widget.ride?.pricePerSeat ?? 0.00}", style: AppThemes.getCustomTextStyle(fontSize: 16, color: AppColors.black, weight: FontWeight.w500),),
                     ],
                   ),
                   Gap(12.h),
                   Row(
                     children: [
-                      SvgPicture.asset(Media.steering, height: 12, width: 12,colorFilter: ColorFilter.mode(AppColors.purple, BlendMode.srcIn)),
+                      SvgPicture.asset(Media.steering, height: 14, width: 14,colorFilter: ColorFilter.mode(AppColors.purple, BlendMode.srcIn)),
                       Gap(4),
                       Text(widget.ride?.driver?.vehicleType ?? "", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w400),),
                       Spacer(),
-                      SvgPicture.asset(Media.blackCar, height: 12, width: 12 ,colorFilter: ColorFilter.mode(AppColors.purple, BlendMode.srcIn)),
+                      SvgPicture.asset(Media.blackCar, height: 14, width: 14 ,colorFilter: ColorFilter.mode(AppColors.purple, BlendMode.srcIn)),
                       Gap(4),
-                      Text(widget.ride?.driver?.vehiclePlateNumber ?? "", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.black, weight: FontWeight.w700),),
+                      Text(widget.ride?.driver?.vehiclePlateNumber ?? "", style: AppThemes.getCustomTextStyle(fontSize: 14, color: AppColors.black, weight: FontWeight.w700),),
                     ],
                   ),
                   Gap(12.h),

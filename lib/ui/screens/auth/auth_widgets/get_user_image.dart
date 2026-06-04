@@ -12,8 +12,8 @@ import 'choose_image_picker.dart';
 class GetUserImage extends StatelessWidget {
   const GetUserImage({super.key, this.imageFile, this.onCameraTap, this.onGalleryTap});
   final File? imageFile;
-  final VoidCallback? onCameraTap;
-  final VoidCallback? onGalleryTap;
+  final Future<void> Function()? onCameraTap;
+  final Future<void> Function()? onGalleryTap;
 
   @override
   Widget build(BuildContext context) {

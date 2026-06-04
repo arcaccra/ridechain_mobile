@@ -1,11 +1,9 @@
 
 
 import 'package:flutter/cupertino.dart';
-import 'package:ridex/ui/screens/history/history_screen.dart';
 import 'package:ridex/ui/screens/home/home_screen.dart';
 import 'package:ridex/ui/screens/profile/profile_screen.dart';
 import 'package:ridex/ui/screens/scan/scan_screen.dart';
-import 'package:ridex/ui/screens/search/search_screen.dart';
 import 'package:ridex/ui/screens/trip_history/trip_history.dart';
 
 import '../core/core_constants/colors.dart';

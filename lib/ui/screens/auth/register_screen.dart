@@ -113,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 authVm.addToRegisterMap("phone_number", formattedNumber);
                                 authVm.addToRegisterMap("email", email);
                                 authVm.addToRegisterMap("full_name", username,);
-                                authVm.addToRegisterMap("country", "GH");
+                                authVm.addToRegisterMap("country", country.countryCode);
                                 locator<DialogService>().showAlertDialog(
                                   context: context,
                                   message: "Is your number $formattedNumber correct?",

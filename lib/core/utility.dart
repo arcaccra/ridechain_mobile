@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 abstract class Utils {
@@ -32,5 +33,9 @@ abstract class Utils {
       throw 'Could not launch $launchUri';
     }
   }
-  //
+  //static format time
+  static String formatDateTime(DateTime date) {
+    String formatted = DateFormat('MMM d, h:mma').format(date);
+    return formatted;
+  }
 }

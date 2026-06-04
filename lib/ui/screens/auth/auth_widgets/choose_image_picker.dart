@@ -6,8 +6,8 @@ import '../../../../core/core_constants/colors.dart';
 import 'choose_image_icon.dart';
 
 class CustomPictureModal extends StatelessWidget {
-  final VoidCallback?  cameraBtnPressed;
-  final VoidCallback?  galleryBtnPressed;
+  final Future<void> Function()?  cameraBtnPressed;
+  final Future<void> Function()?  galleryBtnPressed;
   const CustomPictureModal({Key? key, this.cameraBtnPressed, this.galleryBtnPressed}) : super(key: key);
 
   @override

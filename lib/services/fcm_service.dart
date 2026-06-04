@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
@@ -9,7 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-// Top-level background message handler
+// Top-level background message handler — must be top-level for isolate entry.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Background message: ${message.notification?.title}');
@@ -24,9 +25,10 @@ class FCMService {
 
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
-
+  FirebaseMessaging get fcm => _fcm;
 
   // Notification channels
   static const String CHANNEL_TRIP_REQUEST = 'trip_request_channel';
@@ -35,107 +37,124 @@ class FCMService {
 
   bool _isInitialized = false;
 
+  // ── Stored subscriptions so they can be cancelled ──────────────────────────
+  StreamSubscription<RemoteMessage>? _onMessageSub;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedSub;
+  StreamSubscription<String>? _onTokenRefreshSub;
+
   // ========================================
   // INITIALIZATION
   // ========================================
   Future<void> initialize() async {
-    if (_isInitialized) {
-      print('Service already initialized');
-      return;
-    }
+    if (_isInitialized) return;
 
     try {
-      print('Initializing notification service...');
-
-      //load the dot.env
       await dotenv.load(fileName: ".env");
 
-      // Request permissions
-      NotificationSettings settings = await _fcm.requestPermission(alert: true, badge: true, sound: true, criticalAlert: true);
+      final settings = await _fcm.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        criticalAlert: true,
+      );
 
       if (settings.authorizationStatus != AuthorizationStatus.authorized) {
-        print('Notification permission denied');
+        print('⚠️ Notification permission denied');
         return;
       }
 
-      // Create notification channels
       await _createNotificationChannels();
-
-      // Set up message handlers
       await _setupMessageHandlers();
 
-      //
-
       _isInitialized = true;
-      print('Notification service initialized');
-    } catch (e) {
-      print('Error initializing: $e');
-      throw e;
+      print('✅ Notification service initialized');
+    } catch (e, stack) {
+      print('❌ Error initializing FCMService: $e\n$stack');
+      rethrow;
     }
   }
 
+  // ========================================
+  // RIDE STATUS LISTENER
+  // Returns the StreamSubscription so callers MUST cancel it in dispose().
+  // ========================================
+  StreamSubscription<RemoteMessage> listenToMessageReceivedForRideStatus(
+    void Function(Map<String, dynamic>) onData,
+  ) {
+    return FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      onData(message.data);
+    });
+  }
 
-  //save user fcm token and activate refresh token
-  saveAnActivateTokenRefresh(String userId) async {
-    // Get and save FCM token
-    String? token = await _fcm.getToken();
+  // ========================================
+  // TOKEN MANAGEMENT
+  // ========================================
+  Future<void> saveAnActivateTokenRefresh(String userId) async {
+    // Save current token
+    final token = await _fcm.getToken();
     if (token != null) {
       await _saveFCMToken(userId, token);
     }
 
-    // Listen for token refresh
-    _fcm.onTokenRefresh.listen((newToken) {
+    // Cancel any previous token-refresh listener before registering a new one
+    await _onTokenRefreshSub?.cancel();
+    _onTokenRefreshSub = _fcm.onTokenRefresh.listen((newToken) {
       _saveFCMToken(userId, newToken);
     });
   }
 
+  // ========================================
+  // CANCEL ALL SUBSCRIPTIONS
+  // Call this on logout or app teardown.
+  // ========================================
+  Future<void> cancelSubscriptions() async {
+    await _onMessageSub?.cancel();
+    await _onMessageOpenedSub?.cancel();
+    await _onTokenRefreshSub?.cancel();
+    _onMessageSub = null;
+    _onMessageOpenedSub = null;
+    _onTokenRefreshSub = null;
+  }
 
-
-  // Create Android notification channels
+  // ========================================
+  // PRIVATE: Notification channels
+  // ========================================
   Future<void> _createNotificationChannels() async {
     if (Platform.isAndroid) {
-      final androidPlugin = _localNotifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      final androidPlugin = _localNotifications
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
 
-
-      //TODO: This will go to the user application as its users that reuqests for trips
-      // Trip Request Channel
       await androidPlugin?.createNotificationChannel(
         const AndroidNotificationChannel(
           CHANNEL_TRIP_REQUEST,
           'Trip Requests',
           description: 'Notifications for incoming trip requests',
           importance: Importance.high,
-          //sound: RawResourceAndroidNotificationSound('trip_request'),
           enableVibration: true,
           enableLights: true,
           ledColor: Color.fromARGB(255, 255, 152, 0),
         ),
       );
 
-      //TODO: This will go to the driver application as its drivers that accept or reject trip requests
-      // Trip Updates Channel
       await androidPlugin?.createNotificationChannel(
         const AndroidNotificationChannel(
           CHANNEL_TRIP_UPDATES,
           'Trip Updates',
           description: 'Notifications for trip status changes',
           importance: Importance.high,
-          //sound: RawResourceAndroidNotificationSound('trip_started'),
           enableVibration: true,
           enableLights: true,
           ledColor: Color.fromARGB(255, 76, 175, 80),
         ),
       );
 
-      //TODO: This will go to the user application as its users that make payments
-      // Payment Channel
       await androidPlugin?.createNotificationChannel(
         const AndroidNotificationChannel(
           CHANNEL_PAYMENT,
           'Payment Updates',
           description: 'Notifications for payment confirmations',
           importance: Importance.max,
-          //sound: RawResourceAndroidNotificationSound('payment_completed'),
           enableVibration: true,
           enableLights: true,
           ledColor: Color.fromARGB(255, 33, 150, 243),
@@ -143,9 +162,13 @@ class FCMService {
       );
     }
 
-    // Initialize local notifications
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosSettings = DarwinInitializationSettings(requestAlertPermission: true, requestBadgePermission: true, requestSoundPermission: true);
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
     await _localNotifications.initialize(
       const InitializationSettings(android: androidSettings, iOS: iosSettings),
@@ -153,60 +176,57 @@ class FCMService {
     );
   }
 
-  // Setup message handlers
+  // ========================================
+  // PRIVATE: Message handlers
+  // ========================================
   Future<void> _setupMessageHandlers() async {
-    // Background message handler
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-    // Foreground messages
-    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+    // Store subscriptions so they can be cancelled later
+    _onMessageSub =
+        FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+    _onMessageOpenedSub =
+        FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundNotificationTap);
 
-    // Notification tap when app in background
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundNotificationTap);
-
-    // Check if app was opened from notification (terminated state)
-    RemoteMessage? initialMessage = await _fcm.getInitialMessage();
+    // Handle launch from terminated state
+    final initialMessage = await _fcm.getInitialMessage();
     if (initialMessage != null) {
       _handleBackgroundNotificationTap(initialMessage);
     }
   }
 
-  // Handle foreground messages
   void _handleForegroundMessage(RemoteMessage message) {
-    print('Foreground message received');
-
     final notification = message.notification;
-    final data = message.data;
-
     if (notification == null) return;
 
-    // Show local notification
-    _showLocalNotification(title: notification.title ?? 'Notification', body: notification.body ?? '', payload: jsonEncode(data), type: data['type'] ?? 'general');
+    _showLocalNotification(
+      title: notification.title ?? 'Notification',
+      body: notification.body ?? '',
+      payload: jsonEncode(message.data),
+      type: message.data['type'] as String? ?? 'general',
+    );
   }
 
-  // Show local notification
-  Future<void> _showLocalNotification({required String title, required String body, required String payload, required String type}) async {
-    // Determine channel and sound
+  Future<void> _showLocalNotification({
+    required String title,
+    required String body,
+    required String payload,
+    required String type,
+  }) async {
     String channelId;
-    String? soundFile;
-
     switch (type) {
       case 'trip_request':
         channelId = CHANNEL_TRIP_REQUEST;
-        //soundFile = null;
         break;
       case 'trip_request_response':
       case 'trip_status_update':
         channelId = CHANNEL_TRIP_UPDATES;
-        soundFile = null;
         break;
       case 'payment_completed':
         channelId = CHANNEL_PAYMENT;
-        soundFile = null;
         break;
       default:
         channelId = CHANNEL_TRIP_UPDATES;
-        soundFile = null;
     }
 
     final androidDetails = AndroidNotificationDetails(
@@ -215,14 +235,18 @@ class FCMService {
       channelDescription: _getChannelDescription(channelId),
       importance: Importance.high,
       priority: Priority.high,
-      sound: soundFile != null ? RawResourceAndroidNotificationSound(soundFile) : null,
       icon: '@mipmap/ic_launcher',
       color: _getNotificationColor(type),
       enableVibration: true,
       styleInformation: BigTextStyleInformation(body, contentTitle: title),
     );
 
-    final iosDetails = DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true, sound: soundFile != null ? '$soundFile.caf' : null, badgeNumber: 1);
+    final iosDetails = const DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      badgeNumber: 1,
+    );
 
     await _localNotifications.show(
       DateTime.now().millisecondsSinceEpoch.remainder(100000),
@@ -233,78 +257,104 @@ class FCMService {
     );
   }
 
-  // Handle notification tap (local notification)
   void _handleNotificationTap(NotificationResponse response) {
-    print('🔔 Notification tapped');
-
-    if (response.payload != null) {
-      try {
-        final data = Map<String, String>.from(jsonDecode(response.payload!) as Map);
-        final action = data['action'];
-
-        //TODO: Handle the notification navigation, NavigationService will help with this
-        //NavigationService.handleNotificationNavigation(action, data);
-      } catch (e) {
-        print('Error parsing notification payload: $e');
-      }
+    if (response.payload == null) return;
+    try {
+      final data =
+          Map<String, String>.from(jsonDecode(response.payload!) as Map);
+      // TODO: NavigationService.handleNotificationNavigation(data['action'], data);
+      print('Notification tapped: action=${data['action']}');
+    } catch (e) {
+      print('Error parsing notification payload: $e');
     }
   }
 
-  // Handle notification tap from background/terminated (FCM)
   void _handleBackgroundNotificationTap(RemoteMessage message) {
-    print('🔔 Background notification tapped');
-
-    final data = Map<String, String>.from(message.data);
-    final action = data['action'];
-
-    // Small delay to ensure navigation is ready
     Future.delayed(const Duration(milliseconds: 500), () {
-      //TODO: Take the action type and the data and navigate to the page requsted
-      //NavigationService.handleNotificationNavigation(action, data);
+      // TODO: NavigationService.handleNotificationNavigation(message.data['action'], message.data);
+      print('Background notification tapped: action=${message.data['action']}');
     });
   }
 
-  //On-Login, create a save the fcm token for the user
-  // Save FCM token
+  // ========================================
+  // PRIVATE: Save FCM token to Firestore
+  // ========================================
   Future<void> _saveFCMToken(String userId, String token) async {
     try {
-      await _firestore.collection('users').doc(userId).set({'fcmToken': token, 'fcmTokenUpdatedAt': FieldValue.serverTimestamp(), 'platform': Platform.isAndroid ? 'android' : 'ios'}, SetOptions(merge: true));
-
-      print('FCM Token saved');
+      await _firestore.collection('users').doc(userId).set(
+        {
+          'fcmToken': token,
+          'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+          'platform': Platform.isAndroid ? 'android' : 'ios',
+        },
+        SetOptions(merge: true),
+      );
+      print('✅ FCM token saved for user $userId');
     } catch (e) {
-      print('Error saving FCM token: $e');
+      print('❌ Error saving FCM token: $e');
     }
   }
 
   // ========================================
-  // SEND NOTIFICATIONS (Direct from app)
+  // SEND NOTIFICATIONS
   // ========================================
 
-  // Send trip request notification
-  Future<void> sendTripRequestNotification({required String tripId, required String userId, required String driverToken, required String userName, required String destination}) async {
-    await _sendFCMNotification(token: driverToken, title: '🚗 New Trip Request', body: '$userName wants to join your trip to $destination', data: {'type': 'trip_request', 'tripId': tripId, 'userId': userId, 'action': 'view_request'}, sound: 'trip_request', channelId: CHANNEL_TRIP_REQUEST);
+  Future<void> sendTripRequestNotification({
+    required String tripId,
+    required String userId,
+    required String driverToken,
+    required String userName,
+    required String destination,
+  }) async {
+    await _sendFCMNotification(
+      token: driverToken,
+      title: '🚗 New Trip Request',
+      body: '$userName wants to join your trip to $destination',
+      data: {
+        'type': 'trip_request',
+        'tripId': tripId,
+        'userId': userId,
+        'action': 'view_request',
+      },
+      channelId: CHANNEL_TRIP_REQUEST,
+    );
   }
 
-  // Send trip response notification
-  Future<void> sendTripResponseNotification({required String userToken, required String tripId, required String requestId, required bool accepted, required String driverName}) async {
+  Future<void> sendTripResponseNotification({
+    required String userToken,
+    required String tripId,
+    required String requestId,
+    required bool accepted,
+    required String driverName,
+  }) async {
     await _sendFCMNotification(
       token: userToken,
       title: accepted ? 'Request Accepted!' : 'Request Declined',
-      body: accepted ? '$driverName accepted your trip request' : '$driverName declined your trip request',
-      data: {'type': 'trip_request_response', 'tripId': tripId, 'requestId': requestId, 'status': accepted ? 'accepted' : 'declined', 'action': accepted ? 'view_trip' : 'find_trip'},
-      sound: 'trip_accepted',
+      body: accepted
+          ? '$driverName accepted your trip request'
+          : '$driverName declined your trip request',
+      data: {
+        'type': 'trip_request_response',
+        'tripId': tripId,
+        'requestId': requestId,
+        'status': accepted ? 'accepted' : 'declined',
+        'action': accepted ? 'view_trip' : 'find_trip',
+      },
       channelId: CHANNEL_TRIP_UPDATES,
     );
   }
 
-  // Send trip status update notification
-  Future<void> sendTripStatusNotification({required List<String> passengerTokens, required String tripId, required String status, required String driverName}) async {
+  Future<void> sendTripStatusNotification({
+    required List<String> passengerTokens,
+    required String tripId,
+    required String status,
+    required String driverName,
+  }) async {
     String title, body;
-
     switch (status) {
       case 'arrived_pickup':
         title = 'Driver Arrived';
-        body = '$driverName has arrived at pickup location';
+        body = '$driverName has arrived at your pickup location';
         break;
       case 'started':
         title = 'Trip Started';
@@ -318,74 +368,149 @@ class FCMService {
         return;
     }
 
-    await Future.wait(passengerTokens.map((token) => _sendFCMNotification(token: token, title: title, body: body, data: {'type': 'trip_status_update', 'tripId': tripId, 'status': status, 'action': 'view_trip'}, sound: 'trip_started', channelId: CHANNEL_TRIP_UPDATES)));
+    await Future.wait(
+      passengerTokens.map(
+        (token) => _sendFCMNotification(
+          token: token,
+          title: title,
+          body: body,
+          data: {
+            'type': 'trip_status_update',
+            'tripId': tripId,
+            'status': status,
+            'action': 'view_trip',
+          },
+          channelId: CHANNEL_TRIP_UPDATES,
+        ),
+      ),
+    );
   }
 
-  // Send payment notification
-  Future<void> sendPaymentNotification({required String token, required String paymentId, required String tripId, required double amount, required bool isDriver, String? userName}) async {
+  Future<void> sendPaymentNotification({
+    required String token,
+    required String paymentId,
+    required String tripId,
+    required double amount,
+    required bool isDriver,
+    String? userName,
+  }) async {
     await _sendFCMNotification(
       token: token,
       title: isDriver ? '💰 Payment Received' : '💳 Payment Completed',
-      body: isDriver ? 'You received \$${amount.toStringAsFixed(2)}${userName != null ? ' from $userName' : ''}' : 'Payment of \$${amount.toStringAsFixed(2)} processed successfully',
-      data: {'type': 'payment_completed', 'paymentId': paymentId, 'tripId': tripId, 'amount': amount.toString(), 'role': isDriver ? 'driver' : 'passenger', 'action': isDriver ? 'view_earnings' : 'view_receipt'},
-      sound: 'payment_completed',
+      body: isDriver
+          ? 'You received ₳${amount.toStringAsFixed(2)}${userName != null ? ' from $userName' : ''}'
+          : 'Payment of ₳${amount.toStringAsFixed(2)} processed successfully',
+      data: {
+        'type': 'payment_completed',
+        'paymentId': paymentId,
+        'tripId': tripId,
+        'amount': amount.toString(),
+        'role': isDriver ? 'driver' : 'passenger',
+        'action': isDriver ? 'view_earnings' : 'view_receipt',
+      },
       channelId: CHANNEL_PAYMENT,
     );
   }
 
-
-  //get the access token
-  Future<AccessCredentials> _getAccessToken() async {
-    final serviceAccountPath = dotenv.env['PATH_TO_SECRET'];
-
-    String serviceAccountJson = await rootBundle.loadString(serviceAccountPath!);
-
-    final serviceAccount = ServiceAccountCredentials.fromJson(serviceAccountJson);
-
-    final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
-
-    final client = await clientViaServiceAccount(serviceAccount, scopes);
-    return client.credentials;
-  }
-
-  // Core FCM send method
-  Future<bool> _sendFCMNotification({required String token, required String title, required String body, required Map<String, String> data, String? sound, String? channelId}) async {
-
-    if(token.isEmpty) return false;
-    //TODO: add this to send fcm token
-    final credentials = await _getAccessToken();
-    final accessToken = credentials.accessToken.data;
-
-    await Future.delayed(Duration(seconds: 2));
-
-    final String fcmEndpoint = 'https://fcm.googleapis.com/v1/projects/${dotenv.env['PROJECT_ID']}/messages:send';
+  // ========================================
+  // PRIVATE: Core FCM v1 HTTP send
+  // ========================================
+  Future<bool> _sendFCMNotification({
+    required String token,
+    required String title,
+    required String body,
+    required Map<String, String> data,
+    String? channelId,
+    String? imageUrl,
+    String? priority,
+  }) async {
+    if (token.isEmpty) {
+      print('⚠️ FCM token is empty, skipping notification');
+      return false;
+    }
 
     try {
+      final credentials = await _getAccessToken();
+      final accessToken = credentials.accessToken.data;
+      final projectId = dotenv.env['PROJECT_ID'];
+
+      if (projectId == null) {
+        print('❌ PROJECT_ID not set in .env');
+        return false;
+      }
+
+      final fcmEndpoint =
+          'https://fcm.googleapis.com/v1/projects/$projectId/messages:send';
+
+      final payload = {
+        'message': {
+          'token': token,
+          'notification': {
+            'title': title,
+            'body': body,
+            if (imageUrl != null) 'image': imageUrl,
+          },
+          'data': data,
+          'android': {
+            'priority': priority ?? 'high',
+            'notification': {
+              'channel_id': channelId ?? 'default_channel',
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'notification_priority': 'PRIORITY_HIGH',
+              'visibility': 'PUBLIC',
+            },
+          },
+          'apns': {
+            'headers': {'apns-priority': '10'},
+            'payload': {
+              'aps': {
+                'sound': 'default',
+                'badge': 1,
+                'content-available': 1,
+              },
+            },
+          },
+        },
+      };
+
       final response = await http.post(
         Uri.parse(fcmEndpoint),
-        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $accessToken'},
-        body: jsonEncode({
-          'token': token,
-          'priority': 'high',
-          'notification': {'title': title, 'body': body, 'sound': sound ?? 'default', 'android_channel_id': channelId ?? 'default_channel', 'click_action': 'FLUTTER_NOTIFICATION_CLICK'},
-          'data': data,
-        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(payload),
       );
 
       if (response.statusCode == 200) {
         print('✅ FCM notification sent');
         return true;
       } else {
-        print('❌ FCM error: ${response.statusCode} - ${response.body}');
+        print('❌ FCM error ${response.statusCode}: ${response.body}');
         return false;
       }
-    } catch (e) {
-      print('❌ Error sending FCM: $e');
+    } catch (e, stack) {
+      print('❌ Error sending FCM: $e\n$stack');
       return false;
     }
   }
 
-  // Helper methods
+  Future<AccessCredentials> _getAccessToken() async {
+    final serviceAccountPath = dotenv.env['PATH_TO_SECRET'];
+    if (serviceAccountPath == null) {
+      throw Exception('PATH_TO_SECRET not set in .env');
+    }
+    final serviceAccountJson = await rootBundle.loadString(serviceAccountPath);
+    final serviceAccount =
+        ServiceAccountCredentials.fromJson(serviceAccountJson);
+    final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+    final client = await clientViaServiceAccount(serviceAccount, scopes);
+    return client.credentials;
+  }
+
+  // ========================================
+  // HELPER: Channel metadata
+  // ========================================
   String _getChannelName(String channelId) {
     switch (channelId) {
       case CHANNEL_TRIP_REQUEST:
@@ -426,9 +551,20 @@ class FCMService {
     }
   }
 
-  // Cleanup
-  Future<void> dispose(String userId) async {
-    await _firestore.collection('users').doc(userId).update({'fcmToken': FieldValue.delete()});
-    await _fcm.deleteToken();
+  // ========================================
+  // CLEANUP — call on logout
+  // ========================================
+  Future<void> disposeAndCleanup(String userId) async {
+    await cancelSubscriptions();
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .update({'fcmToken': FieldValue.delete()});
+      await _fcm.deleteToken();
+    } catch (e) {
+      print('⚠️ Error during FCM cleanup: $e');
+    }
+    _isInitialized = false;
   }
 }

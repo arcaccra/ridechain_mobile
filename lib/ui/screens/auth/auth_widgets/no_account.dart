@@ -21,7 +21,7 @@ class NoAccount extends StatelessWidget {
             style: AppThemes.getCustomTextStyle(
               color: AppColors.primaryColor,
               weight: FontWeight.w400,
-              fontSize: 12
+              fontSize: 16
             )
           ),
           TextSpan(
@@ -29,7 +29,7 @@ class NoAccount extends StatelessWidget {
               style: AppThemes.getCustomTextStyle(
                 color: AppColors.primaryColor,
                 weight: FontWeight.w700,
-                fontSize: 12
+                fontSize: 16
               ),
               recognizer: TapGestureRecognizer()..onTap = onPressed
           ),

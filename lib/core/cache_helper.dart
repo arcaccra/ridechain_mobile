@@ -13,6 +13,7 @@ class CacheHelper {
   static const authKey = 'auth-key';
   static const userKey = 'user-key';
   static const walletKey = 'wallet-key';
+  static const walletInfoKey = 'wallet-info-key';
   static const locationsKey = 'locations-key';
   static const registerProcessKey = 'register-process-key';
 

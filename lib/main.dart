@@ -26,7 +26,7 @@ void main() async {
 
   // create the app config
   AppConfig.create(
-      appName: "Ride chain",
+      appName: "Ryde",
       baseUrl: "https://app.arcaccra.com/",
       flavor: Flavor.prod
   );

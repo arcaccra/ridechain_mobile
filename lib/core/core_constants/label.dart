@@ -4,7 +4,7 @@ abstract class Label {
 
   //--------------------------------------------------------------------
   //app name
-  static const appNameLabel = "Ride Chain";
+  static const appNameLabel = "Ryde";
 
   //--------------------------------------------------------------------
   //splash screen
@@ -186,7 +186,18 @@ abstract class Label {
   static String submitReview = "Submit Review";
   static String skipReview = "Skip";
 
-  static List<String> suggestedRatingWords = ["Friendly & Professional", "Punctual", "Good", "Late Pickup", "Reckless Driving"];
+  static List<String> suggestedRatingWords = ['Friendly',
+    'Punctual',
+    'Safe Driver',
+    'Clean Vehicle',
+    'Good Music',
+    'Helpful',
+    'Rushed',
+    'Unfriendly',
+    'Dangerous Driver',
+    'Dirty Vehicle',
+    'Bad Music',
+    'Unhelpful'];
 
   static String earnAsDriver = "Need some cash. Click here.";
 
@@ -203,6 +214,14 @@ abstract class Label {
 
   static const walletAccountLabel = "Your Wallet";
   static const walletMessageLabel = "Update your Wallet Information";
+
+  static String myProfile = "My Profile";
+
+  static String myTrips = "My Trips";
+
+  static String completedTrips = "Completed Trips";
+
+  static String noTrips = "No Trips Found";
 
 
 }

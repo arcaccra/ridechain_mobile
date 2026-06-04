@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/core_constants/colors.dart';
 
 class DotIndicatorWidget extends StatelessWidget {
-  const DotIndicatorWidget({super.key, required this.page, required this.dotCount});
+  const DotIndicatorWidget(
+      {super.key, required this.page, required this.dotCount});
 
   final int page;
   final int dotCount;
@@ -15,13 +16,14 @@ class DotIndicatorWidget extends StatelessWidget {
       position: page.toDouble(),
       mainAxisAlignment: MainAxisAlignment.center,
       decorator: DotsDecorator(
-          color: AppColors.white,
-          size: Size.square(8.0),
-          activeSize: Size(18.0, 8),
-          activeColor: AppColors.primaryColor,
-          activeShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          )),
+        color: const Color(0xFFD1D5DB),
+        size: const Size.square(8.0),
+        activeSize: const Size(24.0, 8.0),
+        activeColor: AppColors.purple,
+        activeShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ),
     );
   }
 }

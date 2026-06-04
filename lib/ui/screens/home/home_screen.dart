@@ -1,6 +1,8 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -42,11 +44,9 @@ class _HomePageState extends State<HomePage> {
   late AuthVm authVm;
   late RideProvider rideProvider;
 
-  //call the app to get the location
+  // FCM listener subscription — must be cancelled in dispose to prevent leak
+  StreamSubscription? _rideStatusSub;
 
-  //TODO: load drivers markers for visualization
-
-  //show searching available cars
   bool isAvailableCars = false;
   bool isRiderComing = false;
   String? destination;
@@ -60,24 +60,116 @@ class _HomePageState extends State<HomePage> {
     authVm = context.read<AuthVm>();
     rideProvider = context.read<RideProvider>();
     super.initState();
-    authVm.getAllDrivers();
-    authVm.getLocations();
-    // Initialize your location stream here
-    location.startListeningToPosition();
-    FCMService.instance.saveAnActivateTokenRefresh(authVm.currentUser!.id.toString());
+    // authVm.getAllDrivers();
+    // authVm.getLocations();
+    // // Initialize your location stream here
+    // //location.startListeningToPosition();
+    // FCMService.instance.saveAnActivateTokenRefresh(authVm.currentUser!.id.toString());
+    //_listenToRemoteMessagesFromRide();
+    _initializeApp();
   }
 
-  void _onDestinationSubmit() {
-    if (locationController.text.trim().isEmpty) {
+  @override
+  void dispose() {
+    locationController.dispose();
+    _rideStatusSub?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _initializeApp() async {
+    if (!mounted) return;
+
+    try {
+      authVm = context.read<AuthVm>();
+      rideProvider = context.read<RideProvider>();
+
+      if (authVm.currentUser?.id == null) {
+        dialog.showSnackBar(
+            "Authentication Error",
+            "User session not found. Please login again.",
+            isError: true,
+        );
+        return;
+      }
+
+      authVm.getAllDrivers();
+      authVm.getLocations();
+
+      // ✅ REMOVE THIS - location already initialized by navigation screen
+      // location.startListeningToPosition();
+
+      // // ✅ Only check if location is already running
+      // if (!location.stream) {
+      //   // Location wasn't started by navigation screen, start it now
+      //   bool hasPermission = await location.checkLocationPermission(context);
+      //   if (hasPermission && mounted) {
+      //     location.startListeningToPosition();
+      //   }
+      // }
+
+      final userId = authVm.currentUser!.id.toString();
+      await FCMService.instance.saveAnActivateTokenRefresh(userId);
+
+      _listenToRemoteMessagesFromRide();
+
+    } catch (e, stackTrace) {
+      log('Initialization error: $e', stackTrace: stackTrace);
+      if (mounted) {
+        dialog.showSnackBar(
+            "Initialization Error",
+            "Failed to initialize: ${e.toString()}",
+            isError: true,
+        );
+      }
+    }
+  }
+
+  //listen to remote messages
+  _listenToRemoteMessagesFromRide(){
+    _rideStatusSub = FCMService.instance.listenToMessageReceivedForRideStatus((data) async {
+      if(!mounted) return;
+
+      String? status = data['status'];
+      String? rideUUid = data['ride_uuid'];
+
+      //TODO: fetch active trip and update the state
+      if(status != null) {
+
+        if(status == 'started') {
+          rideProvider.updateRideState(RideState.tripStarted);
+        } else if(status == 'approaching_pickup') {
+          bool success = await rideProvider.fetchCurrentActiveRide(rideUUid!);
+          if(success) {
+            rideProvider.updateRideState(RideState.riderEnRoute);
+          }
+        }
+        else if(status == 'completed') {
+          if(authVm.currentUser?.walletAddress != null){
+            Get.to(()=> RateDriverScreen());
+          } else {
+            Get.to(()=> PayForTrip());
+          }
+        }
+        else if(status == 'arrived_pickup') {
+          rideProvider.updateRideState(RideState.driverAtLocation);
+        }
+      }
+    });
+  }
+
+  void _onDestinationSubmit([String? dest]) {
+    final text = dest ?? locationController.text.trim();
+    if (text.isEmpty) {
       dialog.showSnackBar(
           "No destination Input",
-          "Please enter a valid destination/drop off"
+          "Please enter a valid destination/drop off",
+          isError: true,
       );
       return;
     }
 
     setState(() {
-      destination = locationController.text.trim();
+      destination = text;
       rideProvider.fetchRides(destination!);
       locationController.text = "";
     });
@@ -132,7 +224,7 @@ class _HomePageState extends State<HomePage> {
         },
         onOkayBtnTap: (){
           Navigator.pop(context);
-          if(authVm.currentUser?.walletAddress == null){
+          if(authVm.userWallet?.address == null){
             Get.to(()=> RateDriverScreen());
           } else {
             Get.to(()=> PayForTrip());
@@ -151,10 +243,10 @@ class _HomePageState extends State<HomePage> {
   //build top container
   Widget buildTopContainer() {
     return Positioned(
-        top: kToolbarHeight + 15.h,
-        left: 0,
-        right: 0,
-        child: Center(child: HomeTopContainer(title: destination,))
+      top: MediaQuery.of(context).padding.top + 12.h,
+      left: 0,
+      right: 0,
+      child: HomeTopContainer(title: destination),
     );
   }
 
@@ -163,7 +255,7 @@ class _HomePageState extends State<HomePage> {
     return Positioned(
       left: 16,
       right: 16,
-      bottom: 88.h,
+      bottom: 90.h,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         transitionBuilder: (child, animation) {
@@ -201,20 +293,24 @@ class _HomePageState extends State<HomePage> {
         return _buildDriverIsHere();
       case RideState.tripStarted:
         return _showTripStartedCard();
-      case RideState.tripEnded:
-        return _buildTripHasEnded();
+      // case RideState.tripEnded:
+      //   return _buildTripHasEnded();
     }
   }
 
   _buildDriverIsHere(){
-    return RideSearchingLoader(
-      notLoadingState: true,
-      title: Label.rideHere,
-      height: 0.4.sh,
-      fontSize: 20,
-      onBtnTap: (){
-        rideProvider.updateRideState(RideState.tripStarted);
-      },
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [BoxShadow(color: AppColors.primaryColor.withValues(alpha: 0.08), blurRadius: 20, offset: const Offset(0, 4))],
+      ),
+      child: DriverEnRouteCard(
+        ride: rideProvider.selectedRide,
+        hasArrived: true,
+        onCancelTap: () => rideProvider.updateRideState(RideState.tripStarted),
+      ),
     );
   }
 
@@ -239,10 +335,7 @@ class _HomePageState extends State<HomePage> {
   //build the destination input card
   Widget _buildDestinationInputCard() {
     return BottomCardWidget(
-      onBtnTap: () {
-        //function called when the destination has been submitted
-        _onDestinationSubmit();
-      },
+      onDestinationSubmit: _onDestinationSubmit,
       locationController: locationController,
     );
   }
@@ -260,15 +353,14 @@ class _HomePageState extends State<HomePage> {
               onCancelTap: (){
                 Navigator.pop(context);
               },
-              onConfirmTap: () async {
+              onConfirmTap: (seats) async {
                 Navigator.pop(context);
                 await rideProvider.bookRide(rideProvider.selectedRide!.uuid!, authVm.currentUser!.id.toString());
               },)
         );
     },
       onCancelTap: (){
-        rideProvider.reset();
-        rideProvider.updateRideState(RideState.idle);
+        rideProvider.resetRideState();
       },
       destination: destination,
     );
@@ -277,29 +369,25 @@ class _HomePageState extends State<HomePage> {
   //build the driver en route card
   _buildDriverEnRouteCard(){
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(21),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primaryColor.withValues(alpha: 0.11),
-                spreadRadius: 0,
-                blurRadius: 13.4,
-                offset: Offset(0, 3.27),)
-            ]
-        ),
-        //TODO: add an ontap to reset to idle when the page is closed
-        child: DriverEnRouteCard(ride: rideProvider.selectedRide!, onCancelTap: (){
-          rideProvider.updateRideState(RideState.carsAvailable);
-          rideProvider.reset();
-        },)
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [BoxShadow(color: AppColors.primaryColor.withValues(alpha: 0.08), blurRadius: 20, offset: const Offset(0, 4))],
+      ),
+      child: DriverEnRouteCard(
+        ride: rideProvider.selectedRide,
+        onCancelTap: () => rideProvider.resetRideState(),
+      ),
     );
   }
 
   //build loader card
   _buildLoadingCard(){
-    return RideSearchingLoader();
+    return RideSearchingLoader(
+      destination: destination,
+      onBtnTap: _resetToIdle,
+    );
   }
 
   _buildShowDriverDetailCard(){
@@ -339,7 +427,12 @@ class _HomePageState extends State<HomePage> {
         child: RideArrivalScreen(
           ride: rideProvider.selectedRide!,
           atDropOff: (){
-            rideProvider.updateRideState(RideState.tripEnded);
+            if(authVm.currentUser?.walletAddress != null){
+              Get.to(()=> RateDriverScreen());
+            } else {
+              Get.to(()=> PayForTrip());
+            }
+            //rideProvider.updateRideState(RideState.tripEnded);
           },
         )
     );

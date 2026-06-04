@@ -118,25 +118,28 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
     setState(() {
       _userLocation = position;
       _isLocationFound = true;
-      //_hasAnimatedToLocation = true;
+      _hasAnimatedToLocation = true;
     });
 
     // Stop pulse animation and start fade animation
     _pulseController.stop();
-    _fadeController.forward();
+    await _fadeController.forward();
 
     // Animate camera to user location with smooth zoom
-    await _mapController!.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(position.latitude, position.longitude),
-          zoom: _userLocationZoom,
-          tilt: 0,
-          bearing: 0,
+    try {
+      await _mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(position.latitude, position.longitude),
+            zoom: _userLocationZoom,
+            tilt: 0,
+            bearing: 0,
+          ),
         ),
-      ),
-    );
-
+      );
+    } catch (e) {
+      log("Camera animation error: $e");
+    }
     // Callback when location is found and animated to
     widget.onLocationFound!();
   }
@@ -200,34 +203,33 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
                   });
 
 
-                if(rideVm.currentRideState == RideState.riderEnRoute) {
-                  var distance = locator<LocationService>().calculateDistance(rideVm.selectedRide?.dropOff?.latitude ?? 0.0, rideVm.selectedRide?.dropOff?.longitude ?? 0.0, _userLocation?.latitude ?? 0.0, _userLocation?.longitude ?? 0.0,);
-                  log("DISTANCE FROM PICKUP===>> $distance");
-                  if(distance <= 10000) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      widget.approachingPickup!();
-                    });
-                  }
-                }
-
-                  if(locator<RidesService>().checkIfTripHasStarted(rideState: rideVm.currentRideState, model: rideVm.selectedRide)) {
-                    var distance = locator<LocationService>().calculateDistance(rideVm.selectedRide?.dropOff?.latitude ?? 0.0, rideVm.selectedRide?.dropOff?.longitude ?? 0.0, _userLocation?.latitude ?? 0.0, _userLocation?.longitude ?? 0.0,);
-                    log("DISTANCE ===>> $distance");
-                    if(distance <= 10000) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        widget.approachingDestination!();
-                      });
-                    }
-                  }
+                // if(rideVm.currentRideState == RideState.riderEnRoute) {
+                //   var distance = locator<LocationService>().calculateDistance(rideVm.selectedRide?.dropOff?.latitude ?? 0.0, rideVm.selectedRide?.dropOff?.longitude ?? 0.0, _userLocation?.latitude ?? 0.0, _userLocation?.longitude ?? 0.0,);
+                //   log("DISTANCE FROM PICKUP===>> $distance");
+                //   if(distance <= 10000) {
+                //     WidgetsBinding.instance.addPostFrameCallback((_) {
+                //       widget.approachingPickup!();
+                //     });
+                //   }
+                // }
+                //
+                //   if(locator<RidesService>().checkIfTripHasStarted(rideState: rideVm.currentRideState, model: rideVm.selectedRide)) {
+                //     var distance = locator<LocationService>().calculateDistance(rideVm.selectedRide?.dropOff?.latitude ?? 0.0, rideVm.selectedRide?.dropOff?.longitude ?? 0.0, _userLocation?.latitude ?? 0.0, _userLocation?.longitude ?? 0.0,);
+                //     log("DISTANCE ===>> $distance");
+                //     if(distance <= 10000) {
+                //       WidgetsBinding.instance.addPostFrameCallback((_) {
+                //         widget.approachingDestination!();
+                //       });
+                //     }
+                //   }
               }
 
               return GoogleMap(
                 onMapCreated: (GoogleMapController controller) {
                   _mapController = controller;
                   widget.onMapCreated(controller);
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _updateDriverMarkers();
-                  });
+                  //defer marker updates
+                  Future.microtask(()=> _updateDriverMarkers());
                 },
                 myLocationEnabled: _isLocationFound,
                 myLocationButtonEnabled: false,
@@ -294,7 +296,7 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
-                        Icons.location_searching,
+                        Icons.location_searching_outlined,
                         size: 32,
                         color: AppColors.primaryColor,
                       ),
@@ -401,5 +403,25 @@ class _ProgressiveMapWidgetState extends State<ProgressiveMapWidget>  with Ticke
     _pulseController.dispose();
     _fadeController.dispose();
     super.dispose();
+  }
+
+  void _handleLocationUpdate(Position newPosition) async {
+    if(!mounted) return;
+
+    final isFirstLocation = _userLocation == null;
+
+    setState(() {
+      _userLocation = newPosition;
+    });
+
+    //Only animate to location on first update
+    if(isFirstLocation && !_hasAnimatedToLocation) {
+      await _animateToUserLocation(newPosition);
+
+      //Notify parent widget after animation completes
+      if(mounted && widget.onLocationFound != null) {
+        widget.onLocationFound!();
+      }
+    }
   }
 }

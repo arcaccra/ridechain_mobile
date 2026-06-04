@@ -32,11 +32,11 @@ class ProfileTopWidget extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(user?.fullName ?? "Anon", style: AppThemes.getCustomTextStyle(fontSize: 20, weight: FontWeight.w800, color: AppColors.black, lineHeight: 0.67, spacing: 0),),
+                  Text(user?.fullName ?? "Anon", style: AppThemes.getCustomTextStyle(fontSize: 20, weight: FontWeight.w700, color: AppColors.black, lineHeight: 0.67, spacing: 0),),
                   Gap(10),
-                  Text(user?.phoneNumber ?? "+233548752965", style: AppThemes.getCustomTextStyle(fontSize: 14, weight: FontWeight.w400, color: AppColors.greyAd, lineHeight: 0.70, spacing: 0),),
+                  Text(user?.phoneNumber ?? "+233548752965", style: AppThemes.getCustomTextStyle(fontSize: 16, weight: FontWeight.w500, color: AppColors.greyAd, lineHeight: 0.70, spacing: 0),),
                   Gap(10),
-                  Text(user?.email ?? "anon@anon.com", style: AppThemes.getCustomTextStyle(fontSize: 14, weight: FontWeight.w400, color: AppColors.greyAd, lineHeight: 0.70, spacing: 0),),
+                  Text(user?.email ?? "anon@anon.com", style: AppThemes.getCustomTextStyle(fontSize: 16, weight: FontWeight.w500, color: AppColors.greyAd, lineHeight: 0.70, spacing: 0),),
                 ],
               ),
               //user image
@@ -69,13 +69,13 @@ class ProfileTopWidget extends StatelessWidget {
               )
             ],
           ),
-          Gap(50.h),
+          Gap(30.h),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Wallet Address: ${walletAddress ?? "N/A"}", style: AppThemes.sora(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.greyAd), overflow: TextOverflow.ellipsis,),
+              Text("Wallet Address: ${walletAddress ?? "N/A"}", style: AppThemes.sora(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.greyAd), overflow: TextOverflow.ellipsis, maxLines: 5,),
               Gap(10.h),
-              Text("ADA ${adaBalance ?? 0.00}", style: AppThemes.getCustomTextStyle(fontSize: 42, weight: FontWeight.w800, color: AppColors.purple),),
+              Text("ADA ${adaBalance ?? 0.00}", style: AppThemes.getCustomTextStyle(fontSize: 32, weight: FontWeight.w700, color: AppColors.purple),),
             ],
           )
         ],

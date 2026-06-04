@@ -1,92 +1,127 @@
-# RideChain Mobile App - Decentralized Carpooling Platform
+# Ryde — Decentralized Ride-Sharing Mobile App
 
-RideChain Mobile App is a decentralized carpooling platform built with Flutter, leveraging Cardano's blockchain to provide a transparent, secure, and flexible ride-sharing experience. It empowers users to interact directly without intermediaries, ensuring affordable transportation options tailored for cost-conscious economies like Ghana.
-
----
-## 🌟 Features
-- **Decentralized Carpooling**: Connects drivers and passengers directly, bypassing intermediaries.
-- **User-Friendly Interface**: Designed with an intuitive and seamless user experience.
-- **Trip Management**: Allows drivers to create and manage trips while enabling passengers to browse and book rides.
-- **Blockchain-Powered Security**: Utilizes Decentralized Identity (DID) for secure user verification.
-- **Smart Contract Payments**: Transparent payments using Cardano's ADA token with escrow for security.
-- **Push Notifications**: Real-time updates for trip bookings, cancellations, and payments.
+**Ryde** is a cross-platform mobile application that connects passengers with drivers for carpooling and uses the **Cardano blockchain (ADA)** for secure, transparent fare payments. Built with Flutter for iOS and Android.
 
 ---
-## 🚀 Tech Stack
-- **Frontend**: Flutter (Dart)
-- **State Management**: Riverpod
-- **Backend Integration**: Django Rest Framework (via REST APIs)
-- **Blockchain Integration**: Cardano Blockchain
-- **Smart Contracts**: Plutus and Marlowe
-- **Security**: Decentralized Identity (DID) and Smart Contract Escrow
-- **Payment System**: Cardano's native ADA token
+
+## Features
+
+- **Ride Search & Booking** — Search rides by destination, browse available options, and book in seconds
+- **Real-Time Trip Tracking** — Live driver location updates and status changes via Firebase
+- **Blockchain Payments** — Trip fares paid in ADA (Cardano cryptocurrency)
+- **QR Code Rewards** — Scan ride QR codes to earn ADA
+- **Push Notifications** — FCM-based alerts for every trip lifecycle event
+- **OTP Authentication** — Firebase phone verification at signup
+- **Driver Onboarding** — Any user can register as a driver with vehicle and document upload
+- **Trip History** — Full log of active and completed rides
+- **Wallet Integration** — Cardano wallet balance and address management
 
 ---
-## 📁 Project Structure
-The project follows a clean architecture design pattern with a modular structure for scalability and maintainability.
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Flutter (Dart) |
+| State Management | Provider (ChangeNotifier) |
+| Navigation | GetX |
+| HTTP Client | Dio + CookieJar |
+| Local Storage | SharedPreferences |
+| Backend | Django REST Framework (`https://app.arcaccra.com/`) |
+| Real-time | Firebase Firestore |
+| Auth | Firebase Auth (Phone OTP) |
+| Push Notifications | Firebase Cloud Messaging (FCM v1) |
+| Maps | Google Maps Flutter |
+| Location | Geolocator |
+| Blockchain | Cardano (ADA) |
+| QR Scanning | mobile_scanner |
+
+---
+
+## Project Structure
 
 ```
 ridechain_mobile/
-│   pubspec.yaml            # Project dependencies and assets
-│   main.dart               # App entry point
-│
 ├── lib/
-│   ├── core/               # Core utilities and constants
-│   ├── data/               # Data models and repositories
-│   ├── services/           # API clients and blockchain integrations
-│   ├── providers/          # State management using Riverpod
+│   ├── main.dart                 # App entry point
+│   ├── app/                      # Root widget, theme, flavor config
+│   ├── core/                     # Cache, utilities, constants, providers
+│   ├── data/                     # Models, API constants, DI locator
+│   ├── providers/                # AuthVm, RideProvider (ChangeNotifier)
+│   ├── services/                 # HTTP, auth, rides, Firebase, FCM, location
 │   └── ui/
-│       ├── screens/        # UI screens for registration, login, trips, and payments
-│       └── widgets/        # Reusable UI components
-│
-└── assets/
-    └── images/             # App images and icons
+│       ├── screens/              # All app screens by feature
+│       └── shared_widgets/       # Reusable UI components
+├── assets/
+│   ├── images/                   # PNG assets
+│   └── svgs/                     # SVG icons
+├── secrets/                      # Service account keys (git-ignored)
+├── .env                          # Environment variables (git-ignored)
+├── ios/                          # iOS native project
+└── android/                      # Android native project
 ```
 
 ---
-## 🔧 Installation & Setup
-1. **Clone the Repository:**
-```
+
+## Installation & Setup
+
+**Prerequisites:** Flutter SDK, Dart, Android Studio / Xcode
+
+```bash
+# Clone
 git clone https://github.com/your-username/ridechain-mobile.git
 cd ridechain-mobile
-```
-2. **Install Dependencies:**
-```
+
+# Install dependencies
 flutter pub get
-```
-3. **Run the App:**
-```
+
+# Run (ensure a device/simulator is connected)
 flutter run
+
+# Build for production
+flutter build apk          # Android
+flutter build ios          # iOS
 ```
-4. **Build for Production:**
+
+**Environment setup:**
+
+Create a `.env` file at the project root:
 ```
-flutter build apk  # For Android
-flutter build ios  # For iOS
+PATH_TO_SECRET=secrets/ridechain-key.json
+PROJECT_ID=ridechain-c7650
 ```
 
----
-## 🔗 API Integration
-The app integrates with the RideChain backend via REST APIs, including:
-- **User Authentication**: Registration, Login, and DID Verification
-- **Trip Management**: Creating, browsing, booking, and canceling trips
-- **Payment Processing**: Smart contract-based payments using ADA
+Place the Google service account JSON at `secrets/ridechain-key.json` (used for FCM v1 API OAuth token generation).
 
 ---
-## 📜 License
-This project is licensed under the MIT License.
+
+## Documentation
+
+See [DOCUMENTATION.md](./DOCUMENTATION.md) for the full technical reference including:
+- Complete screen inventory and navigation flow
+- All API endpoints
+- Data models
+- State management details
+- Firebase integration
+- Theme and design system
+- Platform permissions
 
 ---
-## 🤝 Contributing
-We welcome contributions! Please read `CONTRIBUTING.md` for guidelines.
+
+## Platform Info
+
+| Property | Value |
+|---|---|
+| App Name | Ryde |
+| Bundle / App ID | `app.arc.ridex` |
+| Version | 1.0.2+4 |
+| Min iOS | 13+ |
+| Min Android SDK | 21+ |
+| Firebase Project | `ridechain-c7650` |
+| Base API URL | `https://app.arcaccra.com/` |
 
 ---
-## 👥 Team & Acknowledgments
-- **Project Lead**: [Your Name](https://linkedin.com)
-- **Flutter Developer**: Frontend Development & User Experience
-- **Backend Developer**: Django Rest Framework & Cardano Integration
-- **Blockchain Developer**: Smart Contracts & Security
-- **Special Thanks**: Accra Resource Center for local support and user onboarding
 
----
-## 📞 Contact
-For any inquiries, please reach out to [Your Email].
+## License
+
+MIT License

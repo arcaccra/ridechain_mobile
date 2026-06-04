@@ -9,10 +9,11 @@ import '../../app/theme.dart';
 
 
 class AvailableCarCard extends StatelessWidget {
-  const AvailableCarCard({super.key, this.amount, this.minutes, this.rating, this.isSelected = false});
+  const AvailableCarCard({super.key, this.amount, this.minutes, this.rating, this.isSelected = false, this.pickup});
   final bool isSelected;
   final double? amount;
   final int? minutes;
+  final String? pickup;
   final double? rating;
 
 
@@ -20,7 +21,7 @@ class AvailableCarCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 137.w,
-      height: 139.h,
+      height: 180.h,
       margin: EdgeInsets.only(left: 16.w),
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       decoration: BoxDecoration(
@@ -36,7 +37,7 @@ class AvailableCarCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Icon(Icons.star, color: AppColors.orange, size: 12,),
-              Text("${rating ?? 4.5}/5", style: AppThemes.getCustomTextStyle(fontSize: 12, color: isSelected ? AppColors.orange  : AppColors.greyAd, weight: FontWeight.w400),),
+              Text("${rating ?? 4.5}/5", style: AppThemes.getCustomTextStyle(fontSize: 12, color: isSelected ? AppColors.orange  : AppColors.greyAd, weight: FontWeight.w500),),
             ],
           ),
           Gap(10),
@@ -44,7 +45,10 @@ class AvailableCarCard extends StatelessWidget {
           Gap(16),
           Text("ADA ${amount ?? ""}", style: AppThemes.getCustomTextStyle(fontSize: 18, color: isSelected ? AppColors.white : AppColors.primaryColor, weight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis,),
           Gap(16),
-          Text("${minutes ?? 7} min", style: AppThemes.getCustomTextStyle(fontSize: 12, color: isSelected ? AppColors.orange : AppColors.greyAd, weight: FontWeight.w400),),
+          Text("Pickup:", style: AppThemes.getCustomTextStyle(fontSize: 12, color: AppColors.greyAd, weight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis,),
+          Gap(8),
+          Text(pickup ?? "Home", style: AppThemes.getCustomTextStyle(fontSize: 12, color: isSelected ? AppColors.white : AppColors.primaryColor, weight: FontWeight.w700), maxLines: 3, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,),
+
         ],
       ),
     );

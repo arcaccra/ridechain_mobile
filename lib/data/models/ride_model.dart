@@ -1,42 +1,49 @@
-
-
-
-import 'dart:convert';
+// To parse this JSON data, do
+//
+//     final rideModel = rideModelFromJson(jsonString);
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-RideModel rideModelFromJson(String str) => RideModel.fromJson(json.decode(str));
-
-String rideModelToJson(RideModel data) => json.encode(data.toJson());
 
 class RideModel {
   String? uuid;
   Driver? driver;
-  DropOff? pickUp;
-  DropOff? dropOff;
+  List<Passenger>? passengers;
+  dynamic pickUp;
+  dynamic dropOff;
+  DateTime? departureTime;
+  DateTime? arrivalTime;
   int? seatsAvailable;
   String? pricePerSeat;
+  String? status;
   DateTime? createdAt;
   DateTime? updatedAt;
 
   RideModel({
     this.uuid,
     this.driver,
+    this.passengers,
     this.pickUp,
     this.dropOff,
+    this.departureTime,
+    this.arrivalTime,
     this.seatsAvailable,
     this.pricePerSeat,
+    this.status,
     this.createdAt,
     this.updatedAt,
   });
 
-  factory RideModel.fromJson(Map<String, dynamic> json) => RideModel(
+  factory RideModel.fromJson(Map<dynamic, dynamic> json) => RideModel(
     uuid: json["uuid"],
     driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
-    pickUp: json["pick_up"] == null ? null : DropOff.fromJson(json["pick_up"]),
-    dropOff: json["drop_off"] == null ? null : DropOff.fromJson(json["drop_off"]),
+    passengers: json["passengers"] == null ? [] : List<Passenger>.from(json["passengers"]!.map((x) => Passenger.fromJson(x))),
+    pickUp: json["pick_up"] == null ? null : json["pick_up"] is int ? json["pick_up"] : DropOff.fromJson(json["pick_up"]),
+    dropOff: json["drop_off"] == null ? null : json["drop_off"] is int ? json["drop_off"] : DropOff.fromJson(json["drop_off"]),
+    departureTime: json["departure_time"] == null ? null : DateTime.parse(json["departure_time"]),
+    arrivalTime: json["arrival_time"] == null ? null : DateTime.parse(json["arrival_time"]),
     seatsAvailable: json["seats_available"],
     pricePerSeat: json["price_per_seat"],
+    status: json["status"],
     createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
     updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
   );
@@ -44,10 +51,14 @@ class RideModel {
   Map<String, dynamic> toJson() => {
     "uuid": uuid,
     "driver": driver?.toJson(),
+    "passengers": passengers == null ? [] : List<dynamic>.from(passengers!.map((x) => x.toJson())),
     "pick_up": pickUp?.toJson(),
     "drop_off": dropOff?.toJson(),
+    "departure_time": departureTime?.toIso8601String(),
+    "arrival_time": arrivalTime?.toIso8601String(),
     "seats_available": seatsAvailable,
     "price_per_seat": pricePerSeat,
+    "status": status,
     "created_at": createdAt?.toIso8601String(),
     "updated_at": updatedAt?.toIso8601String(),
   };
@@ -57,61 +68,77 @@ class RideModel {
 
 class Driver {
   int? id;
-  User? user;
-  String? idType;
-  String? idNumber;
-  String? vehiclePlateNumber;
+  Passenger? user;
+  String? vehicleImage;
   String? vehicleType;
   String? vehicleColor;
+  String? vehiclePlateNumber;
+  String? licenceImage;
+  String? idType;
+  String? idNumber;
+  String? idFrontImage;
+  String? idBackImage;
+  String? insuranceCert;
   DateTime? dateCreated;
   DateTime? dateUpdated;
   String? status;
-  bool? online;
 
   Driver({
     this.id,
     this.user,
-    this.idType,
-    this.idNumber,
-    this.vehiclePlateNumber,
+    this.vehicleImage,
     this.vehicleType,
     this.vehicleColor,
+    this.vehiclePlateNumber,
+    this.licenceImage,
+    this.idType,
+    this.idNumber,
+    this.idFrontImage,
+    this.idBackImage,
+    this.insuranceCert,
     this.dateCreated,
     this.dateUpdated,
     this.status,
-    this.online,
   });
 
   factory Driver.fromJson(Map<String, dynamic> json) => Driver(
     id: json["id"],
-    user: json["user"] == null ? null : User.fromJson(json["user"]),
-    idType: json["id_type"],
-    idNumber: json["id_number"],
-    vehiclePlateNumber: json["vehicle_plate_number"],
+    user: json["user"] == null ? null : Passenger.fromJson(json["user"]),
+    vehicleImage: json["vehicle_image"],
     vehicleType: json["vehicle_type"],
     vehicleColor: json["vehicle_color"],
+    vehiclePlateNumber: json["vehicle_plate_number"],
+    licenceImage: json["licence_image"],
+    idType: json["id_type"],
+    idNumber: json["id_number"],
+    idFrontImage: json["id_front_image"],
+    idBackImage: json["id_back_image"],
+    insuranceCert: json["insurance_cert"],
     dateCreated: json["date_created"] == null ? null : DateTime.parse(json["date_created"]),
     dateUpdated: json["date_updated"] == null ? null : DateTime.parse(json["date_updated"]),
     status: json["status"],
-    online: json["online"],
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "user": user?.toJson(),
-    "id_type": idType,
-    "id_number": idNumber,
-    "vehicle_plate_number": vehiclePlateNumber,
+    "vehicle_image": vehicleImage,
     "vehicle_type": vehicleType,
     "vehicle_color": vehicleColor,
+    "vehicle_plate_number": vehiclePlateNumber,
+    "licence_image": licenceImage,
+    "id_type": idType,
+    "id_number": idNumber,
+    "id_front_image": idFrontImage,
+    "id_back_image": idBackImage,
+    "insurance_cert": insuranceCert,
     "date_created": dateCreated?.toIso8601String(),
     "date_updated": dateUpdated?.toIso8601String(),
     "status": status,
-    "online": online,
   };
 }
 
-class User {
+class Passenger {
   int? id;
   String? avatar;
   String? fullName;
@@ -120,7 +147,7 @@ class User {
   List<double>? currentLocation;
   String? phoneNumber;
 
-  User({
+  Passenger({
     this.id,
     this.avatar,
     this.fullName,
@@ -130,7 +157,7 @@ class User {
     this.phoneNumber,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
+  factory Passenger.fromJson(Map<String, dynamic> json) => Passenger(
     id: json["id"],
     avatar: json["avatar"],
     fullName: json["full_name"],

@@ -13,6 +13,7 @@ abstract class AppColors {
   static const orange = Color(0xfffbbc05);
   static const yellow = Color(0xfffff000);
   static const green = Color(0xff00c950);
+  static const fill = Color(0xff1E1E1E);
   static const textFieldBorderColor = Color(0xffe0e0e0);
   static const textFieldHintColor = Color(0xff828282);
   static const cancelButtonColor = Color(0xffe8eae9);
@@ -27,4 +28,11 @@ abstract class AppColors {
   ];
 
   static const black = Color(0xff101010);
+
+  static const red = Color(0xffdc0436);
+
+  // Dark theme surfaces — used by splash, landing, payment success, etc.
+  static const darkBackground = Color(0xFF0A0A18);
+  static const darkCard = Color(0xFF16162A);
+  static const darkSurface = Color(0xFF1C1C30);
 }

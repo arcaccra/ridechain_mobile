@@ -28,6 +28,7 @@ import '../../../app/theme.dart';
 import '../../../core/core_constants/colors.dart';
 import '../../../data/locator.dart';
 import '../../../services/dialog_service.dart';
+import '../auth/wallet_information.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -186,6 +187,68 @@ class _HomePageState extends State<HomePage> {
   }
 
 
+  Widget _buildWalletWarningBanner() {
+    return Positioned(
+      bottom: 90.h + 90.h,
+      left: 16,
+      right: 16,
+      child: GestureDetector(
+        onTap: () => Get.to(() => const WalletInfo()),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF3CD),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFFFD700), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded,
+                  color: Color(0xFFB45309), size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'No wallet linked — you cannot book rides without a Cardano wallet address.',
+                  style: AppThemes.getCustomTextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    weight: FontWeight.w400,
+                    color: const Color(0xFF92400E),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFB45309),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Add now',
+                  style: AppThemes.getCustomTextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    weight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     authVm = context.watch<AuthVm>();
@@ -200,6 +263,9 @@ class _HomePageState extends State<HomePage> {
 
           //build the bottom card
           buildBottomCard(),
+
+          // Wallet warning banner
+          if (authVm.walletAddress == null) _buildWalletWarningBanner(),
         ],
       ),
     );
@@ -255,7 +321,7 @@ class _HomePageState extends State<HomePage> {
     return Positioned(
       left: 16,
       right: 16,
-      bottom: 90.h,
+      bottom: 140.h,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         transitionBuilder: (child, animation) {

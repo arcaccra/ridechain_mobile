@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:ridex/providers/auth_provider.dart';
+import 'package:ridex/providers/payment_provider.dart';
 import 'package:ridex/providers/rides_provider.dart';
-import 'package:ridex/services/trip_firebase_service.dart';
 import 'package:ridex/ui/screens/pay_for_trip/payment_success_screen.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/core_constants/colors.dart';
 import '../../../data/locator.dart';
+import '../../../services/dialog_service.dart';
 
 class PayForTrip extends StatelessWidget {
   const PayForTrip({super.key});
@@ -21,11 +22,17 @@ class PayForTrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final rideVm = context.watch<RideProvider>();
     final authVm = context.watch<AuthVm>();
+    final payVm = context.watch<PaymentProvider>();
 
     final ride = rideVm.selectedRide;
-    final price = double.tryParse(ride?.pricePerSeat ?? '0') ?? 0.0;
-    final networkFee = price * 0.068;
-    final total = price + networkFee;
+    final priceAda = double.tryParse(ride?.pricePerSeat ?? '0') ?? 0.0;
+
+    // Use actual fee from payment provider once building completes,
+    // otherwise show the estimate (6.8 % ≈ typical Cardano network fee in ADA)
+    final networkFeeAda = payVm.state == PaymentState.idle
+        ? priceAda * 0.068
+        : payVm.actualNetworkFeeAda;
+    final totalAda = priceAda + networkFeeAda;
 
     final driver = ride?.driver;
     final driverName = driver?.user?.fullName ?? 'Driver';
@@ -41,12 +48,14 @@ class PayForTrip extends StatelessWidget {
         ? '${address.substring(0, 10)}...${address.substring(address.length - 8)}'
         : address;
 
+    final driverAddress = ride?.driver?.user?.walletAddress;
+    final hasDriverWallet = driverAddress != null && driverAddress.isNotEmpty;
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
-            // Back button
             Padding(
               padding: EdgeInsets.only(top: 8.h, left: 8.w),
               child: Align(
@@ -54,7 +63,7 @@ class PayForTrip extends StatelessWidget {
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
                   color: AppColors.primaryColor,
-                  onPressed: () => Get.back(),
+                  onPressed: payVm.isLoading ? null : () => Get.back(),
                 ),
               ),
             ),
@@ -79,14 +88,13 @@ class PayForTrip extends StatelessWidget {
 
                     Gap(6.h),
 
-                    // Amount
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.baseline,
                       textBaseline: TextBaseline.alphabetic,
                       children: [
                         Text(
-                          total.toStringAsFixed(2),
+                          totalAda.toStringAsFixed(2),
                           style: AppThemes.getCustomTextStyle(
                             fontFamily: 'Outfit',
                             fontSize: 52,
@@ -108,7 +116,7 @@ class PayForTrip extends StatelessWidget {
                     ),
 
                     Text(
-                      '≈ \$${(total * 0.184).toStringAsFixed(2)} USD',
+                      '≈ \$${(totalAda * 0.184).toStringAsFixed(2)} USD',
                       style: AppThemes.getCustomTextStyle(
                         fontFamily: 'Inter',
                         fontSize: 13,
@@ -119,7 +127,7 @@ class PayForTrip extends StatelessWidget {
 
                     Gap(24.h),
 
-                    // Wallet card (dark)
+                    // Wallet card
                     Container(
                       width: double.infinity,
                       padding: EdgeInsets.all(20.r),
@@ -233,10 +241,8 @@ class PayForTrip extends StatelessWidget {
                                   GestureDetector(
                                     onTap: () => Clipboard.setData(
                                         ClipboardData(text: address)),
-                                    child: const Icon(
-                                        Icons.copy_rounded,
-                                        color: Color(0xFF6B7280),
-                                        size: 16),
+                                    child: const Icon(Icons.copy_rounded,
+                                        color: Color(0xFF6B7280), size: 16),
                                   ),
                               ],
                             ),
@@ -245,9 +251,41 @@ class PayForTrip extends StatelessWidget {
                       ),
                     ),
 
+                    // Driver wallet missing warning
+                    if (!hasDriverWallet) ...[
+                      Gap(12.h),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF3CD),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFFFD700)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.warning_amber_rounded,
+                                color: Color(0xFFB45309), size: 18),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Driver has not linked a wallet. Payment cannot be processed.',
+                                style: AppThemes.getCustomTextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 13,
+                                  weight: FontWeight.w400,
+                                  color: const Color(0xFF92400E),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+
                     Gap(16.h),
 
-                    // Trip summary card (white)
+                    // Trip summary card
                     Container(
                       width: double.infinity,
                       padding: EdgeInsets.all(18.r),
@@ -258,7 +296,6 @@ class PayForTrip extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Driver + route header
                           Row(
                             children: [
                               Container(
@@ -283,8 +320,7 @@ class PayForTrip extends StatelessWidget {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       driverName,
@@ -344,33 +380,69 @@ class PayForTrip extends StatelessWidget {
 
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 14),
-                            child: Divider(
-                                color: Color(0xFFF3F4F6), height: 1),
+                            child: Divider(color: Color(0xFFF3F4F6), height: 1),
                           ),
 
-                          // Breakdown rows
                           _BreakdownRow(
-                            label: '1 seat × ${price.toStringAsFixed(1)} ₳',
-                            value: '${price.toStringAsFixed(2)} ₳',
+                            label: '1 seat × ${priceAda.toStringAsFixed(1)} ₳',
+                            value: '${priceAda.toStringAsFixed(2)} ₳',
                           ),
                           const SizedBox(height: 8),
                           _BreakdownRow(
                             label: 'Cardano network fee',
-                            value: '${networkFee.toStringAsFixed(2)} ₳',
+                            value: '${networkFeeAda.toStringAsFixed(4)} ₳',
                           ),
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 12),
-                            child: Divider(
-                                color: Color(0xFFF3F4F6), height: 1),
+                            child: Divider(color: Color(0xFFF3F4F6), height: 1),
                           ),
                           _BreakdownRow(
                             label: 'Total',
-                            value: '${total.toStringAsFixed(2)} ₳',
+                            value: '${totalAda.toStringAsFixed(4)} ₳',
                             bold: true,
                           ),
                         ],
                       ),
                     ),
+
+                    // Payment state indicator
+                    if (payVm.isLoading) ...[
+                      Gap(20.h),
+                      _PaymentStateIndicator(state: payVm.state)
+                          .animate()
+                          .fade(begin: 0, end: 1, duration: 300.ms),
+                    ],
+
+                    if (payVm.state == PaymentState.failed &&
+                        payVm.errorMessage != null) ...[
+                      Gap(16.h),
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEE2E2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFFCA5A5)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline_rounded,
+                                color: Color(0xFFDC2626), size: 18),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                payVm.errorMessage!,
+                                style: AppThemes.getCustomTextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 13,
+                                  weight: FontWeight.w400,
+                                  color: const Color(0xFF991B1B),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
 
                     Gap(24.h),
                   ],
@@ -378,7 +450,6 @@ class PayForTrip extends StatelessWidget {
               ),
             ),
 
-            // Bottom section
             Padding(
               padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 8.h),
               child: Column(
@@ -386,22 +457,44 @@ class PayForTrip extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () async {
-                        final paymentId = const Uuid().v4();
-                        await locator<TripFirebaseService>().completePayment(
-                          paymentId: paymentId,
-                          username: authVm.currentUser?.fullName ?? '',
-                          tripId: ride?.uuid ?? '',
-                          userId:
-                              authVm.currentUser?.id.toString() ?? '',
-                          amount: price,
-                        );
-                        Get.to(() => const PaymentSuccessScreen());
-                      },
-                      icon: const Icon(Icons.shield_outlined,
-                          color: Colors.white, size: 18),
+                      onPressed: (payVm.isLoading || !hasDriverWallet || address.isEmpty)
+                          ? null
+                          : () async {
+                              final success = await payVm.payForRide(
+                                ride: ride!,
+                                passengerAddress: address,
+                                passengerName:
+                                    authVm.currentUser?.fullName ?? '',
+                                passengerId:
+                                    authVm.currentUser?.id.toString() ?? '',
+                              );
+                              if (success && context.mounted) {
+                                Get.to(() => PaymentSuccessScreen(
+                                      txHash: payVm.txHash,
+                                    ));
+                              } else if (!success && context.mounted) {
+                                locator<DialogService>().showSnackBar(
+                                  'Payment failed',
+                                  payVm.errorMessage ?? 'Unknown error',
+                                  isError: true,
+                                );
+                              }
+                            },
+                      icon: payVm.isLoading
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.shield_outlined,
+                              color: Colors.white, size: 18),
                       label: Text(
-                        'Confirm payment · ${total.toStringAsFixed(2)} ₳',
+                        payVm.isLoading
+                            ? _stateLabel(payVm.state)
+                            : 'Confirm payment · ${totalAda.toStringAsFixed(2)} ₳',
                         style: AppThemes.getCustomTextStyle(
                           fontFamily: 'Inter',
                           fontSize: 15,
@@ -411,8 +504,9 @@ class PayForTrip extends StatelessWidget {
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.purple,
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 18),
+                        disabledBackgroundColor:
+                            AppColors.purple.withValues(alpha: 0.5),
+                        padding: const EdgeInsets.symmetric(vertical: 18),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
@@ -439,6 +533,90 @@ class PayForTrip extends StatelessWidget {
       ),
     );
   }
+
+  String _stateLabel(PaymentState s) => switch (s) {
+        PaymentState.building => 'Building transaction…',
+        PaymentState.signing => 'Signing…',
+        PaymentState.submitting => 'Submitting to chain…',
+        PaymentState.confirming => 'Awaiting confirmation…',
+        _ => 'Processing…',
+      };
+}
+
+// ── Supporting widgets ────────────────────────────────────────────────────────
+
+class _PaymentStateIndicator extends StatelessWidget {
+  final PaymentState state;
+  const _PaymentStateIndicator({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final steps = [
+      (PaymentState.building, 'Building transaction'),
+      (PaymentState.signing, 'Signing'),
+      (PaymentState.submitting, 'Submitting to chain'),
+      (PaymentState.confirming, 'Awaiting confirmation'),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        children: steps.map((s) {
+          final isActive = s.$1 == state;
+          final isDone = steps.indexOf(s) <
+              steps.indexWhere((e) => e.$1 == state);
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              children: [
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDone
+                        ? const Color(0xFF16A34A)
+                        : isActive
+                            ? AppColors.purple
+                            : const Color(0xFFF3F4F6),
+                  ),
+                  child: isDone
+                      ? const Icon(Icons.check_rounded,
+                          color: Colors.white, size: 14)
+                      : isActive
+                          ? const Padding(
+                              padding: EdgeInsets.all(5),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : null,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  s.$2,
+                  style: AppThemes.getCustomTextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    weight: isActive ? FontWeight.w600 : FontWeight.w400,
+                    color: isActive
+                        ? AppColors.primaryColor
+                        : const Color(0xFF9CA3AF),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
 }
 
 class _BreakdownRow extends StatelessWidget {
@@ -459,9 +637,7 @@ class _BreakdownRow extends StatelessWidget {
             fontFamily: 'Inter',
             fontSize: 13,
             weight: bold ? FontWeight.w700 : FontWeight.w400,
-            color: bold
-                ? AppColors.primaryColor
-                : const Color(0xFF6B7280),
+            color: bold ? AppColors.primaryColor : const Color(0xFF6B7280),
           ),
         ),
         Text(

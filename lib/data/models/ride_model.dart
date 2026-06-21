@@ -146,6 +146,7 @@ class Passenger {
   String? country;
   List<double>? currentLocation;
   String? phoneNumber;
+  String? walletAddress;
 
   Passenger({
     this.id,
@@ -155,6 +156,7 @@ class Passenger {
     this.country,
     this.currentLocation,
     this.phoneNumber,
+    this.walletAddress,
   });
 
   factory Passenger.fromJson(Map<String, dynamic> json) => Passenger(
@@ -165,6 +167,7 @@ class Passenger {
     country: json["country"],
     currentLocation: json["current_location"] == null ? [] : List<double>.from(json["current_location"]!.map((x) => x?.toDouble())),
     phoneNumber: json["phone_number"],
+    walletAddress: json["wallet_address"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -175,6 +178,7 @@ class Passenger {
     "country": country,
     "current_location": currentLocation == null ? [] : List<dynamic>.from(currentLocation!.map((x) => x)),
     "phone_number": phoneNumber,
+    "wallet_address": walletAddress,
   };
 }
 

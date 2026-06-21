@@ -241,57 +241,57 @@ class _BottomCardWidgetState extends State<BottomCardWidget> {
           const SizedBox(height: 18),
 
           // SUGGESTED label
-          Text(
-            'SUGGESTED',
-            style: AppThemes.getCustomTextStyle(
-              fontFamily: 'Inter',
-              fontSize: 11,
-              weight: FontWeight.w600,
-              color: const Color(0xFF9CA3AF),
-            ),
-          ),
-          const SizedBox(height: 10),
+          // Text(
+          //   'SUGGESTED',
+          //   style: AppThemes.getCustomTextStyle(
+          //     fontFamily: 'Inter',
+          //     fontSize: 11,
+          //     weight: FontWeight.w600,
+          //     color: const Color(0xFF9CA3AF),
+          //   ),
+          // ),
+          // const SizedBox(height: 10),
 
           // Suggestion chips
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: _suggestedPlaces.take(2).map((place) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: GestureDetector(
-                    onTap: () => _selectSuggestion(place.name),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF9FAFB),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFE5E7EB)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(place.emoji,
-                              style: const TextStyle(fontSize: 14)),
-                          const SizedBox(width: 6),
-                          Text(
-                            place.name,
-                            style: AppThemes.getCustomTextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 13,
-                              weight: FontWeight.w500,
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
+          // SingleChildScrollView(
+          //   scrollDirection: Axis.horizontal,
+          //   child: Row(
+          //     children: _suggestedPlaces.take(2).map((place) {
+          //       return Padding(
+          //         padding: const EdgeInsets.only(right: 8),
+          //         child: GestureDetector(
+          //           onTap: () => _selectSuggestion(place.name),
+          //           child: Container(
+          //             padding: const EdgeInsets.symmetric(
+          //                 horizontal: 12, vertical: 8),
+          //             decoration: BoxDecoration(
+          //               color: const Color(0xFFF9FAFB),
+          //               borderRadius: BorderRadius.circular(20),
+          //               border: Border.all(color: const Color(0xFFE5E7EB)),
+          //             ),
+          //             child: Row(
+          //               mainAxisSize: MainAxisSize.min,
+          //               children: [
+          //                 Text(place.emoji,
+          //                     style: const TextStyle(fontSize: 14)),
+          //                 const SizedBox(width: 6),
+          //                 Text(
+          //                   place.name,
+          //                   style: AppThemes.getCustomTextStyle(
+          //                     fontFamily: 'Inter',
+          //                     fontSize: 13,
+          //                     weight: FontWeight.w500,
+          //                     color: AppColors.primaryColor,
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //           ),
+          //         ),
+          //       );
+          //     }).toList(),
+          //   ),
+          // ),
         ],
       ),
     );

@@ -15,6 +15,7 @@ import 'package:ridex/data/models/wallet.dart';
 import 'package:ridex/providers/base_provider.dart';
 import 'package:ridex/ui/screens/auth/otp_screen.dart';
 import 'package:ridex/ui/screens/auth/password_screen.dart';
+import 'package:ridex/ui/screens/auth/wallet_information.dart';
 import 'package:ridex/ui/screens/navigation/app_navigation_screen.dart';
 
 import '../data/models/api_response.dart';
@@ -217,7 +218,7 @@ class AuthVm extends BaseProvider {
           await tripService.createNewUser(user: _currentUser!.user!);
           _clearError();
           clearBodyAndImages();
-          Get.offAll(() => const AppNavigationScreen(), transition: Transition.leftToRight);
+          Get.offAll(() => const WalletInfo(fromRegistration: true), transition: Transition.leftToRight);
         }
       } else {
         final msg = apiResponse.message ?? apiResponse.errors ?? 'Registration failed. Please try again.';

@@ -37,21 +37,21 @@ class HomeTopContainer extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Menu icon
+          //Menu icon
           GestureDetector(
             onTap: onMenuTap,
             child: Container(
               width: 34,
               height: 34,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.menu_rounded,
-                color: Colors.white,
-                size: 18,
-              ),
+              // decoration: BoxDecoration(
+              //   color: Colors.white.withValues(alpha: 0.08),
+              //   borderRadius: BorderRadius.circular(10),
+              // ),
+              // child: const Icon(
+              //   Icons.menu_rounded,
+              //   color: Colors.white,
+              //   size: 18,
+              // ),
             ),
           ),
 
@@ -92,15 +92,15 @@ class HomeTopContainer extends StatelessWidget {
             child: Container(
               width: 34,
               height: 34,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.notifications_none_rounded,
-                color: Colors.white,
-                size: 18,
-              ),
+              // decoration: BoxDecoration(
+              //   color: Colors.white.withValues(alpha: 0.08),
+              //   borderRadius: BorderRadius.circular(10),
+              // ),
+              // child: const Icon(
+              //   Icons.notifications_none_rounded,
+              //   color: Colors.white,
+              //   size: 18,
+              // ),
             ),
           ),
         ],

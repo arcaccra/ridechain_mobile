@@ -1,21 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:ridex/providers/auth_provider.dart';
+import 'package:ridex/providers/payment_provider.dart';
 import 'package:ridex/providers/rides_provider.dart';
 import 'package:ridex/ui/screens/navigation/app_navigation_screen.dart';
 import 'package:ridex/ui/screens/rate_driver/rate_driver_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/core_constants/colors.dart';
 
 class PaymentSuccessScreen extends StatefulWidget {
-  const PaymentSuccessScreen({super.key});
+  final String? txHash;
+  const PaymentSuccessScreen({super.key, this.txHash});
 
   @override
   State<PaymentSuccessScreen> createState() => _PaymentSuccessScreenState();
@@ -23,6 +26,20 @@ class PaymentSuccessScreen extends StatefulWidget {
 
 class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
   Timer? _timer;
+
+  String get _txHash => widget.txHash ?? context.read<PaymentProvider>().txHash ?? '';
+
+  String get _shortHash {
+    final h = _txHash;
+    if (h.length <= 16) return h;
+    return '${h.substring(0, 8)}…${h.substring(h.length - 8)}';
+  }
+
+  Future<void> _openCardanoScan() async {
+    if (_txHash.isEmpty) return;
+    final uri = Uri.parse('https://cardanoscan.io/transaction/$_txHash');
+    if (await canLaunchUrl(uri)) launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
 
   @override
   void initState() {
@@ -38,7 +55,6 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
   @override
   Widget build(BuildContext context) {
     final rideVm = context.watch<RideProvider>();
-    final authVm = context.watch<AuthVm>();
 
     final ride = rideVm.selectedRide;
     final price = double.tryParse(ride?.pricePerSeat ?? '0') ?? 0.0;
@@ -190,8 +206,12 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                                   'Today · ${TimeOfDay.now().format(context)}'),
                           _ReceiptRow(
                               label: 'Tx hash',
-                              value: '0x4f2…b8e1',
-                              valueColor: AppColors.purple),
+                              value: _shortHash.isNotEmpty ? _shortHash : '—',
+                              valueColor: AppColors.purple,
+                              onValueTap: _txHash.isNotEmpty ? _openCardanoScan : null,
+                              onValueLongPress: _txHash.isNotEmpty
+                                  ? () => Clipboard.setData(ClipboardData(text: _txHash))
+                                  : null),
                         ],
                       ),
                     )
@@ -328,8 +348,16 @@ class _ReceiptRow extends StatelessWidget {
   final String label;
   final String value;
   final Color? valueColor;
-  const _ReceiptRow(
-      {required this.label, required this.value, this.valueColor});
+  final VoidCallback? onValueTap;
+  final VoidCallback? onValueLongPress;
+
+  const _ReceiptRow({
+    required this.label,
+    required this.value,
+    this.valueColor,
+    this.onValueTap,
+    this.onValueLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -347,13 +375,27 @@ class _ReceiptRow extends StatelessWidget {
               color: const Color(0xFF6B7280),
             ),
           ),
-          Text(
-            value,
-            style: AppThemes.getCustomTextStyle(
-              fontFamily: 'Inter',
-              fontSize: 13,
-              weight: FontWeight.w600,
-              color: valueColor ?? Colors.white,
+          GestureDetector(
+            onTap: onValueTap,
+            onLongPress: onValueLongPress,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  value,
+                  style: AppThemes.getCustomTextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    weight: FontWeight.w600,
+                    color: valueColor ?? Colors.white,
+                  ),
+                ),
+                if (onValueTap != null) ...[
+                  const SizedBox(width: 4),
+                  Icon(Icons.open_in_new_rounded,
+                      size: 13, color: valueColor ?? Colors.white),
+                ],
+              ],
             ),
           ),
         ],
